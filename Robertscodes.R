@@ -1,6 +1,9 @@
 
 # Complete data generation, nb_complete contains complete event time for each subject
-
+##' @T 
+##' @n 
+##' @rate 
+##' @dispersion 
 nb_complete <- function(T,n,rate,dispersion){
   t <- array(list(NA),dim=n)
   

@@ -6,11 +6,15 @@ library(plyr)
 
 #complete data
 
-complete<-function(n,rate.placebo,rr,T,dispersion.placebo,dispersion.treatment,N.rep,alpha){
+complete <- function(n, rate.placebo, rr, T, dispersion.placebo, 
+dispersion.treatment, N.rep, alpha){
   
   rate.treatment <- (1-rr)*rate.placebo
   dropout.p <- rep(NA,N.rep)
   dropout.t <- rep(NA,N.rep)
+  
+
+
   poisson.se <- rep(NA,N.rep)
   poisson.se2 <- rep(NA,N.rep)
   poisson.rratio <- rep(NA,N.rep)
@@ -72,6 +76,7 @@ complete<-function(n,rate.placebo,rr,T,dispersion.placebo,dispersion.treatment,N
     }, warning = function(w){return(1)})
   }
 
+
   
   # excludes cases with warnings
 
@@ -99,7 +104,8 @@ complete<-function(n,rate.placebo,rr,T,dispersion.placebo,dispersion.treatment,N
 #
 # MCAR without variation in drop-out rate
 # 
-
+#
+# 
 sim_mcar1<-function(n,rate.placebo,rr,T,dispersion.placebo,dispersion.treatment,drop_rate.placebo,drop_rate.treatment,N.rep,N.mi,alpha){
   
   rate.treatment <- (1-rr)*rate.placebo
@@ -112,7 +118,7 @@ sim_mcar1<-function(n,rate.placebo,rr,T,dispersion.placebo,dispersion.treatment,
   ERle75p.p <- rep(NA,N.rep)
   ERle75p.t <- rep(NA,N.rep)
   
-  # no imputation (direct likelihood approach)
+  # no imputation (direct likelihood approach)  
   dl_poisson.se <- rep(NA,N.rep)
   dl_poisson.rratio <- rep(NA,N.rep)
   dl_poisson.pval <- rep(NA,N.rep)
@@ -899,8 +905,8 @@ sim_mar2<-function(n,rate.placebo,rr,T,dispersion.placebo,dispersion.treatment,r
   for (i in 1:N.rep){
     if ((i/10 - round(i/10)) == 0) print(i)
     err[i] <-tryCatch({
-    nb_complete.placebo <- nb_complete(T,n,rate.placebo,dispersion.placebo)
-    nb_complete.treatment <- nb_complete(T,n,rate.treatment,dispersion.treatment)
+    nb_complete.placebo   <- nb_complete(T, n, rate.placebo,   dispersion.placebo)
+    nb_complete.treatment <- nb_complete(T, n, rate.treatment, dispersion.treatment)
     
     dropout_time.placebo <- dropout_time4(T,n,nb_complete.placebo,rates,drop_rate_variance)
     dropout_time.treatment <- dropout_time4(T,n,nb_complete.treatment,rates,drop_rate_variance)
