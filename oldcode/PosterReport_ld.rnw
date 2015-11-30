@@ -1,0 +1,264 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\title{Results for PSI poster - A Simulation study of a controlled imputation approach for analyzing missing data in recurrent events due to early discontinuations}
+\author{Mattis Gottlow}
+\maketitle
+
+\noindent \textbf{Keywords:} Missing Data, Recurrent Events, Clinical Trial Design and Analysis
+\\
+\\
+\noindent \textbf{Background:} A controlled imputation approach for recurrent events has been developed using a conditional probability relationship between events before and after discontinuation. The treatment effect is often established using an estimand based on the missing at random (MAR) assumption and the jump to reference (J2R) approach is sometimes used to provide a conservative estimate that is not based on the MAR assumption.  
+\\
+\\
+\noindent \textbf{Method:} Simulations were conducted to study the effects of imputation on the estimated treatment effect, its standard error and the power when using the J2R approach for recurrent events with different levels of missing data.
+\\
+\\
+\noindent \textbf{Results:} We show that when J2R imputation is used, the treatment effect is diluted as expected, and consequently the power is reduced. However the dilution is manageable as long as the number of discontinuations is reasonably low. 
+\\
+\\
+\noindent \textbf{Conclusion:} Our work offers a view of the consequences of using the J2R approach when analyzing missing data in recurrent events due to early discontinuations and serves as a reminder that keeping the amount of missing data low is at least as important as how you deal with it. 
+
+\newpage
+\section*{Introduction}
+Missing data is one of the most critical statistical issues in regulatory science with the ability to impact drug approvals and there are no statistical analysis approaches that can fully replace data that are missing. 
+The treatment effect in a clinical study is often established using an estimand based on the missing at random (MAR) assumption and approaches such as jump to reference (J2R) are sometimes used to provide a conservative estimate that is not based on the MAR assumption.
+Here we present the results of simulations that were conducted to study the effects of imputation on the estimated treatment effect, its standard error and the power when using different controlled based approaches for recurrent events with different levels of missing data
+
+
+\section*{Imputation Approach}
+A controlled imputation approach for recurrent events has been developed using a conditional probability relationship between events before and after discontinuation (based on Keene 2014). This method takes into account the observed number of events for a subject with missing data and makes it possible to impute  data based on various assumptions. The method is slightly reformulated to allow for a more intuitive way to explore deviations from the MAR assumption, using an algorithm that does not rely on Bayesian methods
+
+\begin{itemize}
+\item \textbf{Jump to reference (J2R)} After discontinuation, subjects behave as if they were assigned to placebo. If available outcomes for a subject in the active group are worse than expected, imputed outcomes will be worse than expected for a subject in the placebo group.
+\item \textbf{Effectiveness} After discontinuation, subjects from the active group behave like a mixture of placebo and active . If available outcomes for a subject in the active group are worse than expected, imputed outcomes will be worse than expected for a subject with a diluted treatment effect
+\item \textbf{Delta method} After discontinuation, subjects from the active group behave worse than as if they were assigned to placebo. How much worse depend on the factor delta; In the simulations we have used delta = 1.5 which means that, after discontinuation, imputed outcomes will be 50\% than expected for a subject with similar history in the placebo group.
+ 
+\end{itemize}
+
+\textbf{Algorithm}
+\begin{enumerate}
+   \item Estimate model using the observed data,
+   \item Impute missing data using predictions from the model and the assumption about post withdrawal behaviour,
+   \item Analyze the multiply-imputed dataset and
+   \item combine the results using standard MI methodology.
+\end{enumerate}
+ 
+For comparison we estimate the treatment effect using a negative binomial model with the time to discontinuation as an offset term (Direct Likelihood (DL)), which is valid under MAR. We also estimate a negative binomial model using the complete datasets (no missing data)
+ 
+\section*{Data generation model}
+First, complete data is generated using a negative binomial model, then dropout times are generated based on a model were the individual dropout rate increases as soon as an event occurs. In the simulations we have used a placebo rate of 0.9, a dispersion parameter of 0.9, a treatment effect of 40\% event rate reduction and a sample size of 228 subjects per treatment group
+
+We generate 6 different missing data scenarios with increasing  dropout rates and 2000 datasets are generated for each scenario. This results in observed dropout rates that differ between the treatment groups:
+
+
+<<chunk0, cache=TRUE, echo=FALSE>>=
+require(ggplot2)
+require(MASS)
+require(plyr)
+require(gridExtra)
+require(xtable)
+path="/scratch/INR/missingData"
+
+lstname1=paste(path,"/Data/PSIposter1ld.rds",sep="")
+lstname2=paste(path,"/Data/PSIposter2ld.rds",sep="")
+lstname3=paste(path,"/Data/PSIposter3ld.rds",sep="")
+lstname4=paste(path,"/Data/PSIposter4ld.rds",sep="")
+lstname5=paste(path,"/Data/PSIposter5ld.rds",sep="")
+lstname6=paste(path,"/Data/PSIposter6ld.rds",sep="")
+
+poster1 <- readRDS(lstname1)
+poster2 <- readRDS(lstname2)
+poster3 <- readRDS(lstname3)
+poster4 <- readRDS(lstname4)
+poster5 <- readRDS(lstname5)
+poster6 <- readRDS(lstname6)
+
+
+
+
+scens=c("Scenario 1","Scenario 2","Scenario 3","Scenario 4","Scenario 5","Scenario 6")
+meths=c("Complete","DL","J2R","Delta")
+
+<<DOtab, results=tex,echo=FALSE>>=
+do=rbind(100*round(poster1$dropout[4,1:2],digits=3),
+     100*round(poster2$dropout[4,1:2],digits=3),
+	   100*round(poster3$dropout[4,1:2],digits=3),
+	   100*round(poster4$dropout[4,1:2],digits=3),
+	   100*round(poster5$dropout[4,1:2],digits=3),
+     100*round(poster6$dropout[4,1:2],digits=3)
+	   )
+doq1=rbind(100*round(poster1$dropout[2,1:2],digits=3),
+	   100*round(poster2$dropout[2,1:2],digits=3),
+	   100*round(poster3$dropout[2,1:2],digits=3),
+	   100*round(poster4$dropout[2,1:2],digits=3),
+	   100*round(poster5$dropout[2,1:2],digits=3),
+     100*round(poster6$dropout[2,1:2],digits=3)
+	   )
+
+doq2=rbind(100*round(poster1$dropout[5,1:2],digits=3),
+	   100*round(poster2$dropout[5,1:2],digits=3),
+	   100*round(poster3$dropout[5,1:2],digits=3),
+	   100*round(poster4$dropout[5,1:2],digits=3),
+	   100*round(poster5$dropout[5,1:2],digits=3),
+     100*round(poster6$dropout[5,1:2],digits=3)
+	   )
+
+sc=cbind(paste0(do[,1], "%") ,paste0(doq1[,1], "%"), paste0(doq2[,1], "%"),
+	   paste0(do[,2], "%"),paste0(doq1[,2], "%"), paste0(doq2[,2], "%"))
+
+rownames(sc)=scens
+#colnames(sc)=c("Placebo","","","Active","","")
+sc=rbind(c("Placebo","","","Active","",""),c("Mean","Q1","Q3","Mean","Q1","Q3"),sc)
+#grid.arrange(tableGrob(sc,core.just="left",gpar.rowtext = gpar(cex = 1, fontface = "bold")))
+
+textab <- xtable(sc, caption = "Dropout rates observed in simulations (percent)")
+#hlines <- c(-1,0,1, nrow(textab))
+print(textab, hline.after=c(-1,2,nrow(textab)), floating = TRUE, caption.placement = 'top', include.colnames=FALSE, include.rownames=FALSE)
+
+domean=(do$summdrop.p+do$summdrop.t)/2
+@
+\newpage
+\section*{Simulation Results}
+\subsection*{Power}
+<<power, results=tex,echo=FALSE>>=
+preflst=c("co_", "dl_", "j2r_","tr_","del_" )
+nmlst=c("Complete","DL","J2R","Effectiveness", "Delta")
+allpow=rbind(poster1$power,poster2$power,poster3$power,poster4$power,poster5$power,poster6$power)
+scenlst=c("Scenario 1","Scenario 2", "Scenario 3","Scenario 4","Scenario 5","Scenario 6")
+allnm=names(allpow)
+nbdnm=paste0(preflst,"powernb")
+ind=which(allnm %in% nbdnm)
+nb.pw=round(allpow[,ind],digits=3)
+colnames(nb.pw)=nmlst
+rownames(nb.pw)=scenlst
+
+allrr=data.frame(rbind(colMeans(poster1$rratio,na.rm=TRUE),
+                       colMeans(poster2$rratio,na.rm=TRUE),
+                       colMeans(poster3$rratio,na.rm=TRUE),
+                       colMeans(poster4$rratio,na.rm=TRUE),
+                       colMeans(poster5$rratio,na.rm=TRUE),
+                       colMeans(poster6$rratio,na.rm=TRUE)))
+allnm=names(allrr)
+preflst=c("co_", "dl_", "j2r_","tr_","delta_" )
+nbdnm=paste0(preflst,"nbd.rratio")
+ind=which(allnm %in% nbdnm)
+nb.rr=round(100*(1-allrr[,ind]),digits=1)
+colnames(nb.rr)=nmlst
+rownames(nb.rr)=scenlst
+
+
+allse=data.frame(rbind(colMeans(poster1$se,na.rm=TRUE),
+                       colMeans(poster2$se,na.rm=TRUE),
+                       colMeans(poster3$se,na.rm=TRUE),
+                       colMeans(poster4$se,na.rm=TRUE),
+                       colMeans(poster5$se,na.rm=TRUE),
+                       colMeans(poster6$se,na.rm=TRUE)))
+allnm=names(allse)
+preflst=c("co_", "dl_", "j2r_","tr_","delta_" )
+nbdnm=paste0(preflst,"nbd.se2")
+ind=which(allnm %in% nbdnm)
+nb.se=round(allse[,ind],digits=3)
+colnames(nb.se)=nmlst
+rownames(nb.se)=scenlst
+
+textab <- xtable(nb.pw, caption = "Power",digits=3)
+print(textab, floating = TRUE, caption.placement = 'top')
+
+@
+
+\setkeys{Gin}{width=1 \textwidth} 
+<<Graph1, echo=FALSE, fig=TRUE, height=5, width=10>>=
+fs=18
+nbg=(rbind(data.frame(Power=as.numeric(nb.pw$Complete),Method="Complete",scens=domean),
+           data.frame(Power=as.numeric(nb.pw$DL),Method="DL",scens=domean),
+           data.frame(Power=as.numeric(nb.pw$J2R),Method="J2R",scens=domean),
+           data.frame(Power=as.numeric(nb.pw$Effectiveness),Method="Partial (0.5) J2R",scens=domean),
+           data.frame(Power=as.numeric(nb.pw$Delta),Method="Delta (x1.4)",scens=domean)))
+#colnames(nbg)=c("Power","Method")
+m <- ggplot(nbg, aes(x=scens, y=Power, colour=Method))
+m = m +  geom_line(size=1.3) + xlab("Overall Dropout Rate")
+m = m + theme(axis.text=element_text(size=fs),
+              axis.title=element_text(size=fs),
+              legend.text=element_text(size=fs),
+              legend.title=element_text(size=fs))
+m = m + scale_x_continuous(breaks=5*(1:5))
+#m = m + annotation_custom(tableGrob(nb,core.just="left",gpar.rowtext = gpar(cex = 1, fontface = "bold")), xmin=35, xmax=50, ymin=-2.5, ymax=-1)
+m
+@
+
+
+\newpage
+\subsection*{Event Rate Reduction (ERR)}
+<<rr, results=tex,echo=FALSE>>=
+textab <- xtable(nb.rr, caption = "Estimated ERR",digits=1)
+print(textab, floating = TRUE, caption.placement = 'top')
+@
+
+<<Graph2, echo=FALSE, fig=TRUE, height=5, width=10>>=
+nbg=(rbind(data.frame(AERR=as.numeric(nb.rr$Complete),Method="Complete",scens=domean),
+           data.frame(AERR=as.numeric(nb.rr$DL),Method="DL",scens=domean),
+           data.frame(AERR=as.numeric(nb.rr$J2R),Method="J2R",scens=domean),
+           data.frame(AERR=as.numeric(nb.rr$Effectiveness),Method="Partial (0.5) J2R",scens=domean),
+           data.frame(AERR=as.numeric(nb.rr$Delta),Method="Delta (x1.4)",scens=domean)))
+#colnames(nbg)=c("Power","Method")
+m <- ggplot(nbg, aes(x=scens, y=AERR, colour=Method))
+m = m +  geom_line(size=1.3) + xlab("Overall Dropout Rate") +ylab("Event Rate Reduction (%)")
+m = m + theme(axis.text=element_text(size=fs),
+              axis.title=element_text(size=fs),
+              legend.text=element_text(size=fs),
+              legend.title=element_text(size=fs))
+m = m + scale_x_continuous(breaks=5*(1:5))
+#m = m + annotation_custom(tableGrob(nb,core.just="left",gpar.rowtext = gpar(cex = 1, fontface = "bold")), xmin=35, xmax=50, ymin=-2.5, ymax=-1)
+m
+@
+
+\newpage
+\subsection*{Standard Error}
+<<se, results=tex,echo=FALSE>>=
+textab <- xtable(nb.se, caption = "Standard Error",digits=3)
+print(textab, floating = TRUE, caption.placement = 'top')
+@
+
+<<Graph3, echo=FALSE, fig=TRUE, height=5, width=10>>=
+nbg=(rbind(data.frame(SE=as.numeric(nb.se$Complete),Method="Complete",scens=domean),
+           data.frame(SE=as.numeric(nb.se$DL),Method="DL",scens=domean),
+           data.frame(SE=as.numeric(nb.se$J2R),Method="J2R",scens=domean),
+           data.frame(SE=as.numeric(nb.se$Effectiveness),Method="Partial (0.5) J2R",scens=domean),
+           data.frame(SE=as.numeric(nb.se$Delta),Method="Delta (x1.4)",scens=domean)))
+#colnames(nbg)=c("Power","Method")
+m <- ggplot(nbg, aes(x=scens, y=SE, colour=Method))
+m = m +  geom_line(size=1.3) + xlab("Overall Dropout Rate") + ylab("Standard Error")
+m = m + theme(axis.text=element_text(size=fs),
+              axis.title=element_text(size=fs),
+              legend.text=element_text(size=fs),
+              legend.title=element_text(size=fs))
+m = m + scale_x_continuous(breaks=5*(1:5)) 
+
+#m = m + annotation_custom(tableGrob(nb,core.just="left",gpar.rowtext = gpar(cex = 1, fontface = "bold")), xmin=35, xmax=50, ymin=-2.5, ymax=-1)
+m
+@
+
+\section*{Conclusions}
+\begin{itemize}
+\item There is a substantial loss of power when using conservative imputation methods. Firstly because the dilution of the treatment effect  that comes from using methods that are conservative, but also because the standard deviation of the negative binomial model estimate increases as the imputation method becomes more conservative.
+\item Our work offers a view of the consequences of using the J2R and similar approaches when analyzing missing data in recurrent events due to early discontinuations and serves as a reminder that keeping the amount of missing data low is at least as important as how you deal with it; We should  design studies to remove or minimise barriers to patients participating so that where it is medically appropriate patients can be maintained on randomised treatment until the outcome data are collected.
+\item Continuation of missing data research work in various design settings and internal\/external publications and  collaborations  are much needed due to the complicated nature of the missing data issue
+\end{itemize}
+
+\begin{thebibliography}{widest entry}
+\bibitem[1]{cite_key1} The Panel on Handling Missing Data in Clinical Trials; National Research Council. The Prevention and Treatment of Missing Data in Clinical Trials. National Academies Press, 2010
+\bibitem[2]{cite_key2} Guideline on Missing Data in Confirmatory Clinical Trials 2 July 2010 EMA\/CPMP\/EWP\/1776/99 Rev. 1
+\bibitem[3]{cite_key3} AZ guidance \(clinical OPI\): Guidance on Minimizing the Loss of Patient Data in AstraZeneca Clinical Trials, ed 2.0. \(LDMS_001_00102309\)
+Fleming, TR. Addressing Missing Data in Clinical Trials. Ann. Intern. Med. 2011;154:113-117.
+\bibitem[4]{cite_key4} Ratitch B, O’Kelly M, Tosiello R. Missing data in clinical trials: from clinical assumptions to statistical analysis using pattern mixture models. Pharmaceutical Statistics 2013; 12: 337-347.
+\bibitem[5]{cite_key5} Keene ON, Roger JH, Hartley BF, Kenward MG. Missing data sensitivity analysis for recurrent event data using controlled imputation. Pharmaceutical Statistics 2014, 13 258–264.
+\bibitem[6]{cite_key6} Little RJ, Yosef M, Cain KC, Nan B, Harlow SD. A hot-deck multiple imputation procedure for gaps in longitudinal data on recurrent events. Statist. Med., 2008; 27:103-120.
+\bibitem[7]{cite_key7} Mallinckrodt CH, Lin Q, Lipkovich I, Molenberghs G. A structured approach to choosing estimands and estimators in longitudinal clinical trials. Pharmaceutical Statistics 2012, 11:456–461. 
+\bibitem[8]{cite_key8} Keene ON, Jones MRK, Lane PW, Anderson J. Analysis of exacerbation rates in asthma and chronic obstructive pulmonary disease: example from the TRISTAN study. Pharmaceut. Statist. 2007; 6:89-97.
+
+\end{thebibliography}
+
+
+\end{document}
