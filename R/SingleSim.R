@@ -87,9 +87,12 @@ SimulateDropout <- function(simComplete,drop.mechanism){
     drop.mechanism$GetDropTime(event.times=simComplete$event.times[[i]],data=simComplete$data[i,])
   },FUN.VALUE=numeric(1))
   
-  retVal <- simComplete
-  retVal$data$censored.time <- censored.time 
-  retVal$status <- "dropout"
-  #add dropout details to object
-  return(retVal)
+  event.times <- mapply(function(censor.time,event.times){ 
+                          return(event.times[event.times<=censor.time]) },
+                        censor.time=censored.time,event.times=simComplete$event.times,SIMPLIFY = FALSE)
+  
+  simComplete$observed.events <- vapply(event.times,length,FUN.VALUE=numeric(1))
+  simComplete$data$censored.time <- censored.time
+  simComplete$status <- "dropout"
+  return(simComplete)
 }
