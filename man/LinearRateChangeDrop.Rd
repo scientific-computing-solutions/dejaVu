@@ -5,15 +5,15 @@
 \title{Create a Dropout Mechanism with drop out rate which changes by a fixed constant
 after every event}
 \usage{
-LinearRateChangeDrop(stating.rate, rate.change, var = 0)
+LinearRateChangeDrop(starting.rate, rate.change, var = 0)
 }
 \arguments{
+\item{starting.rate}{\code{C}, see description section.}
+
 \item{rate.change}{\code{D}, see description section. Note if \code{D<0}, \code{Cj} could be negative
 for large \code{j}, this is not possible and the rate remains constant if the next change would set \code{Cj<0}}
 
 \item{var}{\code{sigma^2}, see description section}
-
-\item{starting.rate}{\code{C}, see description section.}
 }
 \value{
 A \code{DropoutMechanism} object

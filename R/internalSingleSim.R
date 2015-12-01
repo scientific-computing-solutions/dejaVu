@@ -32,11 +32,7 @@ GetSimRates <- function(study.time,number.subject,event.rate,dispersion){
   if(dispersion==0){
     return(rep(event.rate,number.subject))  
   }
-  
-  mean.event <- event.rate*study.time
-  p <- (dispersion*mean.event)/(1+dispersion*mean.event)
-  
-  lambda <- rgamma(n=number.subject,shape=1/dispersion,scale=p/(1-p))
+  lambda <- rgamma(n=number.subject,shape=1/dispersion,scale=event.rate*study.time*dispersion)
   return(lambda/study.time)
 }
 

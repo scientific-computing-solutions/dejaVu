@@ -4,7 +4,11 @@
 ##' clinical trial without dropouts using a negative binomial model
 ##' with given rates and dispersion parameters
 ##' 
-##' TODO add some maths here?
+##' Each subject's events are described by a Poisson process with a subject specific rate given by
+##' \code{lambda/study.time} where \code{study.time} is the study follow up period and \code{lambda}
+##' has a gamma distribution with \code{shape=1/dispersion} and \code{scale=dispersion*event.rate*study.time} 
+##' 
+##' Different dispersions, event.rates and number of subjects can be specified for both arms of the trial 
 ##' 
 ##' @param study.time The study follow up period
 ##' @param number.subjects The number of subjects, if a vector \code{c(a,b)} then
@@ -48,10 +52,29 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
   retVal <- list(data=data,
                  event.times=event.times,
                  status="complete",
-                 subject.rates=subject.rates) #needed? 
-  
+                 subject.rates=subject.rates, #needed? 
+                 dropout.mechanism=NULL,
+                 study.time=study.time,
+                 event.rates=event.rates,
+                 dispersions=dispersions)
+                 
   class(retVal) <- "SingleSim"
   return(retVal)
+}
+
+
+##' @export
+print.SingleSim <- function(x,...){
+  
+  cat(x$status,"dataset\n")
+  cat("Study follow up period:",x$study.time,"\n")
+  cat("Negative binomial event rates:",x$event.rates,"\n")
+  cat("Negative binomial dispersion:",x$dispersions,"\n")
+  if(x$status!="complete"){
+    print(x$dropout.mechanism)
+  }
+  cat("Data:\n")
+  str(x$data)
 }
 
 
@@ -67,6 +90,10 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
 ##' @param event.times TODO
 ##' @param status TODO
 ##' @param subject.rates TODO
+##' @param dropout.mechanism TODO
+##' @param study.time TODO
+##' @param event.rates TODO
+##' @param dispersions  TODO
 ##' @name SingleSim.object
 ##' @aliases print.SingleSim summary.SingleSim
 NULL
@@ -105,5 +132,6 @@ SimulateDropout <- function(simComplete,drop.mechanism){
   simComplete$observed.events <- vapply(event.times,length,FUN.VALUE=numeric(1))
   simComplete$data$censored.time <- censored.time
   simComplete$status <- "dropout"
+  simComplete$dropout.mechanism <- drop.mechanism
   return(simComplete)
 }

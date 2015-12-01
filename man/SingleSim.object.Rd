@@ -13,6 +13,14 @@
 \item{status}{TODO}
 
 \item{subject.rates}{TODO}
+
+\item{dropout.mechanism}{TODO}
+
+\item{study.time}{TODO}
+
+\item{event.rates}{TODO}
+
+\item{dispersions}{TODO}
 }
 \description{
 Stuff

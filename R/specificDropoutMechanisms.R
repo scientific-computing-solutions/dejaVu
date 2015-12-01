@@ -111,7 +111,7 @@ LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
     text=text,
     cols.needed=cols.needed,
     GetDropTime=f,
-    parameters=list(stating.rate=stating.rate,
+    parameters=list(starting.rate=starting.rate,
                     rate.change.after.event=rate.change,
                     between.subject.var=var)
   )

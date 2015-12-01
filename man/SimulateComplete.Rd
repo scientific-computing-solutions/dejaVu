@@ -26,7 +26,11 @@ clinical trial without dropouts using a negative binomial model
 with given rates and dispersion parameters
 }
 \details{
-TODO add some maths here?
+Each subject's events are described by a Poisson process with a subject specific rate given by
+\code{lambda/study.time} where \code{study.time} is the study follow up period and \code{lambda}
+has a gamma distribution with \code{shape=1/dispersion} and \code{scale=dispersion*event.rate*study.time}
+
+Different dispersions, event.rates and number of subjects can be specified for both arms of the trial
 }
 \examples{
 sim <- SimulateComplete(study.time=365,number.subjects=50,
