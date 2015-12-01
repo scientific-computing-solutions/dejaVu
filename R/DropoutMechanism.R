@@ -36,7 +36,7 @@ ValidColumns <- function(drop.mechanism,columnnames){
 }
 
 ##' @export
-print.DropoutMechanism <- function(x){
+print.DropoutMechanism <- function(x,...){
   cat("Dropout Type:",x$type,fill=TRUE)
   cat("Dropout Mechanism:",x$text,fill=TRUE)
   cat("Parameters:",fill=TRUE)

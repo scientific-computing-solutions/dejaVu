@@ -7,14 +7,23 @@
 SimulateDropout(simComplete, drop.mechanism)
 }
 \arguments{
-\item{simComplete}{TODO}
+\item{simComplete}{A \code{SingleSim} object (with \code{status="complete"})}
 
-\item{drop.mechanism}{TODO}
+\item{drop.mechanism}{A \code{DropoutMechanism} object}
 }
 \value{
 A \code{SingleSim} object with \code{status='dropout'}
 }
 \description{
-STUFF
+This function takes a complete recurrent event data set
+and drop out mechanism and creates a data set set with
+dropout
+}
+\examples{
+sim <- SimulateComplete(study.time=365,number.subjects=50,
+                        event.rates=c(0.01,0.005),dispersions=0.25)
+
+sim.with.dropout <- SimulateDropout(sim,
+                     drop.mechanism=ConstantRateDrop(rate=0.0025))
 }
 

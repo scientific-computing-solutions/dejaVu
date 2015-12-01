@@ -74,11 +74,19 @@ NULL
 
 ##' Simulate subject dropout
 ##' 
-##' STUFF
-##' 
-##' @param simComplete TODO
-##' @param drop.mechanism TODO
+##' This function takes a complete recurrent event data set
+##' and drop out mechanism and creates a data set set with
+##' dropout
+##'  
+##' @param simComplete A \code{SingleSim} object (with \code{status="complete"})
+##' @param drop.mechanism A \code{DropoutMechanism} object
 ##' @return A \code{SingleSim} object with \code{status='dropout'}
+##' @examples 
+##' sim <- SimulateComplete(study.time=365,number.subjects=50,
+##'                         event.rates=c(0.01,0.005),dispersions=0.25)
+##'                         
+##' sim.with.dropout <- SimulateDropout(sim,
+##'                      drop.mechanism=ConstantRateDrop(rate=0.0025))                        
 ##' @export 
 SimulateDropout <- function(simComplete,drop.mechanism){
   validateSimulateDropout(simComplete,drop.mechanism)
