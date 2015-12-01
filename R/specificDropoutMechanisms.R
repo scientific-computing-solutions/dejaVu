@@ -50,7 +50,7 @@ ConstantRateDrop <- function(rate,var=0){
 ##' after every event
 ##' 
 ##' Creates an MAR \code{DropoutMechanism} object where subject \code{i} has piecewise exponential
-##' dropout rate where the rate changes by a constant amount after each event, specifically after $j$ events
+##' dropout rate where the rate changes by a constant amount after each event, specifically after \code{j} events
 ##' the subject has rate \code{Rij = Cj*exp(Xij)} where \code{Cj=C+j*D} for constants \code{C}, \code{D} 
 ##' and Xij is a standard normal variable with mean 0 and standard deviation \code{sigma}   
 ##' 
@@ -62,7 +62,7 @@ ConstantRateDrop <- function(rate,var=0){
 ##' @return A \code{DropoutMechanism} object
 ##' @seealso \code{\link{DropoutMechanism.object}}
 ##' @examples
-##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=0.0025)
+##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=0.0005)
 ##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=-0.00001,var=1)
 ##' @export
 LinearRateChangeDrop <- function(stating.rate,rate.change,var=0){
