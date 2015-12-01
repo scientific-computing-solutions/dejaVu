@@ -2,11 +2,29 @@
 % Please edit documentation in R/specificDropoutMechanisms.R
 \name{ConstantRateDrop}
 \alias{ConstantRateDrop}
-\title{TODO}
+\title{Create a Dropout Mechanism with constant dropout rate}
 \usage{
 ConstantRateDrop(log.rate, var = 0)
 }
+\arguments{
+\item{log.rate}{\code{C} described in the details}
+
+\item{var}{\code{sigma^2} described in the details section, by default = 0}
+}
+\value{
+A \code{DropoutMechanism} object
+}
 \description{
-TODO
+Creates an MCAR \code{DropoutMechanism} object where subject \code{i} dropout
+is exponentially distributed with rate \code{Ri} where
+\code{log(Ri) = C + Xi} for constant \code{C} and
+\code{Xi} a random normal variable with mean 0 and standard deviation \code{sigma}
+}
+\examples{
+ConstantRateDrop(log.rate=-6)
+ConstantRateDrop(log.rate=-6,var=1)
+}
+\seealso{
+\code{\link{DropoutMechanism.object}}
 }
 

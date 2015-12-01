@@ -75,6 +75,6 @@ validateSimulateDropout <- function(simComplete,drop.mechanism){
     stop("Invalid SingleSim argument: simComplete$status != 'complete'")
   }
   
-  #TODO check columns needed by drop mechanism are in dataframe
+  ValidColumns(drop.mechanism,colnames(simComplete$data))
   
 }
