@@ -25,7 +25,9 @@ ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispe
   
 }
 
-
+# Return a vector of length number.subject of rates for the Poission process
+# 1 for each subject of a given arm. The arguments here are single values not
+# numeric vectors
 GetSimRates <- function(study.time,number.subject,event.rate,dispersion){
   if(dispersion==0){
     return(rep(event.rate,number.subject))  

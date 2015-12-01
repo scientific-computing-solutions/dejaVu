@@ -44,3 +44,78 @@ ConstantRateDrop <- function(rate,var=0){
   class(retVal) <- "DropoutMechanism"
   return(retVal)
 }
+
+
+##' Create a Dropout Mechanism with drop out rate which changes by a fixed constant
+##' after every event
+##' 
+##' Creates an MAR \code{DropoutMechanism} object where subject \code{i} has piecewise exponential
+##' dropout rate where the rate changes by a constant amount after each event, specifically after $j$ events
+##' the subject has rate \code{Rij = Cj*exp(Xij)} where \code{Cj=C+j*D} for constants \code{C}, \code{D} 
+##' and Xij is a standard normal variable with mean 0 and standard deviation \code{sigma}   
+##' 
+##'  
+##' @param starting.rate \code{C}, see description section.
+##' @param rate.change \code{D}, see description section. Note if \code{D<0}, \code{Cj} could be negative
+##' for large \code{j}, this is not possible and the rate remains constant if the next change would set \code{Cj<0} 
+##' @param var \code{sigma^2}, see description section
+##' @return A \code{DropoutMechanism} object
+##' @seealso \code{\link{DropoutMechanism.object}}
+##' @examples
+##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=0.0025)
+##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=-0.00001,var=1)
+##' @export
+LinearRateChangeDrop <- function(stating.rate,rate.change,var=0){
+  
+  if(!is.numeric(starting.rate) || is.na(starting.rate) || length(starting.rate)>1 || starting.rate < 0){
+    stop("Invalid argument starting.rate")
+  }
+  if(!is.numeric(var) || is.na(var) || length(var)>1 || var < 0){
+    stop("Invalid argument var")
+  }
+  if(!is.numeric(rate.change) || is.na(rate.change) || length(rate.change)>1){
+    stop("Invalid argument rate.change")
+  }
+  
+  
+  text <- "Linear change in rate after each event" 
+  cols.needed <- "censored.time"  
+  sd <- sqrt(var)
+  
+  f <- function(event.times,data){
+    
+    current.time <- 0
+    current.rate <- starting.rate
+    event.times <- c(event.times,data$censored.time)
+    end.index <- 1
+    
+    while(end.index <= length(event.times)){
+      possible.drop <- current.time + rexp(1,current.rate*exp(rnorm(1,0,sd)))
+      if(possible.drop < event.times[end.index]){
+        return(possible.drop)
+      }
+      current.time <- event.times[end.index]
+      current.rate <- starting.rate + rate.change
+      if(current.rate < 0){
+        current.rate <- current.rate - rate.change 
+      }
+      end.index <- end.index + 1
+    }
+    
+    return(data$censored.time)  
+    
+  }
+  
+  retVal <- list(
+    type="MAR",
+    text=text,
+    cols.needed=cols.needed,
+    GetDropTime=f,
+    parameters=list(stating.rate=stating.rate,
+                    rate.change.after.event=rate.change,
+                    between.subject.var=var)
+  )
+  
+  class(retVal) <- "DropoutMechanism"
+  return(retVal)
+}

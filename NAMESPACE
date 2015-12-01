@@ -2,5 +2,6 @@
 
 S3method(print,DropoutMechanism)
 export(ConstantRateDrop)
+export(LinearRateChangeDrop)
 export(SimulateComplete)
 export(SimulateDropout)
