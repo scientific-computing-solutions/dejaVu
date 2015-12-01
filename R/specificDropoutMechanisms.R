@@ -65,7 +65,7 @@ ConstantRateDrop <- function(rate,var=0){
 ##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=0.0005)
 ##' LinearRateChangeDrop(starting.rate=0.0025,rate.change=-0.00001,var=1)
 ##' @export
-LinearRateChangeDrop <- function(stating.rate,rate.change,var=0){
+LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
   
   if(!is.numeric(starting.rate) || is.na(starting.rate) || length(starting.rate)>1 || starting.rate < 0){
     stop("Invalid argument starting.rate")
