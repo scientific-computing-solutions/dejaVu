@@ -1,4 +1,4 @@
-Package: MIrecurrent
+Package: dejaVu
 Type: Package
 Title: Multiple Imputation for recurrent events
 Version: 0.0.1
