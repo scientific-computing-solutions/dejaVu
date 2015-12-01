@@ -18,7 +18,7 @@ SimulateComplete(study.time, number.subjects, event.rates, dispersions)
 \item{dispersions}{The dispersion parameter(s) for the negative binomial model (if single parameter then it is used for both arms)}
 }
 \value{
-A SingleSim object
+A \code{SingleSim} object with \code{status='complete'}
 }
 \description{
 Simulate a complete data set of a recurrent event
@@ -35,6 +35,6 @@ sim2 <- SimulateComplete(study.time=365,number.subjects=c(50,75),
                         event.rates=c(0.01,0.005),dispersions=c(0,0.25))
 }
 \seealso{
-SingleSim.object
+\code{\link{SingleSim.object}}
 }
 

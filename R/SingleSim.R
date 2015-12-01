@@ -12,8 +12,8 @@
 ##' \code{number.subjects} is a single number then both arms have the given number of subjects.
 ##' @param event.rates The rate parameter(s) for the negative binomial model (if single parameter then it is used for both arms)
 ##' @param dispersions The dispersion parameter(s) for the negative binomial model (if single parameter then it is used for both arms)
-##' @return A SingleSim object 
-##' @seealso SingleSim.object 
+##' @return A \code{SingleSim} object with \code{status='complete'} 
+##' @seealso \code{\link{SingleSim.object}} 
 ##' @examples
 ##' sim <- SimulateComplete(study.time=365,number.subjects=50,
 ##'                         event.rates=c(0.01,0.005),dispersions=0.25)
@@ -37,12 +37,13 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
   event.times <- lapply(subject.rates,GetEventTimes,study.time=study.time)
   
   total.subjects <- sum(number.subjects)
+  events <- vapply(event.times,length,FUN.VALUE=numeric(1))
   
   data <- data.frame(Id=1:total.subjects,
-                     arm=unlist(lapply(seq_along(number.subjects),function(x){rep(x-1,number.subjects[x])})),   
+                     arm=as.factor(unlist(lapply(seq_along(number.subjects),function(x){rep(x-1,number.subjects[x])}))),   
                      censored.time=rep(study.time,total.subjects),
-                     observed.events=vapply(event.times,length,FUN.VALUE=numeric(1))
-                     )
+                     observed.events=events,
+                     actual.events=events)
   
   retVal <- list(data=data,
                  event.times=event.times,
@@ -69,3 +70,26 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
 ##' @name SingleSim.object
 ##' @aliases print.SingleSim summary.SingleSim
 NULL
+
+
+##' Simulate subject dropout
+##' 
+##' STUFF
+##' 
+##' @param simComplete TODO
+##' @param drop.mechanism TODO
+##' @return A \code{SingleSim} object with \code{status='dropout'}
+##' @export 
+SimulateDropout <- function(simComplete,drop.mechanism){
+  validateSimulateDropout(simComplete,drop.mechanism)
+  
+  censored.time <- vapply(seq_along(simComplete$event.times),function(i){
+    drop.mechanism$GetDropTime(event.times=simComplete$event.times[[i]],data=simComplete$data[i,])
+  },FUN.VALUE=numeric(1))
+  
+  retVal <- simComplete
+  retVal$data$censored.time <- censored.time 
+  retVal$status <- "dropout"
+  #add dropout details to object
+  return(retVal)
+}
