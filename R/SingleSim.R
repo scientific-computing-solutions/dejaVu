@@ -135,3 +135,4 @@ SimulateDropout <- function(simComplete,drop.mechanism){
   simComplete$dropout.mechanism <- drop.mechanism
   return(simComplete)
 }
+
