@@ -3,6 +3,8 @@ NULL
 
 ##' S3 generic for fitting an negative binomial model
 ##' @param x The S3 object
+##' @param equal.dispersion logical, should the arms have the same dispersion parameter when
+##' fitting the negative binomial model
 ##' @param formula The formula to be used when calling \code{glm.nb} this should be
 ##' left as the default value for all but advanced users 
 ##' @param ... Additional arguments to be passed to the Surv function
@@ -44,19 +46,25 @@ NBfit.SingleSim <- function(x,equal.dispersion,formula=GetDefaultFormula(equal.d
 }
 
 
+##' SingleSimFit object
+##' 
+##' TODO
+##' 
+##' @name SingleSimFit.object
+NULL
 
 
+##' @export
+Impute <- function(fit,impute.mechanism,N){
+  validateImputeArguments(fit,impute.mechanism,N)
 
+  retVal <- list(fit=fit,
+                 impute.mechanism=impute.mechanism,
+                 imputed.values=replicate(n=N, impute.mechanism$impute(fit),simplify="list"))
+  class(retVal) <- "ImputeSim"
+  return(retVal)
+}
 
-GetDefaultFormula <- function(equal.dispersion){
-  if(!is.logical(equal.dispersion) || length(equal.dispersion)>1){
-    stop("Invalid equal.dispersion argument")
-  }
-  
-  if(equal.dispersion){
-    return(formula("observed.events ~ arm + offset(log(censored.time))"))
-  }
-  
-  formula("observed.events ~ offset(log(censored.time))")
-  
+numberSubjects.SingleSimFit <- function(x){
+  numberSubjects(x$singleSim)
 }

@@ -9,6 +9,9 @@ NBfit(x, equal.dispersion, formula, ...)
 \arguments{
 \item{x}{The S3 object}
 
+\item{equal.dispersion}{logical, should the arms have the same dispersion parameter when
+fitting the negative binomial model}
+
 \item{formula}{The formula to be used when calling \code{glm.nb} this should be
 left as the default value for all but advanced users}
 

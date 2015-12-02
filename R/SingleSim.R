@@ -125,14 +125,31 @@ SimulateDropout <- function(simComplete,drop.mechanism){
     drop.mechanism$GetDropTime(event.times=simComplete$event.times[[i]],data=simComplete$data[i,])
   },FUN.VALUE=numeric(1))
   
-  event.times <- mapply(function(censor.time,event.times){ 
+  simComplete$event.times <- mapply(function(censor.time,event.times){ 
                           return(event.times[event.times<=censor.time]) },
                         censor.time=censored.time,event.times=simComplete$event.times,SIMPLIFY = FALSE)
   
-  simComplete$observed.events <- vapply(event.times,length,FUN.VALUE=numeric(1))
+  simComplete$data$observed.events <- vapply(simComplete$event.times,length,FUN.VALUE=numeric(1))
   simComplete$data$censored.time <- censored.time
   simComplete$status <- "dropout"
   simComplete$dropout.mechanism <- drop.mechanism
   return(simComplete)
 }
 
+
+##' S3 generic TODO
+##' @param x TODO
+##' @export
+numberSubjects <- function(x,...){
+  UseMethod("numberSubjects")
+}
+
+##' @export
+numberSubjects.default <- function(x,...){
+  stop("Invalid x for numberSubjects")
+}
+
+##' @export
+numberSubjects.SingleSim <- function(x){
+  return(nrow(x$data))  
+}

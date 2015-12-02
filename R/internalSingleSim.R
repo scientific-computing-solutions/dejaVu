@@ -1,3 +1,6 @@
+.internal.is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) abs(x - round(x)) < tol
+
+
 # Validates the user arguments to SimulateComplete function
 # for arguments see SimulateComplete function
 # if invalid argument an exception is thrown
@@ -13,8 +16,8 @@ ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispe
     }
   })
   
-  is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) abs(x - round(x)) < tol
-  if(!all(is.wholenumber(number.subjects))){
+  
+  if(!all(.internal.is.wholenumber(number.subjects))){
     stop("Invalid argument: there must be a integer number of subjects")
   }
   
