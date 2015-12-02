@@ -7,20 +7,20 @@ NULL
 ##' fitting the negative binomial model
 ##' @param formula The formula to be used when calling \code{glm.nb} this should be
 ##' left as the default value for all but advanced users 
-##' @param ... Additional arguments to be passed to the Surv function
+##' @param ... Additional arguments to be passed to \code{glm} or \code{glm.nb}
 ##' @export
-NBfit <- function(x,equal.dispersion,formula,...){
-  UseMethod("NBfit")
+Simfit <- function(x,equal.dispersion,formula,...){
+  UseMethod("Simfit")
 }
 
 ##' @export
-NBfit.default <- function(x,equal.dispersion,formula,...){
-  stop("Invalid x for NBfit")
+Simfit.default <- function(x,equal.dispersion,formula,...){
+  stop("Invalid x for Simfit")
 }
 
 
 ##' @export
-NBfit.SingleSim <- function(x,equal.dispersion,formula=GetDefaultFormula(equal.dispersion)){
+Simfit.SingleSim <- function(x,equal.dispersion,formula=GetDefaultFormula(equal.dispersion),...){
   
   data <- x$data[x$data$censored.time>0,]
   

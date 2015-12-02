@@ -4,7 +4,7 @@
 \alias{numberSubjects}
 \title{S3 generic TODO}
 \usage{
-numberSubjects(x, ...)
+numberSubjects(x)
 }
 \arguments{
 \item{x}{TODO}

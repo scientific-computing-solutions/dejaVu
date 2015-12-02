@@ -140,12 +140,12 @@ SimulateDropout <- function(simComplete,drop.mechanism){
 ##' S3 generic TODO
 ##' @param x TODO
 ##' @export
-numberSubjects <- function(x,...){
+numberSubjects <- function(x){
   UseMethod("numberSubjects")
 }
 
 ##' @export
-numberSubjects.default <- function(x,...){
+numberSubjects.default <- function(x){
   stop("Invalid x for numberSubjects")
 }
 
