@@ -2,14 +2,17 @@
 % Please edit documentation in R/SingleSim.R
 \name{numberSubjects}
 \alias{numberSubjects}
-\title{S3 generic TODO}
+\title{S3 generic to output the number of subjects in a given object}
 \usage{
 numberSubjects(x)
 }
 \arguments{
-\item{x}{TODO}
+\item{x}{The object}
+}
+\value{
+The number of subjects
 }
 \description{
-S3 generic TODO
+S3 generic to output the number of subjects in a given object
 }
 

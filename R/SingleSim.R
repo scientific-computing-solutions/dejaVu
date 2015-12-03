@@ -137,8 +137,9 @@ SimulateDropout <- function(simComplete,drop.mechanism){
 }
 
 
-##' S3 generic TODO
-##' @param x TODO
+##' S3 generic to output the number of subjects in a given object
+##' @param x The object
+##' @return The number of subjects
 ##' @export
 numberSubjects <- function(x){
   UseMethod("numberSubjects")

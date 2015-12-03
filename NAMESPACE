@@ -3,6 +3,7 @@
 S3method(Simfit,SingleSim)
 S3method(Simfit,default)
 S3method(numberSubjects,SingleSim)
+S3method(numberSubjects,SingleSimFit)
 S3method(numberSubjects,default)
 S3method(print,DropoutMechanism)
 S3method(print,SingleSim)

@@ -28,18 +28,9 @@
 ##' @aliases print.DropoutMechanism 
 NULL
 
-ValidColumns <- function(drop.mechanism,columnnames){
-  if(!all(drop.mechanism$cols.needed %in% columnnames)){
-    stop("This dropout mechanism requires ",paste(drop.mechanism$cols.needed,collapse=", "),
-               "as column names in the simulated data frame")
-  }
-}
-
 ##' @export
 print.DropoutMechanism <- function(x,...){
   cat("Dropout Type:",x$type,fill=TRUE)
   cat("Dropout Mechanism:",x$text,fill=TRUE)
-  cat("Parameters:",fill=TRUE)
-  invisible(lapply(seq_along(x$parameters),function(i){
-    cat("  ",names(x$parameters)[i],": ",x$parameters[[i]],"\n",sep="")}))
+  .internal.output.list(x$parameters)
 }

@@ -1,4 +1,11 @@
 ##' @export
+print.ImputeMechanism <- function(x,...){
+  cat("Imputation Method:",x$name)
+  .internal.output.list(x$parameters)
+}
+
+
+##' @export
 GetImputedDataSet <- function(imputeSim,index){
   
   ValidateGetImputeDSArgs(imputeSim,index)

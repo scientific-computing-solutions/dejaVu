@@ -1,6 +1,3 @@
-.internal.is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) abs(x - round(x)) < tol
-
-
 # Validates the user arguments to SimulateComplete function
 # for arguments see SimulateComplete function
 # if invalid argument an exception is thrown
@@ -76,6 +73,9 @@ validateSimulateDropout <- function(simComplete,drop.mechanism){
     stop("Invalid SingleSim argument: simComplete$status != 'complete'")
   }
   
-  ValidColumns(drop.mechanism,colnames(simComplete$data))
+  if(!all(drop.mechanism$cols.needed %in% colnames(simComplete$data))){
+    stop("This dropout mechanism requires ",paste(drop.mechanism$cols.needed,collapse=", "),
+         "as column names in the simulated data frame")
+  }
   
 }
