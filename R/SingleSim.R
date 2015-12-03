@@ -144,20 +144,33 @@ SimulateDropout <- function(simComplete,drop.mechanism){
 }
 
 
-##' S3 generic to output the number of subjects in a given object
-##' @param x The object
-##' @return The number of subjects
-##' @export
-numberSubjects <- function(x){
-  UseMethod("numberSubjects")
-}
-
-##' @export
-numberSubjects.default <- function(x){
-  stop("Invalid x for numberSubjects")
-}
-
 ##' @export
 numberSubjects.SingleSim <- function(x){
   return(nrow(x$data))  
+}
+
+##' @export
+Simfit.SingleSim <- function(x,equal.dispersion,formula=GetDefaultFormula(equal.dispersion),...){
+  
+  data <- x$data[x$data$censored.time>0,]
+  
+  if(equal.dispersion){
+    model <- glm.nb(formula=formula,data=data,...)
+    mod.summary <- summary(model)
+    gamma <- rep(mod.summary$theta,2)
+    p <- exp(mod.summary$coeffi[1,1])*c(1,exp(mod.summary$coeffi[2,1]))
+  }
+  else{
+    model <- lapply(0:1,function(i){glm.nb(formula=formula,data=data[data$arm==i,],...)})
+    gamma <- vapply(model,function(mod){summary(mod)$theta},FUN.VALUE = numeric(1)) 
+    p <-     vapply(model,function(mod){exp(summary(mod)$coeffi[1,1])},FUN.VALUE = numeric(1))
+  }
+  
+  retVal <- list(singleSim=x,
+                 equal.dispersion=equal.dispersion,
+                 model=model,
+                 gamma=gamma,
+                 p=p)
+  class(retVal) <- "SingleSimFit"
+  return(retVal)
 }

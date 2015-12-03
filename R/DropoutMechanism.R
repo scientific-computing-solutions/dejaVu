@@ -23,7 +23,7 @@
 ##' @param GetDropTime A function with two arguments event.times and data, the corresponding entries from the 
 ##' SingleSim object. This function should return a list of dropout times (if a subject does not dropout its dropout time should be 
 ##' their current censored.time (i.e. the study follow up time)) 
-##' @param parameters A list of named parameters for the mechanism (only used for printing)
+##' @param parameters A list of named parameters for the mechanism (only used for printing) or NULL if none
 ##' @name DropoutMechanism.object
 ##' @aliases print.DropoutMechanism 
 NULL

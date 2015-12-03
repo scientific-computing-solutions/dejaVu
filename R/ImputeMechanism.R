@@ -1,42 +1,37 @@
+##' ImputeMechanism object
+##' 
+##' An object which defines a mechanism for taking
+##' a \code{SingleSimFit} object and imputing missing data
+##' to create a \code{ImputeSim}
+##' 
+##' It is possible to create user defined mechanisms, however, certain
+##' common mechanisms have already been implemented. For example see
+##' \code{\link{j2r}} 
+##' 
+##' A \code{print.ImputeMechanism} method is defined.
+##'
+##' @section Structure: The following components must be included in
+##' an ImputeMechanism Object
+##' @param name 
+##' @param cols.needed which columns of the SingleSim data frame are required by the method, typically
+##' \code{c("censored.time","observed.events","arm")}
+##' @param impute A function which takes a \code{SingleSimFit} object and outputs the details for a single
+##' imputed data set, specifically a list with two elements:
+##' \code{new.censored.times} - a vector of times subjects were censored (after taking into account imputation)
+##' and \code{newevent.times} - a list of vectors where the vectors contain the imputed event times for the subjects
+##' (these vectors do not contain the observed event times before subject drop out). If a subject has no imputed events then 
+##' the vector \code{numeric(0)} is returned.   
+##' @param parameters A list of named parameters describing the method (used for printing) - or NULL if none
+##' @examples 
+##' j2r.procedure <- j2r()
+##' @name ImputeMechanism.object
+NULL
+
+
 ##' @export
 print.ImputeMechanism <- function(x,...){
   cat("Imputation Method:",x$name)
   .internal.output.list(x$parameters)
-}
-
-
-##' @export
-GetImputedDataSet <- function(imputeSim,index){
-  
-  ValidateGetImputeDSArgs(imputeSim,index)
-  
-  retVal <- imputeSim$fit$singleSim
-  retVal$status <- "imputed"
-  retVal$data$censored.time <- imputeSim$imputed.values[,index]$new.censored.times
-  retVal$event.times <- mapply(c,retVal$event.times,imputeSim$imputed.values[,index]$newevent.times,SIMPLIFY = FALSE)
-  retVal$data$observed.events <-  vapply(retVal$event.times,length,FUN.VALUE=numeric(1))
-  retVal$impute.mechanism <- imputeSim$impute.mechanism
-  return(retVal)
-}
-
-
-
-.internal.number.data.sets <- function(imputedSim){
-  return(ncol(imputedSim$imputed.values))
-}
-
-ValidateGetImputeDSArgs <- function(imputeSim,index){
-  if(class(imputeSim)!="ImputeSim"){
-    stop("Invalid argument: imputeSim argument must be an ImputeSim object")
-  }
-  
-  if(!is.numeric(index) || is.na(index) || index < 0 || length(index)>1 || !.internal.is.wholenumber(index)){
-    stop("Invalid argument: index")
-  }
-  
-  if(index > .internal.number.data.sets(imputeSim)){
-    stop("index too big, not enough imputed data sets!")
-  }
 }
 
 

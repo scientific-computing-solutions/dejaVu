@@ -17,7 +17,7 @@ included.}
 SingleSim object. This function should return a list of dropout times (if a subject does not dropout its dropout time should be
 their current censored.time (i.e. the study follow up time))}
 
-\item{parameters}{A list of named parameters for the mechanism (only used for printing)}
+\item{parameters}{A list of named parameters for the mechanism (only used for printing) or NULL if none}
 }
 \description{
 An object which defines a specific mechanism which

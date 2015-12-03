@@ -79,3 +79,19 @@ validateSimulateDropout <- function(simComplete,drop.mechanism){
   }
   
 }
+
+#If no formula is given to the fit function then 
+#a default formula is used (different depending on whether the arms
+#have the same dispersion parameters)
+GetDefaultFormula <- function(equal.dispersion){
+  if(!is.logical(equal.dispersion) || length(equal.dispersion)>1){
+    stop("Invalid equal.dispersion argument")
+  }
+  
+  if(equal.dispersion){
+    return(formula("observed.events ~ arm + offset(log(censored.time))"))
+  }
+  
+  formula("observed.events ~ offset(log(censored.time))")
+  
+} 
