@@ -35,6 +35,6 @@ A \code{print.ImputeMechanism} method is defined.
 an ImputeMechanism Object
 }
 \examples{
-j2r.procedure <- j2r()
+j2r <- weighted_j2r(trt.weight=0)
 }
 

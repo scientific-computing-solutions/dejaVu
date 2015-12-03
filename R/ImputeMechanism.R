@@ -23,7 +23,7 @@
 ##' the vector \code{numeric(0)} is returned.   
 ##' @param parameters A list of named parameters describing the method (used for printing) - or NULL if none
 ##' @examples 
-##' j2r.procedure <- j2r()
+##' j2r <- weighted_j2r(trt.weight=0)
 ##' @name ImputeMechanism.object
 NULL
 
@@ -34,32 +34,3 @@ print.ImputeMechanism <- function(x,...){
   .internal.output.list(x$parameters)
 }
 
-
-.internal.impute <- function(fit,treatment.p.choice){
-  
-  df <- fit$singleSim$data
-  
-  lapply(1:nrow(df), function(i){
-    study.time <- fit$singleSim$study.time 
-    time.left <- study.time - df$censored.time[i]
-    if(time.left==0){return(numeric(0))}
-    
-    if(df$arm[i]==0){
-      p <- (fit$p[1] * time.left)/(fit$gamma[1]+fit$p[1]*study.time)
-      gamma <- fit$gamma[1] + df$observed.events[i]
-    }
-    else{
-      p <- (fit$p[1]*time.left)/(fit$gamma[2] + fit$p[2]*df$censored.time[i] + fit$p[1]*time.left)
-      p <- c(p, (fit$p[2]*time.left)/(fit$gamma[2]+fit$p[2]*study.time))
-      p <- treatment.p.choice(p)
-      gamma <- fit$gamma[2] + df$observed.events[i]
-    }  
-      
-    u <- (p/(1-p))*gamma
-    
-    rate <- GetSimRates(time.left,number.subject=1,event.rate=u/time.left,dispersion=1/gamma) 
-    return(GetEventTimes(rate,time.left)+df$censored.time[i])  
-    #note numeric(0)+x = numeric(0)
-  })
-  
-}
