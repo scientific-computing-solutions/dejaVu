@@ -14,7 +14,7 @@ GetDefaultFormula <- function(equal.dispersion){
   
 } 
 
-#' check the arguments to Impute function are valid
+# check the arguments to Impute function are valid
 validateImputeArguments <- function(fit,impute.mechanism,N){
   
   if(class(fit)!="SingleSimFit"){

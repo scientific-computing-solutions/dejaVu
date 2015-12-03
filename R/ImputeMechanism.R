@@ -15,6 +15,7 @@ GetImputedDataSet <- function(imputeSim,index){
   retVal$data$censored.time <- imputeSim$imputed.values[,index]$new.censored.times
   retVal$event.times <- mapply(c,retVal$event.times,imputeSim$imputed.values[,index]$newevent.times,SIMPLIFY = FALSE)
   retVal$data$observed.events <-  vapply(retVal$event.times,length,FUN.VALUE=numeric(1))
+  retVal$impute.mechanism <- imputeSim$impute.mechanism
   return(retVal)
 }
 

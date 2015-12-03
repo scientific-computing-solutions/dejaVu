@@ -16,6 +16,8 @@
 
 \item{dropout.mechanism}{TODO}
 
+\item{impute.mechanism}{TODO}
+
 \item{study.time}{TODO}
 
 \item{event.rates}{TODO}

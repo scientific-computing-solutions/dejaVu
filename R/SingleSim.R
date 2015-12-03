@@ -54,6 +54,7 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
                  status="complete",
                  subject.rates=subject.rates, #needed? 
                  dropout.mechanism=NULL,
+                 impute.mechanism=NULL,
                  study.time=study.time,
                  event.rates=event.rates,
                  dispersions=dispersions)
@@ -72,6 +73,11 @@ print.SingleSim <- function(x,...){
   cat("Negative binomial dispersion:",x$dispersions,"\n")
   if(x$status!="complete"){
     print(x$dropout.mechanism)
+    cat("\n")
+  }
+  if(x$status=="imputed"){
+    print(x$impute.mechanism)
+    cat("\n")
   }
   cat("Data:\n")
   str(x$data)
@@ -91,6 +97,7 @@ print.SingleSim <- function(x,...){
 ##' @param status TODO
 ##' @param subject.rates TODO
 ##' @param dropout.mechanism TODO
+##' @param impute.mechanism TODO
 ##' @param study.time TODO
 ##' @param event.rates TODO
 ##' @param dispersions  TODO

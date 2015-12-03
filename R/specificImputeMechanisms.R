@@ -15,7 +15,8 @@ j2r <- function(){
   
   retVal <- list(name="j2r",
                  cols.needed=c("censored.time","observed.events","arm"),
-                 impute=f)
+                 impute=f,
+                 parameters=NULL)
   class(retVal) <- "ImputeMechanism"
   return(retVal)
 }
@@ -37,7 +38,8 @@ efficacy <- function(){
   
   retVal <- list(name="efficacy",
                  cols.needed=c("censored.time","observed.events","arm"),
-                 impute=f)
+                 impute=f,
+                 parameters=NULL)
   class(retVal) <- "ImputeMechanism"
   return(retVal)
 }
@@ -59,7 +61,8 @@ tr <- function(){
   
   retVal <- list(name="tr",
                  cols.needed=c("censored.time","observed.events","arm"),
-                 impute=f)
+                 impute=f,
+                 parameters=NULL)
   class(retVal) <- "ImputeMechanism"
   return(retVal)
 }
