@@ -5,6 +5,10 @@ validateImputeArguments <- function(fit,impute.mechanism,N){
     stop("Invalid fit argument, must be of class SingleSimFit")
   }
   
+  lapply(fit$impute.parameters,function(x){
+    if(is.null(x)) stop("Cannot impute using this SingleSimFit object (a negative binomial model was not fit)")
+  })
+  
   if(class(impute.mechanism)!="ImputeMechanism"){
     stop("Invalid mpute.mechanism argument, must one of class ImputeMechanism")
   }

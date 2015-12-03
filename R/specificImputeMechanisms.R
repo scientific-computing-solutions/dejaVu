@@ -72,15 +72,16 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     if(time.left==0){return(numeric(0))}
     
     if(df$arm[i]==0){
-      p <- (fit$p[1] * time.left)/(fit$gamma[1]+fit$p[1]*study.time)
-      gamma <- fit$gamma[1] + df$observed.events[i]
+      p <- (fit$impute.parameters$p[1] * time.left)/(fit$impute.parameters$gamma[1]+fit$impute.parameters$p[1]*study.time)
+      gamma <- fit$impute.parameters$gamma[1] + df$observed.events[i]
       delta.factor <- delta[1]
     }
     else{
-      p <- (fit$p[1]*time.left)/(fit$gamma[2] + fit$p[2]*df$censored.time[i] + fit$p[1]*time.left)
-      p <- c(p, (fit$p[2]*time.left)/(fit$gamma[2]+fit$p[2]*study.time))
+      p <- (fit$impute.parameters$p[1]*time.left)/
+           (fit$impute.parameters$gamma[2] + fit$impute.parameters$p[2]*df$censored.time[i] + fit$impute.parameters$p[1]*time.left)
+      p <- c(p, (fit$impute.parameters$p[2]*time.left)/(fit$impute.parameters$gamma[2]+fit$impute.parameters$p[2]*study.time))
       p <- treatment.p.choice(p)
-      gamma <- fit$gamma[2] + df$observed.events[i]
+      gamma <- fit$impute.parameters$gamma[2] + df$observed.events[i]
       delta.factor <- delta[2]
     }  
     

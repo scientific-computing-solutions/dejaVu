@@ -5,6 +5,7 @@ GetImputedDataSet <- function(imputeSim,index){
   
   retVal <- imputeSim$fit$singleSim
   retVal$status <- "imputed"
+  retVal$data$actual.censored.time <- retVal$data$censored.time 
   retVal$data$censored.time <- imputeSim$imputed.values[,index]$new.censored.times
   retVal$event.times <- mapply(c,retVal$event.times,imputeSim$imputed.values[,index]$newevent.times,SIMPLIFY = FALSE)
   retVal$data$observed.events <-  vapply(retVal$event.times,length,FUN.VALUE=numeric(1))

@@ -6,7 +6,7 @@ NULL
   if(!is.null(x)){
     cat("Parameters:",fill=TRUE)
     invisible(lapply(seq_along(x),function(i){
-      cat("  ",names(x)[i],": ",x[[i]],"\n",sep="")}))
+      cat("  ",names(x)[i],": ",x[[i]],"\n",sep=" ")}))
   }
 }
 
@@ -25,22 +25,29 @@ numberSubjects.default <- function(x){
   stop("Invalid x for numberSubjects")
 }
 
-##' S3 generic for fitting an negative binomial model
+##' S3 generic for fitting models
 ##' @param x The S3 object
+##' @param family Either "negbin" for fitting a negative binomial model (using \code{MASS::glm.nb}),
+##' "poisson" for fitting a poisson model (\code{glm}) or "quasipoisson" for fitting a quasipoisson model
+##' \code{glm} 
 ##' @param equal.dispersion logical, should the arms have the same dispersion parameter when
-##' fitting the negative binomial model
+##' fitting negative binomial models
 ##' @param formula The formula to be used when calling \code{glm.nb} this should be
 ##' left as the default value for all but advanced users 
 ##' @param ... Additional arguments to be passed to \code{glm} or \code{glm.nb}
 ##' @return A \code{SingleSimFit} object
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @export
-Simfit <- function(x,equal.dispersion,formula,...){
+Simfit <- function(x,family="negbin",equal.dispersion=TRUE,formula,...){
   UseMethod("Simfit")
 }
 
 ##' @export
-Simfit.default <- function(x,equal.dispersion,formula,...){
+Simfit.default <- function(x,family="negbin",equal.dispersion=TRUE,formula,...){
   stop("Invalid x for Simfit")
 }
 
+
+.onLoad <- function(libname,pkgname){
+  packageStartupMessage("Warning: This package is in development. DO NOT USE without contacting David Ruau or Paul Metcalfe")
+}

@@ -8,7 +8,8 @@ NULL
 
 ##' Produce imputed data sets
 ##' 
-##' Given a \code{SingleSimFit} object and an imputation mechanism,
+##' Given a \code{SingleSimFit} object (with impute.parameters not NULL)
+##' and an imputation mechanism,
 ##' create a collection of imputed data sets 
 ##' 
 ##' @param fit A \code{SingleSimFit} object

@@ -17,7 +17,8 @@ Impute(fit, impute.mechanism, N)
 An \code{ImputeSim} object
 }
 \description{
-Given a \code{SingleSimFit} object and an imputation mechanism,
+Given a \code{SingleSimFit} object (with impute.parameters not NULL)
+and an imputation mechanism,
 create a collection of imputed data sets
 }
 

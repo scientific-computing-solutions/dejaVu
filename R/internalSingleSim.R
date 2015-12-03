@@ -95,3 +95,16 @@ GetDefaultFormula <- function(equal.dispersion){
   formula("observed.events ~ offset(log(censored.time))")
   
 } 
+
+ValidateSimFitArguments <- function(family,equal.dispersion){
+  
+  if(!is.logical(equal.dispersion) || length(equal.dispersion)>1){
+    stop("Invalid argument: equal.dispersion")
+  }
+
+  allowed.models <- c("negbin","poisson","quasipoisson")
+  if(!family %in% allowed.models){
+    stop("Invalid argument: family must be one of",paste(allowed.models,sep=", "))
+  }
+  
+}

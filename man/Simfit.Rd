@@ -2,15 +2,19 @@
 % Please edit documentation in R/common.R
 \name{Simfit}
 \alias{Simfit}
-\title{S3 generic for fitting an negative binomial model}
+\title{S3 generic for fitting models}
 \usage{
-Simfit(x, equal.dispersion, formula, ...)
+Simfit(x, family = "negbin", equal.dispersion = TRUE, formula, ...)
 }
 \arguments{
 \item{x}{The S3 object}
 
+\item{family}{Either "negbin" for fitting a negative binomial model (using \code{MASS::glm.nb}),
+"poisson" for fitting a poisson model (\code{glm}) or "quasipoisson" for fitting a quasipoisson model
+\code{glm}}
+
 \item{equal.dispersion}{logical, should the arms have the same dispersion parameter when
-fitting the negative binomial model}
+fitting negative binomial models}
 
 \item{formula}{The formula to be used when calling \code{glm.nb} this should be
 left as the default value for all but advanced users}
@@ -21,7 +25,7 @@ left as the default value for all but advanced users}
 A \code{SingleSimFit} object
 }
 \description{
-S3 generic for fitting an negative binomial model
+S3 generic for fitting models
 }
 \seealso{
 \code{\link{SingleSimFit.object}}
