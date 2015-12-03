@@ -179,3 +179,44 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
   class(retVal) <- "SingleSimFit"
   return(retVal)
 }
+
+
+##' @export
+summary.SingleSim <- function(object,...){
+  
+  .extract <- function(f){
+    vapply(unique(object$data$arm),
+         function(arm)f(object$data[object$data$arm==arm,]),FUN.VALUE = numeric(1))
+  }
+  
+  total.events <- .extract(function(y){sum(y$observed.events)})
+  time.at.risk <- .extract(function(y){sum(y$censored.time)})
+  
+  retVal <- list(status=object$status,
+                 study.time=object$study.time,
+                 number.subjects=.extract(nrow),
+                 total.events=total.events,
+                 time.at.risk=time.at.risk,
+                 empirical.rates=total.events/time.at.risk)
+  class(retVal) <- "summary.SingleSim"
+  return(retVal)
+}
+
+
+##' @export
+print.summary.SingleSim <- function(x,...){
+  cat(x$status,"dataset\n")
+  cat("Study follow up period:",x$study.time,"\n")
+  cat("Subjects (per arm):",x$number.subjects,fill = TRUE)
+  cat("Number of events (per arm):",x$total.events,fill=TRUE)
+  cat("Total Time at risk (per arm):",x$time.at.risk,fill=TRUE)
+  cat("Empirical event rates (per arm):",x$empirical.rates,fill=TRUE)
+}
+
+
+##' summary.SingleSim object
+##' 
+##' TODO
+##' 
+##' @name summary.SingleSim.object
+NULL

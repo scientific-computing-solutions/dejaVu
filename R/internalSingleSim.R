@@ -96,6 +96,7 @@ GetDefaultFormula <- function(equal.dispersion){
   
 } 
 
+#validate the arguments for the SimFit.SingleSim function
 ValidateSimFitArguments <- function(family,equal.dispersion){
   
   if(!is.logical(equal.dispersion) || length(equal.dispersion)>1){

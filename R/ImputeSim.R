@@ -1,3 +1,14 @@
+##' ImputeSim object
+##' 
+##' TODO
+##' @name ImputeSim.object
+NULL
+
+##' TODO
+##' 
+##' @param imputeSim TODO
+##' @param index TODO
+##' @return TODO
 ##' @export
 GetImputedDataSet <- function(imputeSim,index){
   
@@ -32,3 +43,23 @@ ValidateGetImputeDSArgs <- function(imputeSim,index){
     stop("index too big, not enough imputed data sets!")
   }
 }
+
+##' @export
+Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion),...){
+  if(!equal.dispersion){
+    stop("Invalid argument equal.dispersion must be TRUE")
+  }
+  
+  imputed.summaries <- lapply(1:.internal.number.data.sets(x),
+                         function(index){
+                           singleSim <- GetImputedDataSet(x,index)                     
+                           summary(Simfit(singleSim,family=family,equal.dispersion=TRUE,formula=formula,...))  
+                       })
+  
+  retVal <- list(imputeSim=x,
+                 summaries=imputed.summaries)
+  
+  class(retVal) <- "ImputeSimFit"
+  return(retVal)
+}
+

@@ -13,12 +13,12 @@ NULL
 NULL
 
 ##' @export
-summary.SingleSimFit <- function(x,...){
-  if(!x$equal.dispersion){
+summary.SingleSimFit <- function(object,...){
+  if(!object$equal.dispersion){
     stop("Cannot generate a summary if equal.dispersion is FALSE")
   }  
  
-  model.summary <- summary(x$model)
+  model.summary <- summary(object$model)
   
   retVal <- list(model.summary=model.summary,
                  rate.ratio=exp(model.summary$coefficient[2,1]),
@@ -27,7 +27,7 @@ summary.SingleSimFit <- function(x,...){
                  theta=model.summary$theta, #only if negative binomial
                  exp.intercept=exp(model.summary$coefficient[1,1])*c(1,exp(model.summary$coefficient[2,1])),         
                  pval=model.summary$coefficient[2,4],
-                 datastatus=x$singleSim$status
+                 datastatus=object$singleSim$status
                  )# exp.intercept this was nbd.mp and nbd.mt in old code 
   
   class(retVal) <- "summary.SingleSimFit"

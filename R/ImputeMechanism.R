@@ -4,15 +4,15 @@
 ##' a \code{SingleSimFit} object and imputing missing data
 ##' to create a \code{ImputeSim}
 ##' 
-##' It is possible to create user defined mechanisms, however, certain
+##' It is possible to create user defined mechanisms, however, 
 ##' common mechanisms have already been implemented. For example see
-##' \code{\link{j2r}} 
+##' \code{\link{weighted_j2r}} 
 ##' 
 ##' A \code{print.ImputeMechanism} method is defined.
 ##'
 ##' @section Structure: The following components must be included in
 ##' an ImputeMechanism Object
-##' @param name 
+##' @param name The method name (used for printing)
 ##' @param cols.needed which columns of the SingleSim data frame are required by the method, typically
 ##' \code{c("censored.time","observed.events","arm")}
 ##' @param impute A function which takes a \code{SingleSimFit} object and outputs the details for a single

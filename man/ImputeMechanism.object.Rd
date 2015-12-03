@@ -4,7 +4,7 @@
 \alias{ImputeMechanism.object}
 \title{ImputeMechanism object}
 \arguments{
-\item{name}{}
+\item{name}{The method name (used for printing)}
 
 \item{cols.needed}{which columns of the SingleSim data frame are required by the method, typically
 \code{c("censored.time","observed.events","arm")}}
@@ -24,9 +24,9 @@ a \code{SingleSimFit} object and imputing missing data
 to create a \code{ImputeSim}
 }
 \details{
-It is possible to create user defined mechanisms, however, certain
+It is possible to create user defined mechanisms, however,
 common mechanisms have already been implemented. For example see
-\code{\link{j2r}}
+\code{\link{weighted_j2r}}
 
 A \code{print.ImputeMechanism} method is defined.
 }

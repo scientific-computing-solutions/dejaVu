@@ -48,6 +48,6 @@ Simfit.default <- function(x,family="negbin",equal.dispersion=TRUE,formula,...){
 }
 
 
-.onLoad <- function(libname,pkgname){
+.onAttach <- function(libname,pkgname){
   packageStartupMessage("Warning: This package is in development. DO NOT USE without contacting David Ruau or Paul Metcalfe")
 }
