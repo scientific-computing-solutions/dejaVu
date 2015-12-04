@@ -2,19 +2,23 @@
 % Please edit documentation in R/ImputeSim.R
 \name{GetImputedDataSet}
 \alias{GetImputedDataSet}
-\title{TODO}
+\title{Output a single imputed data set}
 \usage{
 GetImputedDataSet(imputeSim, index)
 }
 \arguments{
-\item{imputeSim}{TODO}
+\item{imputeSim}{A \code{ImputeSim} object which contains
+multiple imputed data sets}
 
-\item{index}{TODO}
+\item{index}{numberic, which of the multiple imputed data sets to output}
 }
 \value{
-TODO
+A \code{SingleSim} object with \code{status="imputed"}
 }
 \description{
-TODO
+Output a single imputed data set
+}
+\seealso{
+\code{\link{ImputeSim.object}}
 }
 

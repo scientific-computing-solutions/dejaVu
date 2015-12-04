@@ -4,11 +4,13 @@
 ##' @name ImputeSim.object
 NULL
 
-##' TODO
+##' Output a single imputed data set
 ##' 
-##' @param imputeSim TODO
-##' @param index TODO
-##' @return TODO
+##' @param imputeSim A \code{ImputeSim} object which contains 
+##' multiple imputed data sets
+##' @param index numberic, which of the multiple imputed data sets to output
+##' @return A \code{SingleSim} object with \code{status="imputed"}
+##' @seealso \code{\link{ImputeSim.object}}
 ##' @export
 GetImputedDataSet <- function(imputeSim,index){
   
@@ -30,6 +32,8 @@ GetImputedDataSet <- function(imputeSim,index){
   return(ncol(imputedSim$imputed.values))
 }
 
+# validation of GetImputedDatSet function
+# see that function for parameter details
 ValidateGetImputeDSArgs <- function(imputeSim,index){
   if(class(imputeSim)!="ImputeSim"){
     stop("Invalid argument: imputeSim argument must be an ImputeSim object")

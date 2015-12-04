@@ -26,7 +26,9 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
 
 }
 
-
+# validate the logical value use.adjusted.pval, it
+# should be logical and must be FALSE if x is a list 
+# of summary.SingleSimFit objects
 Validate.adjusted.pval <- function(x,use.adjusted.pval){
   if(!is.logical(use.adjusted.pval) || length(use.adjusted.pval)>1){
    stop("Invalid argument use.adjusted.pval")
@@ -38,14 +40,19 @@ Validate.adjusted.pval <- function(x,use.adjusted.pval){
 }
 
 
-##' Boo
-##' @param object TODO
-##' @param description TODO
-##' @return TODO
+##' Create \code{Scenario} object from list of Fit Summaries
+##' @param object Either a list of \code{summary.SingleSimFit}
+##' or \code{summary.ImputeSimFit} objects
+##' @param description A character string describing the scenario 
+##' (used for printing)
+##' @return A \code{Scenario} object
+##' @seealso \code{\link{Scenario.object}}
 ##' @export
 CreateScenario <- function(object,description=""){
 
-  #validate description
+  if(length(description)!= 1){
+    stop("Invalid description argument")
+  }
   
   if(!is.list(object)){
     stop("Invalid argument: object must be a list of either summary.ImputeSimFit or summary.SingleSimFit")

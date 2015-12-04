@@ -2,19 +2,24 @@
 % Please edit documentation in R/scenario.R
 \name{CreateScenario}
 \alias{CreateScenario}
-\title{Boo}
+\title{Create \code{Scenario} object from list of Fit Summaries}
 \usage{
 CreateScenario(object, description = "")
 }
 \arguments{
-\item{object}{TODO}
+\item{object}{Either a list of \code{summary.SingleSimFit}
+or \code{summary.ImputeSimFit} objects}
 
-\item{description}{TODO}
+\item{description}{A character string describing the scenario
+(used for printing)}
 }
 \value{
-TODO
+A \code{Scenario} object
 }
 \description{
-Boo
+Create \code{Scenario} object from list of Fit Summaries
+}
+\seealso{
+\code{\link{Scenario.object}}
 }
 
