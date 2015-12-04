@@ -6,7 +6,7 @@ NULL
 
 
 ##' @export
-as.data.frame.Scenario <- function(x,use.adjusted.pval=FALSE,...){
+as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adjusted.pval=FALSE,...){
   
   Validate.adjusted.pval(x$summaries,use.adjusted.pval)
   
@@ -39,6 +39,9 @@ Validate.adjusted.pval <- function(x,use.adjusted.pval){
 
 
 ##' Boo
+##' @param object TODO
+##' @param description TODO
+##' @return TODO
 ##' @export
 CreateScenario <- function(object,description=""){
 

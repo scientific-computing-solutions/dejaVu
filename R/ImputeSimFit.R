@@ -5,7 +5,7 @@
 NULL
 
 ##' @export
-as.data.frame.ImputeSimFit <- function(x,...){
+as.data.frame.ImputeSimFit <- function(x,row.names = NULL, optional = FALSE,...){
   
   .extract <- function(name,fun.val=numeric(1)){
     vapply(x$summaries,function(x){x[[name]]},FUN.VALUE = fun.val)

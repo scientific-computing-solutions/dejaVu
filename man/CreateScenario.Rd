@@ -4,7 +4,15 @@
 \alias{CreateScenario}
 \title{Boo}
 \usage{
-CreateScenario(object)
+CreateScenario(object, description = "")
+}
+\arguments{
+\item{object}{TODO}
+
+\item{description}{TODO}
+}
+\value{
+TODO
 }
 \description{
 Boo
