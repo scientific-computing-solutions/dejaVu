@@ -13,7 +13,7 @@ as.data.frame.ImputeSimFit <- function(x,...){
   
   rate.estimates <- .extract("rate.estimate",fun.val=numeric(2))
   
-  theta <- if(!is.null(x$summaries[[1]]$theta)) .extract("theta") else NULL
+  theta <- if(!is.null(x$summaries[[1]]$theta)) .extract("theta") else NA
   
   data.frame(imputeID=1:.internal.number.data.sets(x$imputeSim),
              control.rate=rate.estimates[1,],
@@ -31,6 +31,12 @@ numberSubjects.ImputeSimFit <- function(x,...){
   numberSubjects(x$imputeSim)
 } 
 
+##' summary.ImputeSimFit object
+##' 
+##' TODO
+##' @name summary.ImputeSimFit.object
+NULL
+
 ##' @export
 summary.ImputeSimFit <- function(object,...){
   
@@ -41,8 +47,7 @@ summary.ImputeSimFit <- function(object,...){
   
   log.treatment.effects <- log(data$treatment.effect)
   se.log.treatment.effects <- data$se
-  theta <- data$theta
-
+  
   se <- sqrt((1+1/N)*var(log.treatment.effects)+ mean(se.log.treatment.effects^2))
   df <- (N-1)*(1+(mean(se.log.treatment.effects^2))/( (1+1/N)*var(log.treatment.effects)))^2
   
@@ -58,7 +63,7 @@ summary.ImputeSimFit <- function(object,...){
                  se=se,
                  df=df,
                  adjusted.df=adjusted.df,
-                 theta=if(is.null(theta)) NULL else mean(theta),
+                 theta=mean(data$theta),
                  pval=getpval(df=df),
                  adjusted.pval=getpval(df=adjusted.df)
                  )
