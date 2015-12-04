@@ -32,8 +32,7 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
                  theta=model.summary$theta, #only if negative binomial
                  rate.estimate=exp(model.summary$coefficient[1,1])*c(1,exp(model.summary$coefficient[2,1])),         
                  pval=model.summary$coefficient[2,4],
-                 datastatus=object$singleSim$status
-                 ) 
+                 datastatus=object$singleSim$status) 
   
   class(retVal) <- "summary.SingleSimFit"
   retVal
