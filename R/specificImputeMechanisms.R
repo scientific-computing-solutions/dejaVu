@@ -25,7 +25,7 @@
 ##' @export
 weighted_j2r <- function(trt.weight,delta=c(1,1)){
   
-  if(!is.numeric(trt.weight) || is.na(trt.weight) || length(trt.weight) > 1 || trt.weight < 0 || trt.weight > 1){
+  if(!.internal.is.finite.number(trt.weight) || trt.weight < 0 || trt.weight > 1){
     stop("Invalid argument trt.weight should be in [0,1]")
   }
 

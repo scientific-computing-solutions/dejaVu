@@ -35,7 +35,7 @@ ValidateGetImputeDSArgs <- function(imputeSim,index){
     stop("Invalid argument: imputeSim argument must be an ImputeSim object")
   }
   
-  if(!is.numeric(index) || is.na(index) || index < 0 || length(index)>1 || !.internal.is.wholenumber(index)){
+  if(!.internal.is.finite.number(index) || index <= 0 || !.internal.is.wholenumber(index)){
     stop("Invalid argument: index")
   }
   

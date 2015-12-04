@@ -3,7 +3,7 @@
 # if invalid argument an exception is thrown
 ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispersions){
   
-  if(!is.numeric(study.time) || length(study.time) > 1 || study.time < 0 || is.infinite(study.time) || is.na(study.time)){
+  if(!.internal.is.finite.number(study.time) || study.time < 0){
     stop("Invalid study.time argument it must be a single positive finite numeric value")
   }
   

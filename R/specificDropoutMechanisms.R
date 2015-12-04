@@ -15,10 +15,10 @@
 ##' @export
 ConstantRateDrop <- function(rate,var=0){
   
-  if(!is.numeric(rate) || is.na(rate) || length(rate)>1 || rate < 0){
+  if(!.internal.is.finite.number(rate) || rate < 0){
     stop("Invalid argument rate")
   }
-  if(!is.numeric(var) || is.na(var) || length(var)>1 || var < 0){
+  if(!.internal.is.finite.number(var) || var < 0){
     stop("Invalid argument var")
   }
   
@@ -67,13 +67,13 @@ ConstantRateDrop <- function(rate,var=0){
 ##' @export
 LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
   
-  if(!is.numeric(starting.rate) || is.na(starting.rate) || length(starting.rate)>1 || starting.rate < 0){
+  if(!.internal.is.finite.number(starting.rate) || starting.rate < 0){
     stop("Invalid argument starting.rate")
   }
-  if(!is.numeric(var) || is.na(var) || length(var)>1 || var < 0){
+  if(!.internal.is.finite.number(var)|| var < 0){
     stop("Invalid argument var")
   }
-  if(!is.numeric(rate.change) || is.na(rate.change) || length(rate.change)>1){
+  if(!.internal.is.finite.number(rate.change)){
     stop("Invalid argument rate.change")
   }
   

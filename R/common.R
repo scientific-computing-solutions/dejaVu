@@ -12,6 +12,14 @@ NULL
 
 .internal.is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) abs(x - round(x)) < tol
 
+.internal.is.finite.number <- function(x){
+  if(!is.numeric(x) || is.na(x) || length(x)>1 || is.infinite(x)){
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+
 ##' S3 generic to output the number of subjects in a given object
 ##' @param x The object
 ##' @return The number of subjects

@@ -18,7 +18,7 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
     stop("Cannot generate a summary if equal.dispersion is FALSE")
   }  
 
-  if(!is.numeric(CI.limit) || is.na(CI.limit) || length(CI.limit)>1 || CI.limit < 0 || CI.limit>1){
+  if(!.internal.is.finite.number(CI.limit) || CI.limit < 0 || CI.limit>1){
     stop("Invalid argument CI.limit")
   } 
    
@@ -91,10 +91,10 @@ validateImputeArguments <- function(fit,impute.mechanism,N){
   })
   
   if(class(impute.mechanism)!="ImputeMechanism"){
-    stop("Invalid mpute.mechanism argument, must one of class ImputeMechanism")
+    stop("Invalid impute.mechanism argument, must one of class ImputeMechanism")
   }
   
-  if(!is.numeric(N)|| is.na(N) || is.infinite(N) || length(N)>1 || N <= 0 || !.internal.is.wholenumber(N)){
+  if(!.internal.is.finite.number(N) || N <= 0 || !.internal.is.wholenumber(N)){
     stop("Invalid argument N, must be positive integer")
   }
   
