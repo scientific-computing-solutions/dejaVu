@@ -264,7 +264,7 @@ Please let me know of any more you would like!
 
 \paragraph{Implementing new drop out mechanisms (advanced!)}
 
-It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a toy example here and see \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMEchanism)} for further details.
+It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a toy example here and see \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMechanism)} for further details.
 
 In our toy\footnote{this is clearly not a sensible dropout method but shows how to implement dropout mechanisms} example we would like the dropout time to be $0.5T$ if subjects have exactly $W$ events and are on the control arm and $T$ (i.e. no dropouts) for all other subjects  where $W$ is a parameter chosen by the user. 
 
@@ -310,9 +310,24 @@ with.my.dropout <- SimulateDropout(complete,
 head(with.my.dropout$data)
 @
 
+\subsection{Additional Imputing Mechanisms}
+
+By altering the \texttt{trt.weight} argument, the \texttt{weighted\_j2r} imputing mechanism can be used to generate different iomputing mechanisms:
+
+If \texttt{trt.weight = 0} then imputation using this mechanism will follow the jump to reference (j2r) model whereby missing counts for subjects in both arms will be imputed according to the mean of the placebo arm conditioned on the subject's observed number of events
+
+If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
+
+Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be included. It should be a vector of length 2, \texttt{c(control.delta,treatment.delta)} and in this case the mean number of expected events for the imputed missing data is multipled by the appropriate delta:
+<<moreimp>>=
+  weighted_j2r(trt.weight=1,delta=c(1,1.4))
+@
 
 
-\subsection{Additional Impute Mechanisms}
+\paragraph{Implementing new imputing mechanisms (advanced!)}
 
+It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details.
+
+In our toy\footnote{this is clearly not a sensible imputing method but shows how to implement imputing mechanisms} example we would like
 
 \end{document}
