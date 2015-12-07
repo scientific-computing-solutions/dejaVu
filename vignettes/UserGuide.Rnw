@@ -216,7 +216,7 @@ example.scenario <- function(){
 
 Next we run the simulation a large number of times:
 <<rep>>=
-answer <- replicate(100,example.scenario(),simplify = FALSE)
+answer <- replicate(10,example.scenario(),simplify = FALSE)
 @
 
 and process the results using the \texttt{extract\_results} function: 
@@ -243,6 +243,75 @@ summary(MI.answer,use.adjusted.pval=TRUE)
 \section{Additional Information}
 
 \subsection{Additional Dropout mechanisms}
+
+Alongside the \texttt{ConstantRateDrop} function. Additional dropout mechanisms have been implemented:
+
+The \texttt{LinearRateChangeDrop} function allows a piecewise exponential drop out function where after $j$ events subjects have drop out rate $R_j$ where $R_j = C_j\exp(X_j)$ where $X_j \sim \mathcal{N}(0,\sigma^2)$ and $C_j = C+j*D$ for constants $C$ and $D$.
+<<linear>>=
+drop.mec <- LinearRateChangeDrop(starting.rate=0.0025, #C in text above
+                                 rate.change=0.0005, #D in text above
+                                 var=1) #sigma^2 in text above by default var=0
+
+drop.mec
+
+with.MAR.dropout <- SimulateDropout(complete,
+                    drop.mechanism=drop.mec)
+
+
+@
+
+Please let me know of any more you would like!
+
+\paragraph{Implementing new drop out mechanisms (advanced!)}
+
+It is possible to implement your own drop out mechanisms. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a toy example here and see \texttt{help(DropoutMechanism.object)} for further details.
+
+In our toy\footnote{this is clearly not a sensible dropout method but shows how to implement dropout mechanisms} example we would like the dropout time to be $0.5T$ if subjects have exactly $W$ events and are on the control arm and $T$ (i.e. no dropouts) for all other subjects  where $W$ is a parameter chosen by the user. 
+
+<<newdropout>>=
+
+#we create a function which returns the new dropout mechanism
+my.example.dropout <- function(W){ #W is the user parameter
+  
+  #First we create a function which must take in two arguments,
+  #event.times - a list of a single subject's event times
+  #data - a row of the data frame containing the subject details
+  #and outputs the time of subject dropout 
+  GetDropTime <- function(event.times,data){
+    if(data$observed.events==W && data$arm==0){
+      return(data$censored.time/2)
+    }
+    return(data$censored.time)
+    
+  }
+  
+  #we create a list of the columns from the data frame that
+  #are used in the GetDropTime function
+  cols.needed <- c("censored.time","arm","observed.events")
+  
+  #we return a named list with the following 5 elements
+  retVal <- list(type="MNAR",  #technically this is MNAR dropout
+                 text="Toy example dropout", #the text to be output
+                 cols.needed=cols.needed, #see above
+                 GetDropTime=GetDropTime, #see above
+                 parameters=list(the.value.of.W=W) #The parameters to be output
+                 )
+  
+  class(retVal) <- "DropoutMechanism" #see the class of the list
+  return(retVal) #and return it
+}
+
+#we can view the dropout mechanism
+my.example.dropout(6)
+
+#we can use it
+with.my.dropout <- SimulateDropout(complete,
+                    drop.mechanism=my.example.dropout(6))
+
+head(with.my.dropout$data)
+@
+
+
 
 \subsection{Additional Impute Mechanisms}
 

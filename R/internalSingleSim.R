@@ -45,6 +45,9 @@ GetSimRates <- function(study.time,number.subject,event.rate,dispersion){
 # This function does not take into account the requirement for the adjacent 
 # exacerbations to be > 7 days apart
 GetEventTimes <- function(rate,study.time){
+  if(is.infinite(rate)){
+    stop("An infinite rate cannot be used!")
+  }
   event.times <- numeric(0)
   current.time <- if(rate==0) Inf else rexp(1,rate)
   
