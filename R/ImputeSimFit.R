@@ -13,7 +13,7 @@ as.data.frame.ImputeSimFit <- function(x,row.names = NULL, optional = FALSE,...)
   
   rate.estimates <- .extract("rate.estimate",fun.val=numeric(2))
   
-  theta <- if(!is.null(x$summaries[[1]]$theta)) .extract("theta") else NA
+  dispersion <- if(!is.null(x$summaries[[1]]$dispersion)) .extract("dispersion") else NA
   
   data.frame(imputeID=1:.internal.number.data.sets(x$imputeSim),
              control.rate=rate.estimates[1,],
@@ -21,7 +21,7 @@ as.data.frame.ImputeSimFit <- function(x,row.names = NULL, optional = FALSE,...)
              treatment.effect=.extract("treatment.effect"),
              se=.extract("se"),
              pval=.extract("pval"),
-             theta=theta)  
+             dispersion=dispersion)  
 
 }
 
@@ -63,7 +63,7 @@ summary.ImputeSimFit <- function(object,...){
                  se=se,
                  df=df,
                  adjusted.df=adjusted.df,
-                 theta=mean(data$theta),
+                 dispersion=mean(data$dispersion),
                  pval=getpval(df=df),
                  adjusted.pval=getpval(df=adjusted.df)
                  )
@@ -80,8 +80,8 @@ print.summary.ImputeSimFit <- function(x,...){
   cat("p-value:",x$pval,fill=TRUE)
   cat("Adjusted d.o.f:",x$adjusted.df,fill=TRUE)
   cat("Adjusted p-value:",x$adjusted.pval,fill=TRUE)
-  if(!is.null(x$theta)){
-    cat("Average theta:",x$theta,fill=TRUE)
+  if(!is.null(x$dispersion)){
+    cat("Average dispersion:",x$dispersion,fill=TRUE)
   }
   
 }

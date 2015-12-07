@@ -10,6 +10,8 @@
 
 \item{number.subjects}{The number of subjects on each arm}
 
+\item{number.dropouts}{The number of subjects who dropout on each arm}
+
 \item{total.events}{The total number of events for each arm}
 
 \item{time.at.risk}{The total time at risk for each arm}

@@ -55,7 +55,9 @@ The \texttt{SimulateComplete} function is used to generate a complete data set o
 Under the negative binomial assumption the time interval between adjacent event for a given subject are exponentially distributed with rate $\lambda_i/T$ where $\lambda_i \sim \mathrm{Gamma}(1/k,k\mu)$ and $k$ is the dispersion parameter and $\mu$ the mean number of events ($k$ and $\mu$ can be different for each treatment group)
 
 Specifically
-$$\mathbb{P}(n_i=r) = \left.\frac{\Gamma(\gamma+ r)}{\Gamma(r+1)\Gamma(\gamma)}p^r(1-p)^{\gamma}\right.$$ where $\gamma=1/k$ and $p=\frac{k\mu}{1+k\mu}$.
+\begin{equation}
+\label{nbpdf}
+\mathbb{P}(n_i=r) = \left.\frac{\Gamma(\gamma+ r)}{\Gamma(r+1)\Gamma(\gamma)}p^r(1-p)^{\gamma}\right.\end{equation} where $\gamma=1/k$ and $p=\frac{k\mu}{1+k\mu}$.
 
 
 The \texttt{SimulateComplete} function takes the following arguments:
@@ -85,6 +87,100 @@ The SimulateComplete function returns a \texttt{SingleSim} object. See \texttt{h
 
 \subsection{Subject Dropout}
 
+Given a \texttt{SingleSim} object, we can use the \texttt{SimulateDropout} function to apply a dropout mechanism to create a data set which includes subject dropout. In this example we use a simple MCAR example. 
+
+The \texttt{ConstantRateDrop} mechanism will give subjects exponentially distributed drop out times with subject specific rate $R$ where $\log(R) =$ \texttt{rate} $+ \mathcal{N}(0,$\texttt{var}$)$ 
+<<CRdrop>>=
+ConstantRateDrop(rate=0.0025,var=1)
+@
+
+This dropout mechanism can be used to create a data set with subject dropouts.
+<<drop>>=
+with.MCAR.dropout <- SimulateDropout(complete,
+                    drop.mechanism=ConstantRateDrop(rate=0.0025,
+                                                    var=1)) #var by default=0
+
+@
+
+Note the \texttt{censored.time} and \texttt{observed.events} have been updated:
+<<dropsummary>>=
+summary(with.MCAR.dropout)
+
+head(with.MCAR.dropout$data)
+@
+
+See later in the tutorial for other available dropout mechanisms and a description of how to implement your own.   
+
+\subsection{Generating MI data sets}
+
+Given a \texttt{SingleSim} object we can fit a negative binomial model using the \texttt{Simfit} function:
+<<fit>>=
+my.fit <- Simfit(with.MCAR.dropout,equal.dispersion=TRUE)
+@
+
+This creates a \texttt{SingleSimFit} object:
+<<>>=
+class(my.fit)
+
+summary(my.fit)
+@
+
+We can output $\gamma$ and $p$ for the model fit (see Equation \eqref{nbpdf}):
+<<ip>>=
+my.fit$impute.parameters$gamma
+my.fit$impute.parameters$p
+@
+
+Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
+<<imp>>=
+imputed.data.sets <- Impute(fit = my.fit,
+                            impute.mechanism = weighted_j2r(trt.weight=0),
+                            N=10)
+@
+
+The \texttt{Impute} function requires three arguments, the fit, an impute mechanism and $N$ the number of data sets to impute.
+We are using the weighted j2r impute mechanism with treatment weight=0 which implies missing counts for subjects in both arms will be imputed according to the mean of the control arm conditioned on the number of subject's observed events. 
+
+TODO description of the method
+
+See later in the tutorial for other available impute mechanisms and a description of how to implement your own.   
+
+\subsection{Fitting MI datasets}
+
+It is possible to access the individual imputed data sets:
+<<>>=
+sixth.data.set <- GetImputedDataSet(imputed.data.sets,index=6)
+
+summary(sixth.data.set)
+
+head(sixth.data.set$data)
+@
+
+Note the \texttt{actual.censored.time} column is the time the subject was actually censored at whereas the \texttt{censored.time} column is the time the subject was censored after applying the imputation. Similarly 
+
+We can even fit a model to them. By default the \texttt{Simfit} function fits a negative binomial model, however, by using the family argument
+a Poission or quasi-Poisson model can be fit instead.
+<<>>=
+sixth.fit <- Simfit(sixth.data.set,
+                    family="poisson") 
+                  
+summary(sixth.fit)
+@
+
+It is possible to fit the entire set of imputed data sets in one go, again using the \texttt{Simfit} function:
+<<>>=
+fitted <- Simfit(imputed.data.sets,family="negbin")
+@
+
+We can create a data frame collating the fitted values:
+<<>>=
+head(as.data.frame(fitted))
+@
+
+We can also summarise the results -- the values shown here are calculated using Rubin's formula. (ADD ref or description here)
+<<>>=
+summary(fitted)
+@
 
 \section{Running Complete Scenarios}
 

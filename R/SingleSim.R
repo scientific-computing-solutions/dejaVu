@@ -178,10 +178,18 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
     p <-     vapply(model,function(mod){exp(summary(mod)$coeffi[1,1])},FUN.VALUE = numeric(1))
   }
   
+  if(family=="negbin"){
+    impute.parameters <- list(gamma=gamma,p=p)
+    class(impute.parameters) <- "ImputeParameters"
+  }
+  else{
+    impute.parameters <- NULL
+  }
+    
   retVal <- list(singleSim=x,
                  equal.dispersion=equal.dispersion,
                  model=model,
-                 impute.parameters=list(gamma=gamma,p=p))
+                 impute.parameters=impute.parameters)
   class(retVal) <- "SingleSimFit"
   return(retVal)
 }
@@ -201,6 +209,7 @@ summary.SingleSim <- function(object,...){
   retVal <- list(status=object$status,
                  study.time=object$study.time,
                  number.subjects=.extract(nrow),
+                 number.dropouts=.extract(function(y){sum(y$censored.time!=object$study.time)}),
                  total.events=total.events,
                  time.at.risk=time.at.risk,
                  empirical.rates=total.events/time.at.risk)
@@ -214,6 +223,7 @@ print.summary.SingleSim <- function(x,...){
   cat(x$status,"dataset\n")
   cat("Study follow up period:",x$study.time,"\n")
   cat("Subjects (per arm):",x$number.subjects,fill = TRUE)
+  cat("Subject dropouts (per arm):",x$number.dropouts,fill = TRUE)
   cat("Number of events (per arm):",x$total.events,fill=TRUE)
   cat("Total Time at risk (per arm):",x$time.at.risk,fill=TRUE)
   cat("Empirical event rates (per arm):",x$empirical.rates,fill=TRUE)
@@ -227,6 +237,7 @@ print.summary.SingleSim <- function(x,...){
 ##' @param status The status of the SingleSim object
 ##' @param study.time The study.time from the SingleSim object
 ##' @param number.subjects The number of subjects on each arm 
+##' @param number.dropouts The number of subjects who dropout on each arm
 ##' @param total.events The total number of events for each arm
 ##' @param time.at.risk The total time at risk for each arm
 ##' @param empirical.rates total.events/time.at.risk 

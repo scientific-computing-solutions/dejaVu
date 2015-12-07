@@ -21,7 +21,7 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
              treatment.effect=.extract("treatment.effect"),
              se=.extract("se"),
              pval=.extract(pval.string),
-             theta=.extract("theta")
+             dispersion=.extract("dispersion")
             )
 
 }

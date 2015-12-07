@@ -29,7 +29,7 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
                  CI.limit=CI.limit,
                  CI=exp(model.summary$coefficient[2,1]+ c(-1,1)*qnorm(1-CI.limit/2)*model.summary$coefficient[2,2]),
                  se=model.summary$coefficient[2,2], #se 2 from old code
-                 theta=model.summary$theta, #only if negative binomial
+                 dispersion=1/model.summary$theta, #only if negative binomial
                  rate.estimate=exp(model.summary$coefficient[1,1])*c(1,exp(model.summary$coefficient[2,1])),         
                  pval=model.summary$coefficient[2,4],
                  datastatus=object$singleSim$status) 
@@ -45,9 +45,7 @@ print.summary.SingleSimFit <- function(x,...){
   cat("SE (log) treatment effect:",x$se,fill=TRUE)
   cat(x$CI.limit*100,"% CI: [",x$CI[1],", ",x$CI[2],"]", sep="",fill=TRUE)
   cat("Rate Estimates (per arm):",x$rate.estimate,fill=TRUE)
-  if(!is.null(x$theta)){
-    cat("Negative binomial model parameter theta:",x$theta,fill=TRUE)
-  }
+  cat("Negative binomial dispersion model parameter:",if(length(x$dispersion)==0) "NA" else x$dispersion ,fill=TRUE)
   cat("p-value:",x$pval,fill=TRUE)
   cat("Note p-value is associated with this individual data set\n")
 }
