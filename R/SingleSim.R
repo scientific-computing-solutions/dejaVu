@@ -222,7 +222,16 @@ print.summary.SingleSim <- function(x,...){
 
 ##' summary.SingleSim object
 ##' 
-##' TODO
+##' The object returned when calling the summary function on a \code{SingleSim} object
+##' 
+##' @param status The status of the SingleSim object
+##' @param study.time The study.time from the SingleSim object
+##' @param number.subjects The number of subjects on each arm 
+##' @param total.events The total number of events for each arm
+##' @param time.at.risk The total time at risk for each arm
+##' @param empirical.rates total.events/time.at.risk 
+##' 
+##' The \code{print.summary.SingleSim} method has been implemented
 ##' 
 ##' @name summary.SingleSim.object
 NULL

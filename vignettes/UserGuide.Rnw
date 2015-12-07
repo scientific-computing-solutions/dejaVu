@@ -4,7 +4,8 @@
 \usepackage{url}
 \usepackage{color}
 \usepackage{authblk}
-
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{User Guide}
@@ -42,11 +43,20 @@ In order to use the functionality of the package, it must be loaded:
 library(dejaVu)
 @
 
+For reproducibility we set the random seed:
+<<seed>>=
+set.seed(1298711)
+@
+
 \subsection{Simulating Complete Data}
 
 The \texttt{SimulateComplete} function is used to generate a complete data set of subject outcomes for a recurrent event study with follow up time $T$ and the number of events for each subject, $n_i$ is given by a negative binomial process. 
 
 Under the negative binomial assumption the time interval between adjacent event for a given subject are exponentially distributed with rate $\lambda_i/T$ where $\lambda_i \sim \mathrm{Gamma}(1/k,k\mu)$ and $k$ is the dispersion parameter and $\mu$ the mean number of events ($k$ and $\mu$ can be different for each treatment group)
+
+Specifically
+$$\mathbb{P}(n_i=r) = \left.\frac{\Gamma(\gamma+ r)}{\Gamma(r+1)\Gamma(\gamma)}p^r(1-p)^{\gamma}\right.$$ where $\gamma=1/k$ and $p=\frac{k\mu}{1+k\mu}$.
+
 
 The \texttt{SimulateComplete} function takes the following arguments:
 \begin{itemize}
@@ -72,6 +82,9 @@ head(complete$data)
 @
 
 The SimulateComplete function returns a \texttt{SingleSim} object. See \texttt{help(SingleSim)} for further details.
+
+\subsection{Subject Dropout}
+
 
 \section{Running Complete Scenarios}
 

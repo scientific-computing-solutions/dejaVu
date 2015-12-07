@@ -3,7 +3,22 @@
 \name{summary.SingleSim.object}
 \alias{summary.SingleSim.object}
 \title{summary.SingleSim object}
+\arguments{
+\item{status}{The status of the SingleSim object}
+
+\item{study.time}{The study.time from the SingleSim object}
+
+\item{number.subjects}{The number of subjects on each arm}
+
+\item{total.events}{The total number of events for each arm}
+
+\item{time.at.risk}{The total time at risk for each arm}
+
+\item{empirical.rates}{total.events/time.at.risk
+
+The \code{print.summary.SingleSim} method has been implemented}
+}
 \description{
-TODO
+The object returned when calling the summary function on a \code{SingleSim} object
 }
 
