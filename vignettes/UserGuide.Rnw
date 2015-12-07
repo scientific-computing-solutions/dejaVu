@@ -219,11 +219,14 @@ Next we run the simulation a large number of times:
 answer <- replicate(500,example.scenario(),simplify = FALSE)
 @
 
-and process the results using the \texttt{extract_results} function: 
+and process the results using the \texttt{extract\_results} function: 
 <<extract>>=
-MI.answer <- extract_results(answer,name="MI",description="Using j2r multiple imputation")
-dropout.answer <- extract_results(answer,name="dropout",description="Using no imputation")
-complete.answer <- extract_results(answer,name="complete",description="Using complete data sets")
+MI.answer <- extract_results(answer,name="MI",
+                            description="Using j2r multiple imputation")
+dropout.answer <- extract_results(answer,name="dropout",
+                            description="Using no imputation")
+complete.answer <- extract_results(answer,name="complete",
+                            description="Using complete data sets")
 
 class(MI.answer)
 @
@@ -237,9 +240,11 @@ summary(dropout.answer)
 summary(MI.answer,use.adjusted.pval=TRUE)
 @
 
-
-
-
 \section{Additional Information}
+
+\subsection{Additional Dropout mechanisms}
+
+\subsection{Additional Impute Mechanisms}
+
 
 \end{document}
