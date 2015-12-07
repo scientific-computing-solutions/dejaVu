@@ -113,7 +113,7 @@ See later in the tutorial for other available dropout mechanisms and a descripti
 
 \subsection{Generating MI data sets}
 
-Given a \texttt{SingleSim} object we can fit a negative binomial model using the \texttt{Simfit} function:
+Given a \texttt{SingleSim} object we can fit a negative binomial model using the \texttt{Simfit} function. \textbf{Note a warning will be displayed if the model fit does not converge}. 
 <<fit>>=
 my.fit <- Simfit(with.MCAR.dropout,equal.dispersion=TRUE)
 @
@@ -183,6 +183,62 @@ summary(fitted)
 @
 
 \section{Running Complete Scenarios}
+
+In order to calculate the summary statistics such as power it is necessary to repeat the procedure multiple times. In this example we show how to easily replicate and combine the results
+
+First we create a function which outputs a list of the summaries of the fits we are interested in:
+<<scenario>>=
+example.scenario <- function(){ 
+
+  #simulate a complete data set
+  sim <- SimulateComplete(study.time=365,number.subjects=100,
+                       event.rates=c(0.01,0.005),dispersions=0.25)
+
+  #take the simulated data set and apply an MCAR dropout mechanism...                         
+  sim.with.MCAR.dropout <- SimulateDropout(sim,
+                    drop.mechanism=ConstantRateDrop(rate=0.0025)) 
+
+  #fit a Negative Binomial model 
+  with.MCAR.fit <- Simfit(sim.with.MCAR.dropout,equal.dispersion=TRUE)
+
+  #we can impute a set of 10 sets following the j2r mechanism using the fit
+  impute.data.sets <- Impute(with.MCAR.fit,impute.mechanism = weighted_j2r(trt.weight=0),N=10)
+
+  #we can then fit models to the entire imputed data set
+  fit.imputed.set <- Simfit(impute.data.sets)
+
+  #output the summary values
+  return(list(MI=summary(fit.imputed.set), #for MI
+              dropout=summary(with.MCAR.fit), #for dropout
+              complete=summary(Simfit(sim)))) #for complete data set
+}
+@
+
+Next we run the simulation a large number of times:
+<<rep>>=
+answer <- replicate(500,example.scenario(),simplify = FALSE)
+@
+
+and process the results using the \texttt{extract_results} function: 
+<<extract>>=
+MI.answer <- extract_results(answer,name="MI",description="Using j2r multiple imputation")
+dropout.answer <- extract_results(answer,name="dropout",description="Using no imputation")
+complete.answer <- extract_results(answer,name="complete",description="Using complete data sets")
+
+class(MI.answer)
+@
+
+We can output a summary of the simulations as a data frame and summarize the results:
+<<scenario.df>>=
+head(as.data.frame(complete.answer))
+
+summary(dropout.answer)
+
+summary(MI.answer,use.adjusted.pval=TRUE)
+@
+
+
+
 
 \section{Additional Information}
 

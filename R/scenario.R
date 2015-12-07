@@ -6,6 +6,13 @@ NULL
 
 
 ##' @export
+extract_results <- function(answer,name,description){
+  #TODO add loads of validations here
+  CreateScenario(lapply(answer,function(x) x[[name]]),description=description)  
+}
+
+
+##' @export
 as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adjusted.pval=FALSE,...){
   
   Validate.adjusted.pval(x$summaries,use.adjusted.pval)
@@ -105,7 +112,7 @@ print.summary.Scenario <- function(x,...){
   cat("Estimated SE (log) treatment effect:",x$se,fill=TRUE)
   cat("Using alpha=",x$alpha,sep="")
   if(x$use.adjusted.pval){
-    cat("(and an adjusted number of degrees of freedom)")
+    cat(" (and an adjusted number of degrees of freedom)")
   }
   cat("\n  power:",x$power,fill=TRUE)
 }
