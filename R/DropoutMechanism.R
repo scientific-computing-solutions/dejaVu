@@ -34,3 +34,19 @@ print.DropoutMechanism <- function(x,...){
   cat("Dropout Mechanism:",x$text,fill=TRUE)
   .internal.output.list(x$parameters)
 }
+
+
+##' @export
+CreateNewDropoutMechanism <- function(type,text,cols.needed,GetDropTime,parameters){
+  
+  #TODO loads of validation
+  
+  retVal <- list(type=type,
+                 text=text,
+                 cols.needed=cols.needed,
+                 GetDropTime=GetDropTime,
+                 parameters=parameters)
+  
+  class(retVal) <- "DropoutMechanism"
+  retVal
+}

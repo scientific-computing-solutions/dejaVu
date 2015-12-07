@@ -32,17 +32,12 @@ ConstantRateDrop <- function(rate,var=0){
     dropout.time <- rexp(1,rate)
     return(pmin(dropout.time,data$censored.time))
   }
-    
-  retVal <- list(
-    type="MCAR",
-    text=text,
-    cols.needed=cols.needed,
-    GetDropTime=f,
-    parameters=list(rate=rate,between.subject.var=var)
-  )
   
-  class(retVal) <- "DropoutMechanism"
-  return(retVal)
+  CreateNewDropoutMechanism(type="MCAR",text=text,
+                            cols.needed=cols.needed,
+                            GetDropTime=f,
+                            parameters=list(rate=rate,between.subject.var=var)) 
+  
 }
 
 
@@ -106,16 +101,11 @@ LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
     
   }
   
-  retVal <- list(
-    type="MAR",
-    text=text,
-    cols.needed=cols.needed,
-    GetDropTime=f,
-    parameters=list(starting.rate=starting.rate,
-                    rate.change.after.event=rate.change,
-                    between.subject.var=var)
-  )
-  
-  class(retVal) <- "DropoutMechanism"
-  return(retVal)
+  CreateNewDropoutMechanism(type="MAR",text=text,
+                            cols.needed=cols.needed,
+                            GetDropTime=f,
+                            parameters=list(starting.rate=starting.rate,
+                                            rate.change.after.event=rate.change,
+                                            between.subject.var=var)) 
+
 }
