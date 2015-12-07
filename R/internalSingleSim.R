@@ -42,11 +42,11 @@ GetSimRates <- function(study.time,number.subject,event.rate,dispersion){
 # returns a vector of event.times for a single subject
 # if no events occur in the time [0,study.time] then numeric(0) 
 # is returned
-# This functiondoes not take into account the requirement for the adjacent 
+# This function does not take into account the requirement for the adjacent 
 # exacerbations to be > 7 days apart
 GetEventTimes <- function(rate,study.time){
   event.times <- numeric(0)
-  current.time <- rexp(1,rate)
+  current.time <- if(rate==0) Inf else rexp(1,rate)
   
   while(current.time <= study.time){
     event.times <- c(event.times,current.time)
