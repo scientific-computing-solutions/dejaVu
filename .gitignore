@@ -4,3 +4,6 @@
 .Rhistory
 .RData
 working/*
+
+vignettes/*
+!vignettes/*.Rnw

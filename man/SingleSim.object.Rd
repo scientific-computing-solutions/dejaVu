@@ -6,32 +6,38 @@
 \alias{summary.SingleSim}
 \title{SingleSim Object}
 \arguments{
-\item{data}{TODO}
+\item{data}{The data frame, one row per subjecy containing (at least) the following columns
+Id, arm, censored.time, observed.events and actual.events}
 
-\item{event.times}{TODO}
+\item{event.times}{A list of event times. event.times[[1]] is a list of event times for subject with Id 1
+The length of event.times[[1]] = the number of observed events of subject with Id 1}
 
-\item{status}{TODO}
+\item{status}{Either "complete", "dropout" or "imputed" denoting the status of the data set.}
 
-\item{subject.rates}{TODO}
+\item{subject.rates}{A vector of the specific rates used for the subjects when generating the data}
 
-\item{dropout.mechanism}{TODO}
+\item{dropout.mechanism}{If status is not "complete" then this contains the \code{DropoutMechanism} object
+used to perform the subject dropout. See \code{\link{DropoutMechanism.object}}.}
 
-\item{impute.mechanism}{TODO}
+\item{impute.mechanism}{If the status is "imputed" then this contains the \code{ImputeMechanism} object
+used to perform the imputation. See \code{\link{ImputeMechanism}}}
 
-\item{study.time}{TODO}
+\item{study.time}{The study follow up period (see \code{SimulateComplete})}
 
-\item{event.rates}{TODO}
+\item{event.rates}{The control/active event rates (see \code{SimulateComplete})}
 
-\item{dispersions}{TODO}
+\item{dispersions}{The control/active dispersion rates (see \code{SimulateComplete})}
 }
 \description{
-Stuff
+A class containing the data for a single simulation. Depending on the value
+of \code{status}, this may be a complete data set, a set including subject dropouts
+or a data set after multiple imputation
 }
 \details{
 \code{print.SingleSim} and \code{summary.SingleSim} methods are defined.
 }
 \section{Structure}{
- The following components must be included in
+ The above components must be included in
 a SingleSim Object
 }
 

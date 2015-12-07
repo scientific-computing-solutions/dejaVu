@@ -86,21 +86,27 @@ print.SingleSim <- function(x,...){
 
 ##' SingleSim Object
 ##' 
-##' Stuff 
+##' A class containing the data for a single simulation. Depending on the value
+##' of \code{status}, this may be a complete data set, a set including subject dropouts
+##' or a data set after multiple imputation  
 ##'   
 ##' \code{print.SingleSim} and \code{summary.SingleSim} methods are defined.
 ##'
-##' @section Structure: The following components must be included in
+##' @section Structure: The above components must be included in
 ##' a SingleSim Object
-##' @param data TODO
-##' @param event.times TODO
-##' @param status TODO
-##' @param subject.rates TODO
-##' @param dropout.mechanism TODO
-##' @param impute.mechanism TODO
-##' @param study.time TODO
-##' @param event.rates TODO
-##' @param dispersions  TODO
+##' @param data The data frame, one row per subjecy containing (at least) the following columns
+##' Id, arm, censored.time, observed.events and actual.events
+##' @param event.times A list of event times. event.times[[1]] is a list of event times for subject with Id 1
+##' The length of event.times[[1]] = the number of observed events of subject with Id 1 
+##' @param status Either "complete", "dropout" or "imputed" denoting the status of the data set.
+##' @param subject.rates A vector of the specific rates used for the subjects when generating the data
+##' @param dropout.mechanism If status is not "complete" then this contains the \code{DropoutMechanism} object
+##' used to perform the subject dropout. See \code{\link{DropoutMechanism.object}}.
+##' @param impute.mechanism If the status is "imputed" then this contains the \code{ImputeMechanism} object
+##' used to perform the imputation. See \code{\link{ImputeMechanism}}
+##' @param study.time The study follow up period (see \code{SimulateComplete})
+##' @param event.rates The control/active event rates (see \code{SimulateComplete})
+##' @param dispersions  The control/active dispersion rates (see \code{SimulateComplete})
 ##' @name SingleSim.object
 ##' @aliases print.SingleSim summary.SingleSim
 NULL

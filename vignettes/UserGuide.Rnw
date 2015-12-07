@@ -1,0 +1,80 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{url}
+\usepackage{color}
+\usepackage{authblk}
+
+
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{User Guide}
+
+\begin{document}
+
+\title{DejaVu User Guide}
+\author[**]{Nikolas S. Burkoff}
+\author[*]{David Ruau}
+
+\affil[*]{AstraZeneca, B\&I, Advanced Analytics Centre, UK}
+\affil[**]{Tessella, 26 The Quadrant, Abingdon Science Park, Abingdon, OX14 3YS, UK}
+
+
+\renewcommand\Authands{ and }
+
+\maketitle
+
+\section{Introduction}
+
+\section{Running a Single MI Example}
+
+In this section we walk through a single MI example:
+\begin{itemize}
+\item Simulating Complete Data
+\item Simulating Subject Dropout
+\item Generating MI data sets
+\item Analysing results using Rubin's formula 
+\end{itemize}
+
+See later in the guide for details of running a large number of examples and combining the results to estimate summary statistics such as power and Type I error.
+
+In order to use the functionality of the package, it must be loaded:
+<<load,message=FALSE>>=
+library(dejaVu)
+@
+
+\subsection{Simulating Complete Data}
+
+The \texttt{SimulateComplete} function is used to generate a complete data set of subject outcomes for a recurrent event study with follow up time $T$ and the number of events for each subject, $n_i$ is given by a negative binomial process. 
+
+Under the negative binomial assumption the time interval between adjacent event for a given subject are exponentially distributed with rate $\lambda_i/T$ where $\lambda_i \sim \mathrm{Gamma}(1/k,k\mu)$ and $k$ is the dispersion parameter and $\mu$ the mean number of events ($k$ and $\mu$ can be different for each treatment group)
+
+The \texttt{SimulateComplete} function takes the following arguments:
+\begin{itemize}
+\item \texttt{study.time} $=T$
+\item \texttt{number.subjects}: the number of subjects in each arm to simulate - if it is a single number then this will be used for both arms, otherwise a vector \texttt{c(number.control,number.active)}
+\item \texttt{event.rates} $=\mu/T$: the event rates for each arm
+\item \texttt{dispersions} $=k$, again either a single number if $k$ is the same for both arms otherwise a vector.
+\end{itemize}
+
+An example of the data generation procedure:
+<<complete>>=
+complete <- SimulateComplete(study.time=365, 
+                      number.subjects=50, 
+                      event.rates=c(0.01,0.005),
+                      dispersions=0.25) 
+print(complete)
+summary(complete)
+@
+
+We can also access the data directly:
+<<>>=
+head(complete$data)
+@
+
+The SimulateComplete function returns a \texttt{SingleSim} object. See \texttt{help(SingleSim)} for further details.
+
+\section{Running Complete Scenarios}
+
+\section{Additional Information}
+
+\end{document}
