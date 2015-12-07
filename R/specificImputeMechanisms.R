@@ -50,12 +50,10 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     
   }
   
-  retVal <- list(name="weighted_j2r",
-                 cols.needed=c("censored.time","observed.events","arm"),
-                 impute=f,
-                 parameters=list(trt.weight=trt.weight,delta=delta))
-  class(retVal) <- "ImputeMechanism"
-  return(retVal)
+  CreateNewImputeMechanism(name="weighted_j2r",
+                           cols.needed=c("censored.time","observed.events","arm"),
+                           impute=f,
+                           parameters=list(trt.weight=trt.weight,delta=delta))
 }
 
 # performs the weighted_j2r method using the given SimFit object

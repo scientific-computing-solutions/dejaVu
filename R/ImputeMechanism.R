@@ -34,3 +34,16 @@ print.ImputeMechanism <- function(x,...){
   .internal.output.list(x$parameters)
 }
 
+
+##' @export
+CreateNewImputeMechanism <- function(name,cols.needed,impute,parameters){
+  
+  #TODO loads of validation
+  retVal <- list(name=name,
+                  cols.needed=cols.needed,
+                  impute=impute,
+                  parameters=parameters)
+  
+  class(retVal) <- "ImputeMechanism"
+  retVal
+}
