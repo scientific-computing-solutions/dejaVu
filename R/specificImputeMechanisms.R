@@ -16,6 +16,8 @@
 ##' in each arm will be imputed according to the event rate of subjects in its treatment group 
 ##' conditioned on the subject's observed number of events
 ##' 
+##' See the User guide vignette for further details
+##' 
 ##' @param trt.weight See details
 ##' @param delta If \code{trt.weight=1} then delta is a vector of length 2
 ##' (control.delta,treatment.delta) and the mean number of expected events for the imputed missing data is

@@ -1,6 +1,17 @@
 ##' SingleSimFit object
+##'  
+##' A \code{SingleSimFit} object is returned from calling \code{Simfit} with
+##' a \code{SingleSim object}. It can be used to both impute data sets or can be summarized 
 ##' 
-##' TODO
+##' A \code{\link{summary.SingleSimFit}} method has been implemented
+##' 
+##' @param singleSim The \code{SingleSim} object to which a model has been fitted
+##' @param model The model which has been fitted
+##' @param impute.parameters A list of parameters from the model
+##' (i.e. p and gamma) fit which are used when imputing data
+##' If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
+##' then this parameter list will not include p and gamma and therefore could not be used to 
+##' impute data
 ##' 
 ##' @name SingleSimFit.object
 NULL
@@ -8,13 +19,27 @@ NULL
 
 ##' summary.SingleSimFit
 ##' 
-##' TODO
+##' The summary object for a \code{SingleSimFit} object
+##' 
+##' A \code{print.summary.SingleSimFit} method has been implemented
+##' 
+##' @param model.summary The model summary from the fit
+##' @param treatment.effect The estimate of treatment effect from the model fit
+##' @param CI.limit The confidence interval limit (by default 0.95), call \code{summary(object,CI.limit=x)} to use
+##' CI of \code{x} instead.
+##' @param CI The confidence interval of the treatment effect
+##' @param se Estimate for the standard error of (log) treatment effect 
+##' @param dispersion Estimate for the dispersion parameter or numeric(0) if Poisson/quasi-Poisson model used
+##' @param rate.estimate Estimate of the event rates from the model a vector c(control arm, treatment arm)         
+##' @param pval The p value directly from the model fit (this is for the single model fit only, i.e. not using Rubin's formula)
+##' @param datastatus The status of SingleSim object to which the fit was applied
+##' @seealso \code{\link{SingleSimFit.object}}
 ##' @name summary.SingleSimFit
 NULL
 
 ##' @export
 summary.SingleSimFit <- function(object,CI.limit=0.95,...){
-  if(!object$equal.dispersion){
+  if(!object$impute.parameters$equal.dispersion){
     stop("Cannot generate a summary if equal.dispersion is FALSE")
   }  
 
@@ -84,9 +109,9 @@ validateImputeArguments <- function(fit,impute.mechanism,N){
     stop("Invalid fit argument, must be of class SingleSimFit")
   }
   
-  lapply(fit$impute.parameters,function(x){
-    if(is.null(x)) stop("Cannot impute using this SingleSimFit object (a negative binomial model was not fit)")
-  })
+ if(is.null(fit$impute.parameters$p)){
+    stop("Cannot impute using this SingleSimFit object (a negative binomial model was not fit)")
+  }
   
   if(class(impute.mechanism)!="ImputeMechanism"){
     stop("Invalid impute.mechanism argument, must one of class ImputeMechanism")

@@ -103,7 +103,7 @@ print.SingleSim <- function(x,...){
 ##' @param dropout.mechanism If status is not "complete" then this contains the \code{DropoutMechanism} object
 ##' used to perform the subject dropout. See \code{\link{DropoutMechanism.object}}.
 ##' @param impute.mechanism If the status is "imputed" then this contains the \code{ImputeMechanism} object
-##' used to perform the imputation. See \code{\link{ImputeMechanism}}
+##' used to perform the imputation. See \code{\link{ImputeMechanism.object}}
 ##' @param study.time The study follow up period (see \code{SimulateComplete})
 ##' @param event.rates The control/active event rates (see \code{SimulateComplete})
 ##' @param dispersions  The control/active dispersion rates (see \code{SimulateComplete})
@@ -179,15 +179,14 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
   }
   
   if(family=="negbin"){
-    impute.parameters <- list(gamma=gamma,p=p)
+    impute.parameters <- list(gamma=gamma,p=p,equal.dispersion=equal.dispersion)
     class(impute.parameters) <- "ImputeParameters"
   }
   else{
-    impute.parameters <- NULL
+    impute.parameters <- list(equal.dispersion=equal.dispersion)
   }
     
   retVal <- list(singleSim=x,
-                 equal.dispersion=equal.dispersion,
                  model=model,
                  impute.parameters=impute.parameters)
   class(retVal) <- "SingleSimFit"

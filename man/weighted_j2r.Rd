@@ -33,6 +33,8 @@ If \code{trt.weight} = 1 then imputation using this mechanism will follow
 the MAR model whereby missing counts for subjects
 in each arm will be imputed according to the event rate of subjects in its treatment group
 conditioned on the subject's observed number of events
+
+See the User guide vignette for further details
 }
 \seealso{
 \code{\link{ImputeMechanism.object}}

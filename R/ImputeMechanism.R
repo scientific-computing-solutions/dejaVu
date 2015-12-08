@@ -35,10 +35,30 @@ print.ImputeMechanism <- function(x,...){
 }
 
 
+##' A function which creates an Impute Mechanism object
+##'
+##' @inheritParams ImputeMechanism.object 
+##' @seealso \code{\link{ImputeMechanism.object}}
 ##' @export
-CreateNewImputeMechanism <- function(name,cols.needed,impute,parameters){
+CreateNewImputeMechanism <- function(name,cols.needed,impute,parameters=NULL){
   
-  #TODO loads of validation
+  if(length(name)>1){
+    stop("Invalid name argument")
+  }
+  
+  if(!is.vector(cols.needed)){
+    stop("Invalid cols.needed argument")
+  }
+  
+  if(!is.null(parameters) && !is.list(parameters)){
+    stop("Invalid parameter list, if no parameters are needed, leave this argument NULL")
+  }
+  
+  if(!is.function(impute)){
+    stop("Invalid impute, it should be a function")
+  }
+  
+  
   retVal <- list(name=name,
                   cols.needed=cols.needed,
                   impute=impute,

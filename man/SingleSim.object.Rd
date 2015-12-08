@@ -20,7 +20,7 @@ The length of event.times[[1]] = the number of observed events of subject with I
 used to perform the subject dropout. See \code{\link{DropoutMechanism.object}}.}
 
 \item{impute.mechanism}{If the status is "imputed" then this contains the \code{ImputeMechanism} object
-used to perform the imputation. See \code{\link{ImputeMechanism}}}
+used to perform the imputation. See \code{\link{ImputeMechanism.object}}}
 
 \item{study.time}{The study follow up period (see \code{SimulateComplete})}
 
