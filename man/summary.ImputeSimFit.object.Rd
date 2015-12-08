@@ -20,6 +20,8 @@ p-value (this should be used if the complete data number of degrees of freedom i
 
 \item{adjusted.pval}{The p-value for the test log(treatment.effect)=0 using Rubin's
 formula and the adjusted number of degrees of freedom}
+
+\item{dropout}{The number of subjects who drop out (per arm) for this imputed data set}
 }
 \description{
 The summary of a \code{ImputeSimFit} object. Rubin's formula

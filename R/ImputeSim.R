@@ -10,7 +10,9 @@
 ##' @param imputed.values A matrix with 1 column per imputed data set and two rows:
 ##' newevent.times a list of vectors containing the imputed event times (not including the events 
 ##' which were observed) and new.censored.times - a vector containing the times at which subjects (with imputed
-##' data) are now censored  
+##' data) are now censored
+##' @param dropout A vector containing the number of subjects who have dropped out in each arm, for whom data is to be
+##' imputed  
 ##' 
 ##' Use \code{\link{GetImputedDataSet}} to extract a single imputed data set and use \code{Simfit} to fit
 ##' a model to the set of data sets

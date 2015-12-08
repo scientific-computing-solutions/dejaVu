@@ -156,6 +156,9 @@ Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
 imputed.data.sets <- Impute(fit = my.fit,
                             impute.mechanism = weighted_j2r(trt.weight=0),
                             N=10)
+
+#output the number of subject dropouts in each arm 
+imputed.data.sets$dropout
 @
 
 The \texttt{Impute} function requires three arguments, the fit, an impute mechanism and $N$ the number of data sets to impute.
@@ -163,7 +166,7 @@ We are using the weighted j2r impute mechanism with treatment weight$=0$ which i
 
 \subsection{Fitting MI datasets}
 
-It is possible to access the individual imputed data sets:
+It is possible to access the individual imputed data sets (note these data sets assume the imputed data is `truth' and hence as far as this data set is concerned the number of subject dropouts is 0):
 <<>>=
 sixth.data.set <- GetImputedDataSet(imputed.data.sets,index=6)
 
@@ -249,11 +252,11 @@ class(MI.answer)
 
 We can output a summary of the simulations as a data frame and summarize the results:
 <<scenario.df>>=
-head(as.data.frame(complete.answer))
+head(as.data.frame(MI.answer))
 
 summary(dropout.answer)
 
-summary(MI.answer,use.adjusted.pval=TRUE)
+summary(complete.answer)
 
 #and can access individual elements
 x <- summary(MI.answer,use.adjusted.pval=TRUE,alpha=0.025)

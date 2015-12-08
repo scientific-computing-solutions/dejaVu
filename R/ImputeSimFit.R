@@ -25,6 +25,7 @@ as.data.frame.ImputeSimFit <- function(x,row.names = NULL, optional = FALSE,...)
   
   rate.estimates <- .extract("rate.estimate",fun.val=numeric(2))
   
+    
   dispersion <- if(!is.null(x$summaries[[1]]$dispersion)) .extract("dispersion") else NA
   
   data.frame(imputeID=1:.internal.number.data.sets(x$imputeSim),
@@ -60,7 +61,7 @@ numberSubjects.ImputeSimFit <- function(x,...){
 ##' @param pval The p-value for the test log(treatment.effect)=0 using Rubin's formula
 ##' @param adjusted.pval The p-value for the test log(treatment.effect)=0 using Rubin's
 ##' formula and the adjusted number of degrees of freedom 
-##' 
+##' @param dropout The number of subjects who drop out (per arm) for this imputed data set
 ##' @name summary.ImputeSimFit.object
 NULL
 
@@ -78,7 +79,7 @@ summary.ImputeSimFit <- function(object,...){
   se <- sqrt((1+1/N)*var(log.treatment.effects)+ mean(se.log.treatment.effects^2))
   df <- (N-1)*(1+(mean(se.log.treatment.effects^2))/( (1+1/N)*var(log.treatment.effects)))^2
   
-  v.0 <- 2*numberSubjects(object)-2
+  v.0 <-  2*numberSubjects(object)-2
   v.hat <- (v.0*(v.0+1)/(v.0+3))*(1-(1+1/N)*(var(log.treatment.effects)/se^2))  
   adjusted.df <- 1/(1/df + 1/v.hat)
   
@@ -92,8 +93,9 @@ summary.ImputeSimFit <- function(object,...){
                  adjusted.df=adjusted.df,
                  dispersion=mean(data$dispersion),
                  pval=getpval(df=df),
-                 adjusted.pval=getpval(df=adjusted.df)
-                 )
+                 adjusted.pval=getpval(df=adjusted.df),
+                 dropout=object$imputeSim$dropout
+                )
   class(retVal) <- "summary.ImputeSimFit"
   retVal  
 }
@@ -110,5 +112,5 @@ print.summary.ImputeSimFit <- function(x,...){
   if(!is.null(x$dispersion)){
     cat("Average dispersion:",x$dispersion,fill=TRUE)
   }
-  
+  cat("Number of subjects dropped out per arm:",x$dropout,fill=TRUE)
 }

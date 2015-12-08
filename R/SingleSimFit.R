@@ -33,6 +33,8 @@ NULL
 ##' @param rate.estimate Estimate of the event rates from the model a vector c(control arm, treatment arm)         
 ##' @param pval The p value directly from the model fit (this is for the single model fit only, i.e. not using Rubin's formula)
 ##' @param datastatus The status of SingleSim object to which the fit was applied
+##' @param df The number of degrees of freedom of the model
+##' @param dropout The number of dropouts of each arm
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @name summary.SingleSimFit
 NULL
@@ -48,6 +50,7 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
   } 
    
   model.summary <- summary(object$model)
+  dropout <- summary(object$singleSim)$number.dropouts
   
   retVal <- list(model.summary=model.summary,
                  treatment.effect=exp(model.summary$coefficient[2,1]),
@@ -57,7 +60,9 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
                  dispersion=1/model.summary$theta, #only if negative binomial
                  rate.estimate=exp(model.summary$coefficient[1,1])*c(1,exp(model.summary$coefficient[2,1])),         
                  pval=model.summary$coefficient[2,4],
-                 datastatus=object$singleSim$status) 
+                 datastatus=object$singleSim$status,
+                 df=2*numberSubjects(object$singleSim)-2,
+                 dropout=dropout)
   
   class(retVal) <- "summary.SingleSimFit"
   retVal
@@ -93,6 +98,7 @@ Impute <- function(fit,impute.mechanism,N){
   retVal <- list(fit=fit,
                  impute.mechanism=impute.mechanism,
                  imputed.values=replicate(n=N, impute.mechanism$impute(fit),simplify="list"))
+  retVal$dropout <- summary(fit$singleSim)$number.dropouts
   class(retVal) <- "ImputeSim"
   return(retVal)
 }

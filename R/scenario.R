@@ -51,14 +51,19 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
     vapply(x$summaries,function(y){y[[name]]},FUN.VALUE = fun.val)
   }
   
-  pval.string <-if(use.adjusted.pval)  "adjusted.pval" else "pval"
+  dropout <- .extract("dropout",numeric(2))
   
+  pval.string <-if(use.adjusted.pval)  "adjusted.pval" else "pval"
+  df.string <- if(use.adjusted.pval)  "adjusted.df" else "df"
   
   data.frame(replica=1:length(x$summaries),
              treatment.effect=.extract("treatment.effect"),
              se=.extract("se"),
              pval=.extract(pval.string),
-             dispersion=.extract("dispersion")
+             df=.extract(df.string),
+             dispersion=.extract("dispersion"),
+             dropout.control=dropout[1,],
+             dropout.active=dropout[2,]
             )
 
 }
@@ -125,6 +130,7 @@ CreateScenario <- function(object,description=""){
 ##' Rubin's formula with the adjusted number of degrees of freedom be used. Use \code{summary(object,use.adjusted.pval=TRUE)},
 ##' to use the adjusted p values
 ##' @param description A string containing a description of the scenario
+##' @param dropout A list of summary statistics regarding number of subject dropouts 
 ##' @name summary.Scenario.object
 NULL 
 
@@ -139,7 +145,8 @@ summary.Scenario <- function(object,alpha=0.05,use.adjusted.pval=FALSE,...){
                  power=sum(data$pval<alpha)/nrow(data),
                  alpha=alpha,
                  use.adjusted.pval=use.adjusted.pval,
-                 description=object$description)
+                 description=object$description,
+                 dropout=list(summary(data$dropout.control),summary(data$dropout.active)))
   
   class(retVal) <- "summary.Scenario"
   retVal 
@@ -160,4 +167,10 @@ print.summary.Scenario <- function(x,...){
     cat(" (and an adjusted number of degrees of freedom)")
   }
   cat("\n  power:",x$power,fill=TRUE)
+  
+  cat("Dropout numbers summary statistics\n")
+  cat("Control arm:\n")
+  print(x$dropout[[1]])
+  cat("Actvie arm:\n")
+  print(x$dropout[[2]])
 }
