@@ -7,3 +7,4 @@ working/*
 
 vignettes/*
 !vignettes/*.Rnw
+!vignettes/*.bib
