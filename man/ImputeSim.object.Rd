@@ -3,7 +3,26 @@
 \name{ImputeSim.object}
 \alias{ImputeSim.object}
 \title{ImputeSim object}
+\arguments{
+\item{fit}{The \code{SingleSimFit} object from which the imputed data sets
+have been derived}
+
+\item{impute.mechanism}{The \code{ImputeMechanism} object used to perform the
+imputation}
+
+\item{imputed.values}{A matrix with 1 column per imputed data set and two rows:
+newevent.times a list of vectors containing the imputed event times (not including the events
+which were observed) and new.censored.times - a vector containing the times at which subjects (with imputed
+data) are now censored
+
+Use \code{\link{GetImputedDataSet}} to extract a single imputed data set and use \code{Simfit} to fit
+a model to the set of data sets}
+}
 \description{
-TODO
+This object contains a collection of imputed data sets
+derived from a \code{SingleSimFit} object and \code{ImputeMechanism}
+}
+\seealso{
+\code{\link{GetImputedDataSet}}
 }
 

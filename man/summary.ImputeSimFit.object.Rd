@@ -3,7 +3,29 @@
 \name{summary.ImputeSimFit.object}
 \alias{summary.ImputeSimFit.object}
 \title{summary.ImputeSimFit object}
+\arguments{
+\item{treatment.effect}{The mean of the estimated treatment.effect
+from the imputed data}
+
+\item{se}{The standard error of the (log) treatment effect calculated using Rubin's formula}
+
+\item{df}{The number of degrees of freedom used to calculate the p-value}
+
+\item{adjusted.df}{The number of degrees of freedom used to calculate the adjusted
+p-value (this should be used if the complete data number of degrees of freedom is small)}
+
+\item{dispersion}{The mean of the estimated dispersion parameter}
+
+\item{pval}{The p-value for the test log(treatment.effect)=0 using Rubin's formula}
+
+\item{adjusted.pval}{The p-value for the test log(treatment.effect)=0 using Rubin's
+formula and the adjusted number of degrees of freedom}
+}
 \description{
-TODO
+The summary of a \code{ImputeSimFit} object. Rubin's formula
+is used to combine the test statistics into a single summary
+}
+\details{
+A \code{print.summary.ImputeSimFit} object has been implemented
 }
 

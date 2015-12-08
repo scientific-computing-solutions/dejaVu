@@ -3,7 +3,24 @@
 \name{ImputeSimFit.object}
 \alias{ImputeSimFit.object}
 \title{ImputeSimFit object}
+\arguments{
+\item{imputeSim}{The \code{ImputeSim} object for which models have been fitted}
+
+\item{summaries}{A list of \code{summary.SingleSimFit} objects containing the model fits
+for each of the imputed data sets}
+}
 \description{
-TODO
+An object which contains both a set of imputed data sets (\code{ImputeSim} object) and
+a set of models fitted to them
+}
+\details{
+Calling \code{summary.ImputeSimFit} will apply Rubin's formula to calculate
+estimates for the treatment effect and standard error
+
+Functions \code{summary.ImputeSimFit} and \code{as.data.frame.ImputeSimFit}
+have been implemented
+}
+\seealso{
+\code{summary.ImputeSimFit} \code{\link{summary.SingleSimFit}}
 }
 

@@ -256,7 +256,10 @@ summary(dropout.answer)
 summary(MI.answer,use.adjusted.pval=TRUE)
 
 #and can access individual elements
-x <- summary(MI.answer,use.adjusted.pval=TRUE)
+x <- summary(MI.answer,use.adjusted.pval=TRUE,alpha=0.025)
+
+#power is calculated as the proportion of replicas which have
+#pvalue < alpha
 x$power
 @
 

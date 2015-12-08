@@ -1,14 +1,44 @@
 ##' Scenario object
 ##' 
-##' TODO
+##' This class contains a collection of model fit summaries and summarizing
+##' this object will calculate overall summary statistics such as power/type I error
+##' 
+##' Functions \code{as.data.frame.Scenario} and \code{summary.Scenario} have 
+##' been implemented
+##' 
+##' @param description A string containind a description of the scenario
+##' @param summaries A list of either \code{summary.ImputeSimFit} or \code{summary.SingleSimFit} objects
+##' 
+##' @seealso \code{\link{CreateScenario}} 
 ##' @name Scenario.object
 NULL 
 
 
+##' Extract the results of running a scenario
+##' 
+##' This function is a wrapper around \code{\link{CreateScenario}}
+##' See the user guide vignette for an example of using this function
+##' 
+##' @param answer A named list of lists 
+##' @param name The name of the lists of answer which should be extracted and 
+##' put together into a \code{sc} 
+##' @param description The description parameter to be passed into the \code{CreateScenario} function
+##' @return A \code{Scenario} object  
+##' @seealso \code{\link{CreateScenario}}
 ##' @export
 extract_results <- function(answer,name,description){
-  #TODO add loads of validations here
-  CreateScenario(lapply(answer,function(x) x[[name]]),description=description)  
+  
+  if(!is.character(name) || length(name) != 1){
+    stop("Invalid argument name")
+  }
+  
+  #using validation inside CreatScenario for more validation
+  CreateScenario(lapply(answer,
+                  function(x){
+                    if(is.null(x[[name]])){
+                      stop("Invalid name")
+                    }   
+                    x[[name]]}), description=description)  
 }
 
 
@@ -79,7 +109,22 @@ CreateScenario <- function(object,description=""){
 
 ##' summary.Scenario object
 ##' 
-##' TODO
+##' This object contains the overall summary statistics for a specific
+##' scenario. It is envisioned that multiple scenarios are run and a set of
+##' \code{summary.Scenario} objects are created and these can then be used for
+##' plotting
+##' 
+##' A \code{print.summary.Scenario} function has been implemented
+##' 
+##' @param treatment.effect The exp(mean(log(individual treatment effects))),
+##' @param se The mean standard error of the (log) treatment effect
+##' @param power The proportion of simulations for which the p-value is \code{< alpha}
+##' @param alpha The signficance level used when calculating power, by default 0.05 use
+##' \code{summary(object,alpha=x)} to use a different p value
+##' @param use.adjusted.pval logical, default FALSE should the p values calculated using
+##' Rubin's formula with the adjusted number of degrees of freedom be used. Use \code{summary(object,use.adjusted.pval=TRUE)},
+##' to use the adjusted p values
+##' @param description A string containing a description of the scenario
 ##' @name summary.Scenario.object
 NULL 
 

@@ -3,7 +3,20 @@
 \name{Scenario.object}
 \alias{Scenario.object}
 \title{Scenario object}
+\arguments{
+\item{description}{A string containind a description of the scenario}
+
+\item{summaries}{A list of either \code{summary.ImputeSimFit} or \code{summary.SingleSimFit} objects}
+}
 \description{
-TODO
+This class contains a collection of model fit summaries and summarizing
+this object will calculate overall summary statistics such as power/type I error
+}
+\details{
+Functions \code{as.data.frame.Scenario} and \code{summary.Scenario} have
+been implemented
+}
+\seealso{
+\code{\link{CreateScenario}}
 }
 

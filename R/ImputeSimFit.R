@@ -1,6 +1,18 @@
 ##' ImputeSimFit object
 ##' 
-##' TODO
+##' An object which contains both a set of imputed data sets (\code{ImputeSim} object) and
+##' a set of models fitted to them 
+##' 
+##' Calling \code{summary.ImputeSimFit} will apply Rubin's formula to calculate 
+##' estimates for the treatment effect and standard error
+##' 
+##' Functions \code{summary.ImputeSimFit} and \code{as.data.frame.ImputeSimFit}
+##' have been implemented
+##' 
+##' @param imputeSim The \code{ImputeSim} object for which models have been fitted
+##' @param summaries A list of \code{summary.SingleSimFit} objects containing the model fits
+##' for each of the imputed data sets
+##' @seealso  \code{summary.ImputeSimFit} \code{\link{summary.SingleSimFit}} 
 ##' @name ImputeSimFit.object
 NULL
 
@@ -33,7 +45,22 @@ numberSubjects.ImputeSimFit <- function(x,...){
 
 ##' summary.ImputeSimFit object
 ##' 
-##' TODO
+##' The summary of a \code{ImputeSimFit} object. Rubin's formula 
+##' is used to combine the test statistics into a single summary
+##' 
+##' A \code{print.summary.ImputeSimFit} object has been implemented
+##' 
+##' @param treatment.effect The mean of the estimated treatment.effect
+##' from the imputed data
+##' @param se The standard error of the (log) treatment effect calculated using Rubin's formula
+##' @param df The number of degrees of freedom used to calculate the p-value
+##' @param adjusted.df The number of degrees of freedom used to calculate the adjusted
+##' p-value (this should be used if the complete data number of degrees of freedom is small)
+##' @param dispersion The mean of the estimated dispersion parameter 
+##' @param pval The p-value for the test log(treatment.effect)=0 using Rubin's formula
+##' @param adjusted.pval The p-value for the test log(treatment.effect)=0 using Rubin's
+##' formula and the adjusted number of degrees of freedom 
+##' 
 ##' @name summary.ImputeSimFit.object
 NULL
 
