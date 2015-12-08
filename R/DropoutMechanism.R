@@ -36,10 +36,33 @@ print.DropoutMechanism <- function(x,...){
 }
 
 
+
+##' A function which creates a DropOut Mechanism object
+##'
+##' @inheritParams DropoutMechanism.object 
+##' @seealso \code{\link{DropoutMechanism.object}}
 ##' @export
-CreateNewDropoutMechanism <- function(type,text,cols.needed,GetDropTime,parameters){
+CreateNewDropoutMechanism <- function(type,text,cols.needed,GetDropTime,parameters=NULL){
   
-  #TODO loads of validation
+  if(length(type)>1 || !type %in% c("MCAR","MAR","MNAR")){
+    stop("Invalid type argument")
+  } 
+  
+  if(length(text)>1){
+    stop("Invalid text argument")
+  }
+  
+  if(!is.vector(cols.needed)){
+    stop("Invalid cols.needed argument")
+  }
+  
+  if(!is.null(parameters) && !is.list(parameters)){
+    stop("Invalid parameter list, if no parameters are needed, leave this argument NULL")
+  }
+  
+  if(!is.function(GetDropTime)){
+    stop("Invalid GetDropTime, it should be a function")
+  }
   
   retVal <- list(type=type,
                  text=text,

@@ -49,11 +49,11 @@ GetEventTimes <- function(rate,study.time){
     stop("An infinite rate cannot be used!")
   }
   event.times <- numeric(0)
-  current.time <- if(rate==0) Inf else rexp(1,rate)
+  current.time <- rexp(1) / rate
   
   while(current.time <= study.time){
     event.times <- c(event.times,current.time)
-    current.time <- current.time + rexp(1,rate)
+    current.time <- current.time + rexp(1)/rate
   }
   
   return(event.times)

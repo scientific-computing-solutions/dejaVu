@@ -128,8 +128,8 @@ my.fit <- Simfit(with.MCAR.dropout,
 
 The function \texttt{glm.nb} from the package \texttt{MASS} is used with the following models:
 \begin{itemize}
-\item \texttt{observed.events ~ arm + offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{TRUE}
-\item \texttt{observed.events ~ offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
+\item \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{TRUE}
+\item \texttt{observed.events} $\sim$ \texttt{offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
 \end{itemize}
 
 (Note: If covariates are required in the model, in will not be \textit{too} much work to allow users to specify the model formula)
@@ -145,7 +145,7 @@ x <- summary(my.fit)
 x$pval
 @
 
-We can output $\gamma$ and $p$ for the model fit (see Equation \eqref{nbpdf}) -- they are vectors containing the value first the control arm and then the active arm:
+We can output $\gamma$ and $p$ for the model fit (see Equation \eqref{nbpdf}) -- they are vectors containing the value for first the control arm and then the active arm:
 <<ip>>=
 my.fit$impute.parameters$gamma
 my.fit$impute.parameters$p
@@ -232,7 +232,7 @@ example.scenario <- function(){
 
 Next we run the simulation a large number of times:
 <<rep>>=
-answer <- replicate(10,example.scenario(),simplify = FALSE)
+answer <- replicate(1000,example.scenario(),simplify = FALSE)
 @
 
 and process the results using the \texttt{extract\_results} function: 
@@ -260,6 +260,13 @@ x <- summary(MI.answer,use.adjusted.pval=TRUE)
 x$power
 @
 
+I haven't implemented plotting functions -- there is an argument for not including them directly in the package:
+\begin{itemize} 
+\item Given the outputs from the summaries above it should be quite easy to plot exactly what is wanted and an example could be included in the vignette and the possibilites of what is wanted is very general
+\item As soon as specific plots are added, users typically (though not always..) want to be able to customize them exactly how they would like them to look and adding so many options to the plots that it becomes easy to just give an example and direct users to lattice/ggplot2.
+\item We can discuss this further of course.
+\end{itemize}
+
 \section{Additional Information}
 
 \subsection{Additional Dropout mechanisms}
@@ -284,7 +291,7 @@ Please let me know of any more you would like!
 
 \paragraph{Implementing new drop out mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
-It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a toy example here and see \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMechanism)} for further details.
+It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a toy example here and see \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMechanism)} for further details (again it isn't much work to allow covariates/other columns of the data frame to be used in calculating the dropout times).
 
 In our toy\footnote{this is clearly not a sensible dropout method but shows how to implement dropout mechanisms} example we would like the dropout time to be $0.5T$ if subjects have exactly $W$ events and are on the control arm and $T$ (i.e. no dropouts) for all other subjects  where $W$ is a parameter chosen by the user. 
 
@@ -338,10 +345,10 @@ If \texttt{trt.weight = 0} then imputation using this mechanism will follow the 
 
 If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
 
-Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $p=(p_c,p_a)$ and $\gamma=(\gamma_c,\gamma_a)$ from the model fit for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is a negative binomial given by
+Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $p=(p_c,p_a)$ and $\gamma=(\gamma_c,\gamma_a)$ from the model fit for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
 \begin{itemize}
-\item $NB(p=\frac{p_c t_i}{\gamma_c+p_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm  
-\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{p_c t_i}{\gamma_a + p_a(T-t_i)+p_c t_i}$ and $q_a=\frac{p_a t_i}{\gamma_a+p_aT}$
+\item $NB(p=\frac{p_c t_i}{\gamma_c+p_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
+\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{p_c t_i}{\gamma_a + p_a(T-t_i)+p_c t_i}$ and $q_a=\frac{p_a t_i}{\gamma_a+p_aT}$.
 \end{itemize}
 
 Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be included. It should be a vector of length 2, \texttt{c(control.delta,treatment.delta)} and in this case the mean number of expected events for the imputed missing data is multipled by the appropriate delta (and so $p$ is adjusted appropriately):
@@ -354,7 +361,7 @@ Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be 
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
-It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details.
+It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details (again it isn't much work to allow covariates/other columns of the data frame to be used when imputing data).
 
 In our toy\footnote{this is clearly not a sensible imputing method but shows how to implement imputing mechanisms} example we would like subjects in the treatment group to have no imputed events and subjects in the control group to have either 0 or 1 events with a given probability and if subjects have an event it is midway between dropping out and the end of the follow up period. 
 
@@ -421,8 +428,7 @@ my.example.impute <- function(prob){ # parameters for probability control arm ha
       }
     }
     
- 
-    #return the appropriate 
+    #return the appropriate list
     return(list(new.censored.times=new.censored.times,
                 newevent.times=newevent.times))
     
