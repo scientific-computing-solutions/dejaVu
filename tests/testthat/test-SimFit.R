@@ -64,6 +64,38 @@ test_that("Simfit_diff_dispersions",{
   expect_equal(p, fit.diff.disp$impute.parameters$p)
 })
 
+
+test_that("sim_fit_equal_dispersion",{
+  set.seed(3143)
+  
+  sim <- SimulateComplete(study.time=365, 
+                          number.subjects=50, 
+                          event.rates=c(0.01,0.005),
+                          dispersions=0.25) 
+  
+  sim.dropout <- SimulateDropout(sim, 
+                                 drop.mechanism=ConstantRateDrop(rate=0.0025,var=1))
+  fit <- Simfit(sim.dropout) #equal.disperison is default
+    
+  expect_equal(100,numberSubjects(fit))
+  expect_equal(fit$singleSim$data,sim.dropout$data)
+  
+  mymod <- glm.nb(observed.events ~arm + offset(log(censored.time)),data=sim.dropout$data)
+  #hack call to make them equal
+  mymod$call <- fit$model$call
+  expect_equal(mymod,fit$model)
+  
+  expect_true(fit$impute.parameters$equal.dispersion)
+  expect_equal(rep(mymod$theta,2),fit$impute.parameters$gamma )
+  
+  #checking p
+  p <- exp(mymod$coefficients[1])*c(1,exp(mymod$coefficients[2]))
+  names(p) <- NULL
+  expect_equal(p,fit$impute.parameters$p )
+  
+})
+
+
 test_that("simfit_poisson_and_qpoisson",{
   set.seed(1435)
   
@@ -89,3 +121,5 @@ test_that("simfit_poisson_and_qpoisson",{
   expect_equal(mod,fit.qpois$model)
   
 })
+
+
