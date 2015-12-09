@@ -95,7 +95,7 @@ The SimulateComplete function returns a \texttt{SingleSim} object. See \texttt{h
 
 Given a \texttt{SingleSim} object, we can use the \texttt{SimulateDropout} function to apply a dropout mechanism to create a data set which includes subject dropout. In this example we use a simple MCAR example. 
 
-The \texttt{ConstantRateDrop} mechanism will give subjects exponentially distributed drop out times with subject specific rate $R$ where $\log(R) =$ \texttt{rate} $+ \mathcal{N}(0,$\texttt{var}$)$. If the simulated drop out time is $<T$ then the subject drops out and any events which occur after dropout are not observed.
+The \texttt{ConstantRateDrop} mechanism will give subjects exponentially distributed drop out times with subject specific rate $R$ where $R=$ \texttt{(rate)}$\exp(X_i)$ where $X_i \sim \mathcal{N}(0,$\texttt{var}$)$. If the simulated drop out time is $<T$ then the subject drops out and any events which occur after dropout are not observed.
 
 <<CRdrop>>=
 ConstantRateDrop(rate=0.0025,var=1)

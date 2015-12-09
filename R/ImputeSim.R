@@ -87,5 +87,5 @@ Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
 
 ##' @export
 numberSubjects.ImputeSim <- function(x,...){
-  numberSubjects(x$fit)
+  numberSubjects(x$singleSim)
 } 

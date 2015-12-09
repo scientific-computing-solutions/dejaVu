@@ -92,3 +92,38 @@ test_that("SimulateDropout",{
   expect_equal(sim.dropout$dropout.mechanism$text,dummy.dropout$text)
 })
 
+
+test_that("SingleSimSummary",{
+  set.seed(400)
+  sim <- SimulateComplete(study.time=12,number.subjects=c(2,4),event.rates=0.1,dispersions=c(0,0.5))
+  
+  #for complete dataset
+  s <- summary(sim)
+  expect_equal("complete",s$status)
+  expect_equal(12,s$study.time)
+  expect_equal(c(2,4),s$number.subjects)
+  expect_equal(sum(sim$data[sim$data$arm==0,]$observed.events), s$total.events[1])
+  expect_equal(sum(sim$data[sim$data$arm==1,]$observed.events), s$total.events[2])
+  expect_equal(c(0,0),s$number.dropouts)
+  expect_equal(sum(sim$data[sim$data$arm==0,]$censored.time), s$time.at.risk[1])
+  expect_equal(sum(sim$data[sim$data$arm==1,]$censored.time), s$time.at.risk[2])
+  expect_equal(s$empirical.rates,s$total.events/s$time.at.risk)
+  
+  dummy.dropout <- CreateNewDropoutMechanism(type="MAR",text="hello",
+                                             GetDropTime=function(event.times,data){
+                                               return(data$censored.time)
+                                             })
+  
+  dropout.sim <- SimulateDropout(sim,dummy.dropout)
+  #hack dropout sim to get c(1,0) dropouts
+  dropout.sim$data[1,]$censored.time <- 11
+  dropout.sim$data[1,]$observed.events <- 1
+  
+  s <- summary(dropout.sim)
+  expect_equal(c(1,0),s$number.dropouts)
+  expect_equal(sum(dropout.sim$data[dropout.sim$data$arm==0,]$observed.events), s$total.events[1])
+  expect_equal(sum(dropout.sim$data[dropout.sim$data$arm==1,]$observed.events), s$total.events[2])
+  expect_equal(sum(dropout.sim$data[dropout.sim$data$arm==0,]$censored.time), s$time.at.risk[1])
+  expect_equal(sum(dropout.sim$data[dropout.sim$data$arm==1,]$censored.time), s$time.at.risk[2])
+  
+})
