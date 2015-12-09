@@ -79,7 +79,7 @@ summary.ImputeSimFit <- function(object,...){
   se <- sqrt((1+1/N)*var(log.treatment.effects)+ mean(se.log.treatment.effects^2))
   df <- (N-1)*(1+(mean(se.log.treatment.effects^2))/( (1+1/N)*var(log.treatment.effects)))^2
   
-  v.0 <-  2*numberSubjects(object)-2
+  v.0 <- object$summaries[[1]]$df
   v.hat <- (v.0*(v.0+1)/(v.0+3))*(1-(1+1/N)*(var(log.treatment.effects)/se^2))  
   adjusted.df <- 1/(1/df + 1/v.hat)
   
