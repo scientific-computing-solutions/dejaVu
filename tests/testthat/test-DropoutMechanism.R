@@ -1,6 +1,6 @@
 context("DropoutMechanism")
 
-#Note no validation onGetDropTime function
+#Note no validation of GetDropTime function
 
 test_that("CreateNewDropoutMechanism_invalid_args",{
   

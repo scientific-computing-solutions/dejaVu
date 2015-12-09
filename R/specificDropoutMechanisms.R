@@ -91,7 +91,7 @@ LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
       }
       current.time <- event.times[end.index]
       current.rate <- current.rate + rate.change
-      if(current.rate < 0){
+      if(current.rate <= 0){
         current.rate <- current.rate - rate.change 
       }
       end.index <- end.index + 1
