@@ -171,6 +171,6 @@ print.summary.Scenario <- function(x,...){
   cat("Dropout numbers summary statistics\n")
   cat("Control arm:\n")
   print(x$dropout[[1]])
-  cat("Actvie arm:\n")
+  cat("Active arm:\n")
   print(x$dropout[[2]])
 }

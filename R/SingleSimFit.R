@@ -95,7 +95,8 @@ print.summary.SingleSimFit <- function(x,...){
 Impute <- function(fit,impute.mechanism,N){
   validateImputeArguments(fit,impute.mechanism,N)
 
-  retVal <- list(fit=fit,
+  retVal <- list(singleSim=fit$singleSim,
+                 impute.parameters=fit$impute.parameters,
                  impute.mechanism=impute.mechanism,
                  imputed.values=replicate(n=N, impute.mechanism$impute(fit),simplify="list"))
   retVal$dropout <- summary(fit$singleSim)$number.dropouts

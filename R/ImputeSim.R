@@ -3,8 +3,9 @@
 ##' This object contains a collection of imputed data sets
 ##' derived from a \code{SingleSimFit} object and \code{ImputeMechanism}
 ##' 
-##' @param fit The \code{SingleSimFit} object from which the imputed data sets
+##' @param singleSim The \code{SingleSim} object from which the imputed data sets
 ##' have been derived
+##' @param impute.parameters The \code{SingleSimFit$impute.parameters} used to perform the imputation
 ##' @param impute.mechanism The \code{ImputeMechanism} object used to perform the
 ##' imputation
 ##' @param imputed.values A matrix with 1 column per imputed data set and two rows:
@@ -33,7 +34,7 @@ GetImputedDataSet <- function(imputeSim,index){
   
   ValidateGetImputeDSArgs(imputeSim,index)
   
-  retVal <- imputeSim$fit$singleSim
+  retVal <- imputeSim$singleSim
   retVal$status <- "imputed"
   retVal$data$actual.censored.time <- retVal$data$censored.time 
   retVal$data$censored.time <- imputeSim$imputed.values[,index]$new.censored.times

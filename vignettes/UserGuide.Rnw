@@ -132,7 +132,7 @@ The function \texttt{glm.nb} from the package \texttt{MASS} is used with the fol
 \item \texttt{observed.events} $\sim$ \texttt{offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
 \end{itemize}
 
-(Note: If covariates are required in the model, in will not be \textit{too} much work to allow users to specify the model formula)
+(Note: If covariates are required in the model, it will not be \textit{too} much work to allow users to specify the model formula)
 
 This creates a \texttt{SingleSimFit} object:
 <<>>=
