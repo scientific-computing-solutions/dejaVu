@@ -4,8 +4,8 @@
 \alias{CreateNewDropoutMechanism}
 \title{A function which creates a DropOut Mechanism object}
 \usage{
-CreateNewDropoutMechanism(type, text, cols.needed, GetDropTime,
-  parameters = NULL)
+CreateNewDropoutMechanism(type, text, cols.needed = vector("character"),
+  GetDropTime, parameters = NULL)
 }
 \arguments{
 \item{type}{The type of mechanism (e.g. "MCAR" or "MNAR")}

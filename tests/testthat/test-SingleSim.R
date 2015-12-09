@@ -54,11 +54,12 @@ test_that("CompleteSim_creation_as_expected",{
   expect_equal(as.factor(c(0,0,1,1,1,1)),data$arm)
   expect_equal(1:6,data$Id)
   expect_equal(rep(12,6),data$censored.time)
-  expect_true(all(unlist(c(sim.dropout$event.times))<=12))
-  
+  expect_true(all(unlist(c(sim$event.times))<=12))
+  invisible(lapply(1:6,function(i)expect_true(all(sim$event.times[[i]]==sort(sim$event.times[[i]])))))
 })
 
 test_that("SimulateDropout",{
+  #non stochastic parts behave as expected
   set.seed(9)
   sim <- SimulateComplete(study.time=12,number.subjects=c(2,4),event.rates=0.1,dispersions=c(0,0.5))
   dummy.dropout <- CreateNewDropoutMechanism(type="MAR",text="hello",
@@ -84,5 +85,10 @@ test_that("SimulateDropout",{
   
   expect_true(all(unlist(c(sim.dropout$event.times))<=6))
   
+  invisible(lapply(1:6,function(i){ et <- sim$event.times[[i]]
+                                    et <- et[et<=6]
+                                    expect_equal(et,sim.dropout$event.times[[i]])}))
+  
+  expect_equal(sim.dropout$dropout.mechanism$text,dummy.dropout$text)
 })
 
