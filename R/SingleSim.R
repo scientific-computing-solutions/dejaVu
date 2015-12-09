@@ -28,11 +28,10 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
   
   ValidateSimCompleteArgs(study.time,number.subjects,event.rates,dispersions)
   
-  if(length(number.subjects==1)){
+  if(length(number.subjects)==1){
     number.subjects <- rep(number.subjects,2)
   }
   
-    
   subject.rates <- unlist(mapply(GetSimRates,study.time=study.time,
                           number.subject=number.subjects,
                           event.rate=event.rates,

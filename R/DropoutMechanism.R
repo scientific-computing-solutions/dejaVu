@@ -42,7 +42,7 @@ print.DropoutMechanism <- function(x,...){
 ##' @inheritParams DropoutMechanism.object 
 ##' @seealso \code{\link{DropoutMechanism.object}}
 ##' @export
-CreateNewDropoutMechanism <- function(type,text,cols.needed,GetDropTime,parameters=NULL){
+CreateNewDropoutMechanism <- function(type,text,cols.needed=vector("character"),GetDropTime,parameters=NULL){
   
   if(length(type)>1 || !type %in% c("MCAR","MAR","MNAR")){
     stop("Invalid type argument")
@@ -53,7 +53,7 @@ CreateNewDropoutMechanism <- function(type,text,cols.needed,GetDropTime,paramete
   }
   
   if(!is.vector(cols.needed)){
-    stop("Invalid cols.needed argument")
+    stop("Invalid cols.needed argument should be a vector, if no columns needed then leave out argument")
   }
   
   if(!is.null(parameters) && !is.list(parameters)){
