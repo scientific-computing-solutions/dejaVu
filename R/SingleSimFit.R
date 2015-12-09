@@ -45,7 +45,7 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
     stop("Cannot generate a summary if equal.dispersion is FALSE")
   }  
 
-  if(!.internal.is.finite.number(CI.limit) || CI.limit < 0 || CI.limit>1){
+  if(!.internal.is.finite.number(CI.limit) || CI.limit <= 0 || CI.limit >= 1){
     stop("Invalid argument CI.limit")
   } 
    
@@ -55,13 +55,13 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
   retVal <- list(model.summary=model.summary,
                  treatment.effect=exp(model.summary$coefficient[2,1]),
                  CI.limit=CI.limit,
-                 CI=exp(model.summary$coefficient[2,1]+ c(-1,1)*qnorm(1-CI.limit/2)*model.summary$coefficient[2,2]),
+                 CI=exp(model.summary$coefficient[2,1]+ c(-1,1)*qnorm(1-(1-CI.limit)/2)*model.summary$coefficient[2,2]),
                  se=model.summary$coefficient[2,2], #se 2 from old code
                  dispersion=1/model.summary$theta, #only if negative binomial
                  rate.estimate=exp(model.summary$coefficient[1,1])*c(1,exp(model.summary$coefficient[2,1])),         
                  pval=model.summary$coefficient[2,4],
                  datastatus=object$singleSim$status,
-                 df=2*numberSubjects(object$singleSim)-2,
+                 df=object$model$df.residual,
                  dropout=dropout)
   
   class(retVal) <- "summary.SingleSimFit"

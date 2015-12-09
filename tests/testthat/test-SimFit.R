@@ -122,4 +122,70 @@ test_that("simfit_poisson_and_qpoisson",{
   
 })
 
+test_that("summary.SingleSimFit",{
+  set.seed(3143)
+  
+  sim <- SimulateComplete(study.time=365, 
+                          number.subjects=50, 
+                          event.rates=c(0.01,0.005),
+                          dispersions=0.25) 
+  
+  sim.dropout <- SimulateDropout(sim, 
+                                 drop.mechanism=ConstantRateDrop(rate=0.0025,var=1))
+  
+  fit <- Simfit(sim.dropout)
+  
+  expect_error(summary(fit,CI.limit=-1))
+  expect_error(summary(fit,CI.limit=1))
+  
+  s <- summary(fit)
+  
+  expect_equal("summary.SingleSimFit",class(s))
+  expect_equal(summary(fit$model), s$model.summary)
+  expect_equal(0.95,s$CI.limit)
+  expect_equal(summary(fit$singleSim)$number.dropouts, s$dropout)
+  tr <- coefficients(fit$model)
+  names(tr) <- NULL
+  expect_equal(exp(tr[2]),s$treatment.effect)
+  expect_equal(fit$impute.parameters$p, s$rate.estimate)
+  expect_equal(fit$model$df.residual,s$df)
+  expect_equal("dropout",s$datastatus)
+  expect_equal(1/fit$impute.parameters$gamma[1], s$dispersion)
+  expect_equal(coefficients(summary(fit$model))[2,2],s$se)
+  expect_equal(2*pnorm(log(s$treatment.effect)/s$se),s$pval)
+  
+  s2 <- summary(fit,CI.limit = 0.75)
+  expect_true(s2$CI[1] > s$CI[1])
+  expect_true(s2$CI[2] < s$CI[2])
+  
+})
 
+test_that("summary.SingleSimFit_for_poisson",{
+  set.seed(33143)
+  
+  sim <- SimulateComplete(study.time=365, 
+                          number.subjects=50, 
+                          event.rates=c(0.01,0.005),
+                          dispersions=0.25) 
+  
+  sim.dropout <- SimulateDropout(sim, 
+                                 drop.mechanism=ConstantRateDrop(rate=0.0025,var=1))
+  
+  fit <- Simfit(sim.dropout,family="poisson")
+  
+  s <- summary(fit)
+  
+  expect_equal("summary.SingleSimFit",class(s))
+  expect_equal(summary(fit$model), s$model.summary)
+  expect_equal(0.95,s$CI.limit)
+  expect_equal(summary(fit$singleSim)$number.dropouts, s$dropout)
+  tr <- coefficients(fit$model)
+  names(tr) <- NULL
+  expect_equal(exp(tr[2]),s$treatment.effect)
+  expect_equal(exp(tr[1])*c(1,exp(tr[2])), s$rate.estimate)
+  expect_equal(fit$model$df.residual,s$df)
+  expect_equal("dropout",s$datastatus)
+  expect_equal(numeric(0), s$dispersion)
+  expect_equal(coefficients(summary(fit$model))[2,2],s$se)
+  expect_equal(2*pnorm(log(s$treatment.effect)/s$se),s$pval)
+})

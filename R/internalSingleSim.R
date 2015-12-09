@@ -114,4 +114,8 @@ ValidateSimFitArguments <- function(family,equal.dispersion){
     stop("Invalid argument: family must be one of",paste(allowed.models,sep=", "))
   }
   
+  if(family!="negbin" && !equal.dispersion){
+    stop("equal.dispersion argument cannot be used unless negative binomial model is to be fit")
+  }
+  
 }

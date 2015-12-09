@@ -25,6 +25,6 @@ test_that("poisson",{
     SimulateComplete(study.time = Ti,number.subjects=N, event.rates=rate,dispersions=0)$data$observed.events
   }
   
-  expect_true(ks.test(CreateSamples(rate=1,N=10000,Ti=100),"ppois",lambda=100)$p.value<0.05)
+  expect_true(ks.test(CreateSamples(rate=0.025,N=10000,Ti=100),"ppois",lambda=100*0.025)$p.value<0.05)
   
 })
