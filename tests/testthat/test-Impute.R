@@ -161,7 +161,7 @@ test_that("Rubins.formula",{
   
   retVal <- .rubinsformula(treatment.effect,ses,original.df,N)
   
-  expect_equal(exp(mean(treatment.effect)),retVal$treatment.effect)
+  expect_equal(exp(mean(log(treatment.effect))),retVal$treatment.effect)
   se <- sqrt((5/4)*var(c(log(3:6))) + mean(ses^2))
   expect_equal(se,retVal$se)
   
