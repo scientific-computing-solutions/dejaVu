@@ -116,16 +116,40 @@ test_that("summary.Scenario.args",{
   expect_error(summary(s2,alpha=0))
   expect_error(summary(s2,alpha=c(0.1,0.3)))
   
+  s <- summary(s2)
+  expect_equal("summary.Scenario",class(s))
+  expect_false(s$use.adjusted.pval)
+  expect_equal("hello",s$description)
+  expect_equal(0.05,s$alpha)
+  
+  s <- summary(s2,use.adjusted.pval = TRUE,alpha=0.1)
+  expect_equal(0.1,s$alpha)
+  expect_true(s$use.adjusted.pval)
+  
 })
 
 test_that("internal.summary.Scenario",{
   
   my.df <- data.frame(treatment.effect=c(5,6,7),
-                      se=c(0.6,0.9,1.4),
+                      se=c(0.7,0.9,1.4),
                       pval=c(0.6,0.06,0.01),
                       dropout.control=c(1,2,3),
                       dropout.active=c(4,5,6))
   
-  .internal.summary.Scenario(my.df,alpha=0.05)
+  ans <- .internal.summary.Scenario(my.df,alpha=0.05)
   
+  expect_equal(exp(mean(log(5:7))),ans$treatment.effect)
+  expect_equal(0.05,ans$alpha)
+  expect_equal(1/3,ans$power)
+  expect_equal(1,ans$se)
+  
+  expect_equal(2,mean(ans$dropout[[1]]))
+  expect_equal(6,max(ans$dropout[[2]]))
+  
+  
+  ans <- .internal.summary.Scenario(my.df,alpha=0.1)
+  expect_equal(0.1,ans$alpha)
+  expect_equal(2/3,ans$power)
 })
+
+

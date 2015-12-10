@@ -32,7 +32,7 @@ extract_results <- function(answer,name,description){
     stop("Invalid argument name")
   }
   
-  #using validation inside CreatScenario for more validation
+  #using validation inside CreateScenario for more validation
   CreateScenario(lapply(answer,
                   function(x){
                     if(is.null(x[[name]])){
@@ -143,8 +143,8 @@ summary.Scenario <- function(object,alpha=0.05,use.adjusted.pval=FALSE,...){
   
   data <- as.data.frame.Scenario(object,use.adjusted.pval)
   
-  retVal <- .internal.summary.Scenario(data,alpha,object$description)
-  retVal$description <- description
+  retVal <- .internal.summary.Scenario(data,alpha)
+  retVal$description <- object$description
   retVal$use.adjusted.pval <- use.adjusted.pval
   class(retVal) <- "summary.Scenario"
   retVal 

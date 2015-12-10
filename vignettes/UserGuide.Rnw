@@ -238,14 +238,36 @@ Next we run the simulation a large number of times:
 answer <- replicate(10,example.scenario(),simplify = FALSE)
 @
 
-and process the results using the \texttt{extract\_results} function: 
+and process the results using the \texttt{extract\_results} function (note the \texttt{extract\_results} is a simple wrapper around the \texttt{CreateScenario} function): 
 <<extract>>=
+
+#answer contains a list of lists each containing 3 SimFit objects
+names(answer[[1]])
+answer[[1]]$MI
+names(answer[[2]])
+length(answer)
+
+#we can create a list with only the MI results
+MI.fits <- lapply(answer,"[[","MI")
+
+MI.fits[[1]]
+MI.fits[[2]]
+
+#and create the scenario
+MI.answer <- CreateScenario(MI.fits,description="the description of the scenario")
+
+
+#The extract_results function can be used to both extract the list and
+#create the scenario in one go
 MI.answer <- extract_results(answer,name="MI",
                             description="Using j2r multiple imputation")
 dropout.answer <- extract_results(answer,name="dropout",
                             description="Using no imputation")
 complete.answer <- extract_results(answer,name="complete",
                             description="Using complete data sets")
+
+
+
 
 class(MI.answer)
 @
