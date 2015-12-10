@@ -210,7 +210,7 @@ First we create a function which outputs a list of the summaries of the fits we 
 example.scenario <- function(){ 
 
   #simulate a complete data set
-  sim <- SimulateComplete(study.time=365,number.subjects=100,
+  sim <- SimulateComplete(study.time=365,number.subjects=125,
                        event.rates=c(0.01,0.005),dispersions=0.25)
 
   #take the simulated data set and apply an MCAR dropout mechanism...                         
@@ -235,7 +235,7 @@ example.scenario <- function(){
 
 Next we run the simulation a large number of times:
 <<rep>>=
-answer <- replicate(10,example.scenario(),simplify = FALSE)
+answer <- replicate(500,example.scenario(),simplify = FALSE)
 @
 
 and process the results using the \texttt{extract\_results} function (note the \texttt{extract\_results} is a simple wrapper around the \texttt{CreateScenario} function): 
