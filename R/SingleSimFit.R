@@ -33,6 +33,8 @@ NULL
 ##' @param rate.estimate Estimate of the event rates from the model a vector c(control arm, treatment arm)         
 ##' @param pval The p value directly from the model fit (this is for the single model fit only, i.e. not using Rubin's formula)
 ##' @param datastatus The status of SingleSim object to which the fit was applied
+##' @param df The number of degrees of freedom of the model
+##' @param dropout The number of dropouts of each arm
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @name summary.SingleSimFit
 NULL
@@ -43,21 +45,24 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
     stop("Cannot generate a summary if equal.dispersion is FALSE")
   }  
 
-  if(!.internal.is.finite.number(CI.limit) || CI.limit < 0 || CI.limit>1){
+  if(!.internal.is.finite.number(CI.limit) || CI.limit <= 0 || CI.limit >= 1){
     stop("Invalid argument CI.limit")
   } 
    
   model.summary <- summary(object$model)
+  dropout <- summary(object$singleSim)$number.dropouts
   
   retVal <- list(model.summary=model.summary,
                  treatment.effect=exp(model.summary$coefficient[2,1]),
                  CI.limit=CI.limit,
-                 CI=exp(model.summary$coefficient[2,1]+ c(-1,1)*qnorm(1-CI.limit/2)*model.summary$coefficient[2,2]),
+                 CI=exp(model.summary$coefficient[2,1]+ c(-1,1)*qnorm(1-(1-CI.limit)/2)*model.summary$coefficient[2,2]),
                  se=model.summary$coefficient[2,2], #se 2 from old code
                  dispersion=1/model.summary$theta, #only if negative binomial
                  rate.estimate=exp(model.summary$coefficient[1,1])*c(1,exp(model.summary$coefficient[2,1])),         
                  pval=model.summary$coefficient[2,4],
-                 datastatus=object$singleSim$status) 
+                 datastatus=object$singleSim$status,
+                 df=object$model$df.residual,
+                 dropout=dropout)
   
   class(retVal) <- "summary.SingleSimFit"
   retVal
@@ -90,9 +95,11 @@ print.summary.SingleSimFit <- function(x,...){
 Impute <- function(fit,impute.mechanism,N){
   validateImputeArguments(fit,impute.mechanism,N)
 
-  retVal <- list(fit=fit,
+  retVal <- list(singleSim=fit$singleSim,
+                 impute.parameters=fit$impute.parameters,
                  impute.mechanism=impute.mechanism,
                  imputed.values=replicate(n=N, impute.mechanism$impute(fit),simplify="list"))
+  retVal$dropout <- summary(fit$singleSim)$number.dropouts
   class(retVal) <- "ImputeSim"
   return(retVal)
 }

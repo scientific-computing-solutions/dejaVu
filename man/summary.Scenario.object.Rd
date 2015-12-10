@@ -18,6 +18,8 @@ Rubin's formula with the adjusted number of degrees of freedom be used. Use \cod
 to use the adjusted p values}
 
 \item{description}{A string containing a description of the scenario}
+
+\item{dropout}{A list of summary statistics regarding number of subject dropouts}
 }
 \description{
 This object contains the overall summary statistics for a specific

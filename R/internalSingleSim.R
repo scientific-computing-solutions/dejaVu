@@ -8,11 +8,14 @@ ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispe
   }
   
   lapply(c(number.subjects,event.rates,dispersions),function(x){
-    if(length(x)>2 || !is.numeric(x) || any(x<0)|| any(is.na(x)) || any(is.infinite(x))){
+    if(!is.numeric(x) || x<0|| is.na(x) || is.infinite(x)){
       stop("Invalid argument: number.subjects, event.rates and dispersions must be non-negative vectors of length at most 2")
     }
   })
   
+  if(length(number.subjects) > 2 ||length(event.rates) > 2 || length(dispersions) > 2 ){
+    stop("Invalid argument: number.subjects, event.rates and dispersions must be non-negative vectors of length at most 2")
+  }
   
   if(!all(.internal.is.wholenumber(number.subjects))){
     stop("Invalid argument: there must be a integer number of subjects")
@@ -106,9 +109,17 @@ ValidateSimFitArguments <- function(family,equal.dispersion){
     stop("Invalid argument: equal.dispersion")
   }
 
+  if(!is.character(family)){
+    stop("Invalid argument: family must be a character")
+  }
+  
   allowed.models <- c("negbin","poisson","quasipoisson")
   if(!family %in% allowed.models){
     stop("Invalid argument: family must be one of",paste(allowed.models,sep=", "))
+  }
+  
+  if(family!="negbin" && !equal.dispersion){
+    stop("equal.dispersion argument cannot be used unless negative binomial model is to be fit")
   }
   
 }

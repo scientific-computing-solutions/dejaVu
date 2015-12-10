@@ -22,6 +22,10 @@ CI of \code{x} instead.}
 \item{pval}{The p value directly from the model fit (this is for the single model fit only, i.e. not using Rubin's formula)}
 
 \item{datastatus}{The status of SingleSim object to which the fit was applied}
+
+\item{df}{The number of degrees of freedom of the model}
+
+\item{dropout}{The number of dropouts of each arm}
 }
 \description{
 The summary object for a \code{SingleSimFit} object

@@ -32,7 +32,7 @@ extract_results <- function(answer,name,description){
     stop("Invalid argument name")
   }
   
-  #using validation inside CreatScenario for more validation
+  #using validation inside CreateScenario for more validation
   CreateScenario(lapply(answer,
                   function(x){
                     if(is.null(x[[name]])){
@@ -51,14 +51,18 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
     vapply(x$summaries,function(y){y[[name]]},FUN.VALUE = fun.val)
   }
   
-  pval.string <-if(use.adjusted.pval)  "adjusted.pval" else "pval"
+  dropout <- .extract("dropout",numeric(2))
   
+  adjusted.string <- if(use.adjusted.pval) "adjusted." else ""
   
   data.frame(replica=1:length(x$summaries),
              treatment.effect=.extract("treatment.effect"),
              se=.extract("se"),
-             pval=.extract(pval.string),
-             dispersion=.extract("dispersion")
+             pval=.extract(paste(adjusted.string,"pval",sep="")),
+             df=.extract(paste(adjusted.string,"df",sep="")),
+             dispersion=if(length(x$summaries[[1]]$dispersion)>0) .extract("dispersion") else NA,
+             dropout.control=dropout[1,],
+             dropout.active=dropout[2,]
             )
 
 }
@@ -125,26 +129,34 @@ CreateScenario <- function(object,description=""){
 ##' Rubin's formula with the adjusted number of degrees of freedom be used. Use \code{summary(object,use.adjusted.pval=TRUE)},
 ##' to use the adjusted p values
 ##' @param description A string containing a description of the scenario
+##' @param dropout A list of summary statistics regarding number of subject dropouts 
 ##' @name summary.Scenario.object
 NULL 
 
 ##' @export
 summary.Scenario <- function(object,alpha=0.05,use.adjusted.pval=FALSE,...){
   Validate.adjusted.pval(object$summaries,use.adjusted.pval)
+  if(!.internal.is.finite.number(alpha)|| alpha <=0 || alpha >=1){
+    stop("Invalid alpha")
+  }
   
   data <- as.data.frame.Scenario(object,use.adjusted.pval)
   
-  retVal <- list(treatment.effect=exp(mean(log(data$treatment.effect))),
-                 se=mean(data$se),
-                 power=sum(data$pval<alpha)/nrow(data),
-                 alpha=alpha,
-                 use.adjusted.pval=use.adjusted.pval,
-                 description=object$description)
-  
+  retVal <- .internal.summary.Scenario(data,alpha)
+  retVal$description <- object$description
+  retVal$use.adjusted.pval <- use.adjusted.pval
   class(retVal) <- "summary.Scenario"
   retVal 
 }
 
+
+.internal.summary.Scenario <- function(data,alpha){
+  list(treatment.effect=exp(mean(log(data$treatment.effect))),
+    se=mean(data$se),
+    power=sum(data$pval<alpha)/nrow(data),
+    alpha=alpha,
+    dropout=list(summary(data$dropout.control),summary(data$dropout.active)))
+}
 
 ##' @export
 print.summary.Scenario <- function(x,...){
@@ -160,4 +172,10 @@ print.summary.Scenario <- function(x,...){
     cat(" (and an adjusted number of degrees of freedom)")
   }
   cat("\n  power:",x$power,fill=TRUE)
+  
+  cat("Dropout numbers summary statistics\n")
+  cat("Control arm:\n")
+  print(x$dropout[[1]])
+  cat("Active arm:\n")
+  print(x$dropout[[2]])
 }

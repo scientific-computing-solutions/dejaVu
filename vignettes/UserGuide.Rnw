@@ -95,7 +95,7 @@ The SimulateComplete function returns a \texttt{SingleSim} object. See \texttt{h
 
 Given a \texttt{SingleSim} object, we can use the \texttt{SimulateDropout} function to apply a dropout mechanism to create a data set which includes subject dropout. In this example we use a simple MCAR example. 
 
-The \texttt{ConstantRateDrop} mechanism will give subjects exponentially distributed drop out times with subject specific rate $R$ where $\log(R) =$ \texttt{rate} $+ \mathcal{N}(0,$\texttt{var}$)$. If the simulated drop out time is $<T$ then the subject drops out and any events which occur after dropout are not observed.
+The \texttt{ConstantRateDrop} mechanism will give subjects exponentially distributed drop out times with subject specific rate $R$ where $R=$ \texttt{(rate)}$\exp(X_i)$ where $X_i \sim \mathcal{N}(0,$\texttt{var}$)$. If the simulated drop out time is $<T$ then the subject drops out and any events which occur after dropout are not observed.
 
 <<CRdrop>>=
 ConstantRateDrop(rate=0.0025,var=1)
@@ -132,7 +132,7 @@ The function \texttt{glm.nb} from the package \texttt{MASS} is used with the fol
 \item \texttt{observed.events} $\sim$ \texttt{offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
 \end{itemize}
 
-(Note: If covariates are required in the model, in will not be \textit{too} much work to allow users to specify the model formula)
+(Note: If covariates are required in the model, it will not be \textit{too} much work to allow users to specify the model formula). Additional arguments to \texttt{Simfit} are passed to the model fitting function. For example \texttt{Simfit(with.MCAR.dropout,maxit=50)} will increase the number of iterations when fitting the model (see \texttt{help(glm.control)} for further details). 
 
 This creates a \texttt{SingleSimFit} object:
 <<>>=
@@ -156,6 +156,9 @@ Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
 imputed.data.sets <- Impute(fit = my.fit,
                             impute.mechanism = weighted_j2r(trt.weight=0),
                             N=10)
+
+#output the number of subject dropouts in each arm 
+imputed.data.sets$dropout
 @
 
 The \texttt{Impute} function requires three arguments, the fit, an impute mechanism and $N$ the number of data sets to impute.
@@ -163,7 +166,7 @@ We are using the weighted j2r impute mechanism with treatment weight$=0$ which i
 
 \subsection{Fitting MI datasets}
 
-It is possible to access the individual imputed data sets:
+It is possible to access the individual imputed data sets (note these data sets assume the imputed data is `truth' and hence as far as this data set is concerned the number of subject dropouts is 0):
 <<>>=
 sixth.data.set <- GetImputedDataSet(imputed.data.sets,index=6)
 
@@ -193,7 +196,7 @@ We can create a data frame collating the fitted values:
 head(as.data.frame(fitted))
 @
 
-We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987}.
+We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987} (Note I am using the formula from the Handling Missing Recurrent Events Data in Clinical Trials document given to me by Mattis).
 <<>>=
 summary(fitted)
 @
@@ -207,7 +210,7 @@ First we create a function which outputs a list of the summaries of the fits we 
 example.scenario <- function(){ 
 
   #simulate a complete data set
-  sim <- SimulateComplete(study.time=365,number.subjects=100,
+  sim <- SimulateComplete(study.time=365,number.subjects=125,
                        event.rates=c(0.01,0.005),dispersions=0.25)
 
   #take the simulated data set and apply an MCAR dropout mechanism...                         
@@ -232,11 +235,30 @@ example.scenario <- function(){
 
 Next we run the simulation a large number of times:
 <<rep>>=
-answer <- replicate(10,example.scenario(),simplify = FALSE)
+answer <- replicate(500,example.scenario(),simplify = FALSE)
 @
 
-and process the results using the \texttt{extract\_results} function: 
+and process the results using the \texttt{extract\_results} function (note the \texttt{extract\_results} is a simple wrapper around the \texttt{CreateScenario} function): 
 <<extract>>=
+
+#answer contains a list of lists each containing 3 SimFit objects
+names(answer[[1]])
+answer[[1]]$MI
+names(answer[[2]])
+length(answer)
+
+#we can create a list with only the MI results
+MI.fits <- lapply(answer,"[[","MI")
+
+MI.fits[[1]]
+MI.fits[[2]]
+
+#and create the scenario
+MI.answer <- CreateScenario(MI.fits,description="the description of the scenario")
+
+
+#The extract_results function can be used to both extract the list and
+#create the scenario in one go
 MI.answer <- extract_results(answer,name="MI",
                             description="Using j2r multiple imputation")
 dropout.answer <- extract_results(answer,name="dropout",
@@ -244,16 +266,19 @@ dropout.answer <- extract_results(answer,name="dropout",
 complete.answer <- extract_results(answer,name="complete",
                             description="Using complete data sets")
 
+
+
+
 class(MI.answer)
 @
 
 We can output a summary of the simulations as a data frame and summarize the results:
 <<scenario.df>>=
-head(as.data.frame(complete.answer))
+head(as.data.frame(MI.answer))
 
 summary(dropout.answer)
 
-summary(MI.answer,use.adjusted.pval=TRUE)
+summary(complete.answer)
 
 #and can access individual elements
 x <- summary(MI.answer,use.adjusted.pval=TRUE,alpha=0.025)

@@ -4,8 +4,10 @@
 \alias{ImputeSim.object}
 \title{ImputeSim object}
 \arguments{
-\item{fit}{The \code{SingleSimFit} object from which the imputed data sets
+\item{singleSim}{The \code{SingleSim} object from which the imputed data sets
 have been derived}
+
+\item{impute.parameters}{The \code{SingleSimFit$impute.parameters} used to perform the imputation}
 
 \item{impute.mechanism}{The \code{ImputeMechanism} object used to perform the
 imputation}
@@ -13,7 +15,10 @@ imputation}
 \item{imputed.values}{A matrix with 1 column per imputed data set and two rows:
 newevent.times a list of vectors containing the imputed event times (not including the events
 which were observed) and new.censored.times - a vector containing the times at which subjects (with imputed
-data) are now censored
+data) are now censored}
+
+\item{dropout}{A vector containing the number of subjects who have dropped out in each arm, for whom data is to be
+imputed
 
 Use \code{\link{GetImputedDataSet}} to extract a single imputed data set and use \code{Simfit} to fit
 a model to the set of data sets}

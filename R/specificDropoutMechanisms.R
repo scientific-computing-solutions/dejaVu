@@ -15,7 +15,7 @@
 ##' @export
 ConstantRateDrop <- function(rate,var=0){
   
-  if(!.internal.is.finite.number(rate) || rate < 0){
+  if(!.internal.is.finite.number(rate) || rate <= 0){
     stop("Invalid argument rate")
   }
   if(!.internal.is.finite.number(var) || var < 0){
@@ -52,7 +52,7 @@ ConstantRateDrop <- function(rate,var=0){
 ##'  
 ##' @param starting.rate \code{C}, see description section.
 ##' @param rate.change \code{D}, see description section. Note if \code{D<0}, \code{Cj} could be negative
-##' for large \code{j}, this is not possible and the rate remains constant if the next change would set \code{Cj<0} 
+##' for large \code{j}, this is not possible and the rate remains constant if the next change would set \code{Cj<=0} 
 ##' @param var \code{sigma^2}, see description section
 ##' @return A \code{DropoutMechanism} object
 ##' @seealso \code{\link{DropoutMechanism.object}}
@@ -62,7 +62,7 @@ ConstantRateDrop <- function(rate,var=0){
 ##' @export
 LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
   
-  if(!.internal.is.finite.number(starting.rate) || starting.rate < 0){
+  if(!.internal.is.finite.number(starting.rate) || starting.rate <= 0){
     stop("Invalid argument starting.rate")
   }
   if(!.internal.is.finite.number(var)|| var < 0){
@@ -90,8 +90,8 @@ LinearRateChangeDrop <- function(starting.rate,rate.change,var=0){
         return(possible.drop)
       }
       current.time <- event.times[end.index]
-      current.rate <- starting.rate + rate.change
-      if(current.rate < 0){
+      current.rate <- current.rate + rate.change
+      if(current.rate <= 0){
         current.rate <- current.rate - rate.change 
       }
       end.index <- end.index + 1

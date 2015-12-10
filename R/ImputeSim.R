@@ -3,14 +3,17 @@
 ##' This object contains a collection of imputed data sets
 ##' derived from a \code{SingleSimFit} object and \code{ImputeMechanism}
 ##' 
-##' @param fit The \code{SingleSimFit} object from which the imputed data sets
+##' @param singleSim The \code{SingleSim} object from which the imputed data sets
 ##' have been derived
+##' @param impute.parameters The \code{SingleSimFit$impute.parameters} used to perform the imputation
 ##' @param impute.mechanism The \code{ImputeMechanism} object used to perform the
 ##' imputation
 ##' @param imputed.values A matrix with 1 column per imputed data set and two rows:
 ##' newevent.times a list of vectors containing the imputed event times (not including the events 
 ##' which were observed) and new.censored.times - a vector containing the times at which subjects (with imputed
-##' data) are now censored  
+##' data) are now censored
+##' @param dropout A vector containing the number of subjects who have dropped out in each arm, for whom data is to be
+##' imputed  
 ##' 
 ##' Use \code{\link{GetImputedDataSet}} to extract a single imputed data set and use \code{Simfit} to fit
 ##' a model to the set of data sets
@@ -31,7 +34,7 @@ GetImputedDataSet <- function(imputeSim,index){
   
   ValidateGetImputeDSArgs(imputeSim,index)
   
-  retVal <- imputeSim$fit$singleSim
+  retVal <- imputeSim$singleSim
   retVal$status <- "imputed"
   retVal$data$actual.censored.time <- retVal$data$censored.time 
   retVal$data$censored.time <- imputeSim$imputed.values[,index]$new.censored.times
@@ -64,15 +67,15 @@ ValidateGetImputeDSArgs <- function(imputeSim,index){
 }
 
 ##' @export
-Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion),...){
-  if(!equal.dispersion){
+Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion=equal.dispersion),...){
+  if(!is.logical(equal.dispersion) || length(equal.dispersion)!=1 || !equal.dispersion){
     stop("Invalid argument equal.dispersion must be TRUE")
   }
   
   imputed.summaries <- lapply(1:.internal.number.data.sets(x),
                          function(index){
                            singleSim <- GetImputedDataSet(x,index)                     
-                           summary(Simfit(singleSim,family=family,equal.dispersion=TRUE,formula=formula,...))  
+                           summary(Simfit(singleSim,family=family,equal.dispersion=equal.dispersion,formula=formula,...))
                        })
   
   retVal <- list(imputeSim=x,
@@ -84,5 +87,5 @@ Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
 
 ##' @export
 numberSubjects.ImputeSim <- function(x,...){
-  numberSubjects(x$fit)
+  numberSubjects(x$singleSim)
 } 

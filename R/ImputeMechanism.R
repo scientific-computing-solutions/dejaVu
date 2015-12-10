@@ -40,14 +40,14 @@ print.ImputeMechanism <- function(x,...){
 ##' @inheritParams ImputeMechanism.object 
 ##' @seealso \code{\link{ImputeMechanism.object}}
 ##' @export
-CreateNewImputeMechanism <- function(name,cols.needed,impute,parameters=NULL){
+CreateNewImputeMechanism <- function(name,cols.needed=vector("character"),impute,parameters=NULL){
   
   if(length(name)>1){
     stop("Invalid name argument")
   }
   
   if(!is.vector(cols.needed)){
-    stop("Invalid cols.needed argument")
+    stop("Invalid cols.needed argument should be a vector, if no columns needed then leave out argument")
   }
   
   if(!is.null(parameters) && !is.list(parameters)){
