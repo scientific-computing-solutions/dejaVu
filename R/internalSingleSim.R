@@ -109,6 +109,10 @@ ValidateSimFitArguments <- function(family,equal.dispersion){
     stop("Invalid argument: equal.dispersion")
   }
 
+  if(!is.character(family)){
+    stop("Invalid argument: family must be a character")
+  }
+  
   allowed.models <- c("negbin","poisson","quasipoisson")
   if(!family %in% allowed.models){
     stop("Invalid argument: family must be one of",paste(allowed.models,sep=", "))

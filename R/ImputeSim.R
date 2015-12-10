@@ -67,15 +67,15 @@ ValidateGetImputeDSArgs <- function(imputeSim,index){
 }
 
 ##' @export
-Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion),...){
-  if(!equal.dispersion){
+Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion=equal.dispersion),...){
+  if(!is.logical(equal.dispersion) || length(equal.dispersion)!=1 || !equal.dispersion){
     stop("Invalid argument equal.dispersion must be TRUE")
   }
   
   imputed.summaries <- lapply(1:.internal.number.data.sets(x),
                          function(index){
                            singleSim <- GetImputedDataSet(x,index)                     
-                           summary(Simfit(singleSim,family=family,equal.dispersion=TRUE,formula=formula,...))  
+                           summary(Simfit(singleSim,family=family,equal.dispersion=equal.dispersion,formula=formula,...))
                        })
   
   retVal <- list(imputeSim=x,

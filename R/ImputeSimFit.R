@@ -26,7 +26,7 @@ as.data.frame.ImputeSimFit <- function(x,row.names = NULL, optional = FALSE,...)
   rate.estimates <- .extract("rate.estimate",fun.val=numeric(2))
   
     
-  dispersion <- if(!is.null(x$summaries[[1]]$dispersion)) .extract("dispersion") else NA
+  dispersion <- if(length(x$summaries[[1]]$dispersion)!=0) .extract("dispersion") else NA
   
   data.frame(imputeID=1:.internal.number.data.sets(x$imputeSim),
              control.rate=rate.estimates[1,],
@@ -69,36 +69,47 @@ NULL
 summary.ImputeSimFit <- function(object,...){
   
   data <- as.data.frame(object)
-  
-  #Rubin's formula 
+
   N <- .internal.number.data.sets(object$imputeSim)
   
-  log.treatment.effects <- log(data$treatment.effect)
-  se.log.treatment.effects <- data$se
+  if(N==1){
+    stop("Cannot apply Rubin's formula for test statistic if only 1 imputed data set!")
+  }
+   
+  retVal <- .rubinsformula(data$treatment.effect,data$se, object$summaries[[1]]$df,N)
+  retVal$dropout <- object$imputeSim$dropout
+  retVal$dispersion <- mean(data$dispersion)
+  class(retVal) <- "summary.ImputeSimFit"
+  retVal
+}
+
+.rubinsformula <- function(treatment.effects,ses,original.df,N){
+  log.treatment.effects <- log(treatment.effects)
+  se.log.treatment.effects <- ses
   
-  se <- sqrt((1+1/N)*var(log.treatment.effects)+ mean(se.log.treatment.effects^2))
-  df <- (N-1)*(1+(mean(se.log.treatment.effects^2))/( (1+1/N)*var(log.treatment.effects)))^2
+  Q <- mean(log.treatment.effects) #test statistic
+  B <- var(log.treatment.effects) #between imputation var
+  U <- mean(se.log.treatment.effects^2) #average imputation var
   
-  v.0 <- object$summaries[[1]]$df
-  v.hat <- (v.0*(v.0+1)/(v.0+3))*(1-(1+1/N)*(var(log.treatment.effects)/se^2))  
+  se <- sqrt(U+(1+1/N)*B) #standard error of combined test statistic
+  df <- (N-1)*(1+U/(B*(1+1/N)))^2 #(unadjusted d.o.f)
+  
+  v.0 <-original.df 
+  v.hat <- (v.0*(v.0+1)/(v.0+3))*(1-(1+1/N)*B/(se*se))  
   adjusted.df <- 1/(1/df + 1/v.hat)
   
   getpval <- function(df){
-    2*(1-pt(abs(mean(log.treatment.effects)/se) ,df=df))
+    2*(1-pt(abs(Q/se),df=df))
   } 
- 
-  retVal <- list(treatment.effect=mean(data$treatment.effect),
-                 se=se,
-                 df=df,
-                 adjusted.df=adjusted.df,
-                 dispersion=mean(data$dispersion),
-                 pval=getpval(df=df),
-                 adjusted.pval=getpval(df=adjusted.df),
-                 dropout=object$imputeSim$dropout
-                )
-  class(retVal) <- "summary.ImputeSimFit"
-  retVal  
+  
+  list(treatment.effect=exp(Q),
+       se=se,
+       df=df,
+       adjusted.df=adjusted.df,
+       pval=getpval(df=df),
+       adjusted.pval=getpval(df=adjusted.df))
 }
+
 
 ##' @export
 print.summary.ImputeSimFit <- function(x,...){

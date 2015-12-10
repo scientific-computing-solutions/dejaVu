@@ -155,7 +155,7 @@ numberSubjects.SingleSim <- function(x){
 }
 
 ##' @export
-Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion),...){
+Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion=equal.dispersion),...){
   
   ValidateSimFitArguments(family,equal.dispersion) #No formula validation yet
   
