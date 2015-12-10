@@ -61,7 +61,7 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
              se=.extract("se"),
              pval=.extract(pval.string),
              df=.extract(df.string),
-             dispersion=.extract("dispersion"),
+             dispersion=if(length(x$summaries[[1]]$dispersion)>0) .extract("dispersion") else NA,
              dropout.control=dropout[1,],
              dropout.active=dropout[2,]
             )
@@ -137,21 +137,27 @@ NULL
 ##' @export
 summary.Scenario <- function(object,alpha=0.05,use.adjusted.pval=FALSE,...){
   Validate.adjusted.pval(object$summaries,use.adjusted.pval)
+  if(!.internal.is.finite.number(alpha)|| alpha <=0 || alpha >=1){
+    stop("Invalid alpha")
+  }
   
   data <- as.data.frame.Scenario(object,use.adjusted.pval)
   
-  retVal <- list(treatment.effect=exp(mean(log(data$treatment.effect))),
-                 se=mean(data$se),
-                 power=sum(data$pval<alpha)/nrow(data),
-                 alpha=alpha,
-                 use.adjusted.pval=use.adjusted.pval,
-                 description=object$description,
-                 dropout=list(summary(data$dropout.control),summary(data$dropout.active)))
-  
+  retVal <- .internal.summary.Scenario(data,alpha,object$description)
+  retVal$description <- description
+  retVal$use.adjusted.pval <- use.adjusted.pval
   class(retVal) <- "summary.Scenario"
   retVal 
 }
 
+
+.internal.summary.Scenario <- function(data,alpha){
+  list(treatment.effect=exp(mean(log(data$treatment.effect))),
+    se=mean(data$se),
+    power=sum(data$pval<alpha)/nrow(data),
+    alpha=alpha,
+    dropout=list(summary(data$dropout.control),summary(data$dropout.active)))
+}
 
 ##' @export
 print.summary.Scenario <- function(x,...){
