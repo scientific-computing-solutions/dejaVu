@@ -196,7 +196,7 @@ We can create a data frame collating the fitted values:
 head(as.data.frame(fitted))
 @
 
-We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987}.
+We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987} (Note I am using the formula from the Handling Missing Recurrent Events Data in Clinical Trials document given to me by Mattis).
 <<>>=
 summary(fitted)
 @

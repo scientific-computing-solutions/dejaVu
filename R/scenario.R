@@ -53,14 +53,13 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
   
   dropout <- .extract("dropout",numeric(2))
   
-  pval.string <-if(use.adjusted.pval)  "adjusted.pval" else "pval"
-  df.string <- if(use.adjusted.pval)  "adjusted.df" else "df"
+  adjusted.string <- if(use.adjusted.pval) "adjusted." else ""
   
   data.frame(replica=1:length(x$summaries),
              treatment.effect=.extract("treatment.effect"),
              se=.extract("se"),
-             pval=.extract(pval.string),
-             df=.extract(df.string),
+             pval=.extract(paste(adjusted.string,"pval",sep="")),
+             df=.extract(paste(adjusted.string,"df",sep="")),
              dispersion=if(length(x$summaries[[1]]$dispersion)>0) .extract("dispersion") else NA,
              dropout.control=dropout[1,],
              dropout.active=dropout[2,]
