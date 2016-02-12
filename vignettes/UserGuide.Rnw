@@ -45,6 +45,8 @@ In order to use the functionality of the package, it must be loaded:
 library(dejaVu)
 @
 
+\textbf{Note:} due to namespace conflicts between libraries \texttt{MASS} and \texttt{trafficlight}, \texttt{dejaVu} does will not work if \texttt{trafficlight} is loaded. 
+
 For reproducibility we set the random seed:
 <<seed>>=
 set.seed(1298711)
