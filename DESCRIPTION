@@ -10,9 +10,8 @@ LazyLoad: yes
 Suggests:
     knitr,
     testthat,
-    stats
 Depends:
     R (>= 3.1.0)
 Imports:
-    MASS
+    stats
 VignetteBuilder: knitr
