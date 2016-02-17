@@ -345,7 +345,7 @@ In this Section we show how to perform multiple imputation using a data set with
 
 In order to use the \texttt{SimulateComplete} function with covariates, we require a data frame containing the covariates together with three additional columns: subject Id, treatment arm (0 for control or 1 for active) and a rate column (typically a function of the covariates/treatment arm). The rate column will replace the \texttt{event.rates} argument, so it is a subject specific $\mu/T$.
 
-Users have complete freedom over the number and type of covariates. In this example we use two covariates \texttt{pre.exa}, the number of events in the previous year, and \texttt{steroid} a variable for whether the subject is using steroids (1 yes, 0 no).
+Users have complete freedom over the number and type of covariates. In this example we use two covariates: \texttt{pre.exa}, the number of events in the previous year, and \texttt{steroid} a variable for whether the subject is using steroids (1 yes, 0 no).
 
 We first generate some covariates for a 100 subject trial with equal randomization proportions:
 <<>>=
@@ -377,55 +377,59 @@ head(complete.covar$data)
 
 @
 
+The \texttt{MakeDejaData} function requires 4 arguments: the data frame and the column names used for the treatment arm, the subject Id and the event rate.
 
+\paragraph{Implementing new drop out mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users can follow these instructions.}
 
+It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a very simple example here and see \newline \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMechanism)} for further details.
 
-\paragraph{Implementing new drop out mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
-
-It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a toy example here and see \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMechanism)} for further details (again it isn't much work to allow covariates/other columns of the data frame to be used in calculating the dropout times).
-
-In our toy\footnote{this is clearly not a sensible dropout method but shows how to implement dropout mechanisms} example we would like the dropout time to be $0.5T$ if subjects have exactly $W$ events and are on the control arm and $T$ (i.e. no dropouts) for all other subjects  where $W$ is a parameter chosen by the user. 
+In our example we say subject dropouts are exponentially distributed with subject specific rate $R$ where $R=($\texttt{rate}$)\exp(X_i)$ where $X_i \sim \mathcal{N}(0,$ \texttt{var}$)$ and there are different rates dependent on whether the subject is on steroids.
 
 <<newdropout>>=
 
 #we create a function which returns the new dropout mechanism
-my.example.dropout <- function(W){ #W is the user parameter
+steroidMCAR <- function(steroid.rate, non.steroid.rate,var=0){ 
   
   #First we create a function which must take in two arguments,
   #event.times - a list of a single subject's event times
   #data - a row of the data frame containing the subject details
   #and outputs the time of subject dropout 
   GetDropTime <- function(event.times,data){
-    if(data$observed.events==W && data$arm==0){
-      return(data$censored.time/2)
-    }
-    return(data$censored.time)
-    
+    rate <- if(data$steroid==1) steroid.rate else non.steroid.rate  
+    rate <- rate*exp(rnorm(1,mean = 0,sd = sqrt(var)))
+    dropout.time <- rexp(1,rate)
+    return(min(dropout.time, data$censored.time))
   }
   
   #we create a vector of the columns from the data frame that
   #are used in the GetDropTime function
-  cols.needed <- c("censored.time","arm","observed.events")
+  cols.needed <- c("censored.time","steroid")
   
   #we call the CreateNewDropoutMechanism function
   #with the following arguments
-  CreateNewDropoutMechanism(type="MNAR", #technically this is MNAR dropout
-                            text="Toy example dropout", #the text to be output
+  CreateNewDropoutMechanism(type="MCAR", 
+                            text="Rate dependent on steroid use", #the text to be output
                             cols.needed=cols.needed, #see above
                             GetDropTime=GetDropTime, #see above
-                            parameters=list(the.value.of.W=W) #The parameters to be output
+                            parameters=list(steroid.rate=steroid.rate,
+                                            non.steroid.rate=non.steroid.rate,
+                                            var=var) #The parameters to be output
                             )
 
 }
+@
 
+We can then use the \texttt{steroidMCAR} function:
+<<>>=
 #we can view the dropout mechanism
-my.example.dropout(6)
+steroidMCAR(steroid.rate = 0.005, non.steroid.rate = 0.025)
 
 #we can use it
-with.my.dropout <- SimulateDropout(complete,
-                    drop.mechanism=my.example.dropout(6))
+dropout.covar <- SimulateDropout(complete.covar,
+                    drop.mechanism=steroidMCAR(steroid.rate = 0.0025,
+                                   non.steroid.rate = 0.001))
 
-head(with.my.dropout$data)
+summary(dropout.covar)
 @
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
