@@ -5,7 +5,7 @@
 validateDefaultDejaDataArgs <- function(number.subjects,event.rates){
   
   lapply(c(number.subjects,event.rates),function(x){
-    if(!is.numeric(x) || x<0|| is.na(x) || is.infinite(x)){
+    if(is.null(x) || !is.numeric(x) || x<0|| is.na(x) || is.infinite(x)){
       stop("Invalid argument: number.subjects, event.rates and dispersions must be non-negative vectors of length at most 2")
     }
   })

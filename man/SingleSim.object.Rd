@@ -24,7 +24,8 @@ used to perform the imputation. See \code{\link{ImputeMechanism.object}}}
 
 \item{study.time}{The study follow up period (see \code{SimulateComplete})}
 
-\item{event.rates}{The control/active event rates (see \code{SimulateComplete})}
+\item{event.rates}{The control/active event rates (see \code{SimulateComplete}), if data set was
+generated without using these (e.g. the dejaData argument was used) then this is set to NULL}
 
 \item{dispersions}{The control/active dispersion rates (see \code{SimulateComplete})}
 }

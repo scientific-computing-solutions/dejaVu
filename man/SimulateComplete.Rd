@@ -4,8 +4,8 @@
 \alias{SimulateComplete}
 \title{Simulate a complete data set}
 \usage{
-SimulateComplete(study.time, dejaData = NULL, number.subjects, event.rates,
-  dispersions)
+SimulateComplete(study.time, dejaData = NULL, number.subjects = NULL,
+  event.rates = NULL, dispersions)
 }
 \arguments{
 \item{study.time}{The study follow up period}

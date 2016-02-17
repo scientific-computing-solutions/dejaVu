@@ -26,7 +26,7 @@
 
 \section{Introduction}
 
-TODO (not worth writing until I have a better idea of the functionality the package will take)
+TODO (not worth writing until I have a better idea of the functionality the package will take). Include a description of the sections
 
 \section{Running a Single MI Example}
 
@@ -70,6 +70,7 @@ The \texttt{SimulateComplete} function takes the following arguments:
 \item \texttt{number.subjects}: the number of subjects in each arm to simulate - if it is a single number then this will be used for both arms, otherwise a vector \texttt{c(number.control,number.active)}
 \item \texttt{event.rates} $=\mu/T$: the event rates for each arm
 \item \texttt{dispersions} $=k$, again either a single number if $k$ is the same for both arms otherwise a vector.
+\item \texttt{dejaData}, this advanced option is used only when subject covariates are included; see later in the guide for further information 
 \end{itemize}
 
 An example of the data generation procedure:
@@ -91,7 +92,7 @@ complete$event.times[[1]]
 
 @
 
-The SimulateComplete function returns a \texttt{SingleSim} object. See \texttt{help(SingleSim)} for further details.
+The \texttt{SimulateComplete} function returns a \texttt{SingleSim} object. See \texttt{help(SingleSim)} for further details.
 
 \subsection{Subject Dropout}
 
@@ -134,7 +135,7 @@ The function \texttt{glm.nb} from the package \texttt{MASS} is used with the fol
 \item \texttt{observed.events} $\sim$ \texttt{offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
 \end{itemize}
 
-(Note: If covariates are required in the model, it will not be \textit{too} much work to allow users to specify the model formula). Additional arguments to \texttt{Simfit} are passed to the model fitting function. For example \texttt{Simfit(with.MCAR.dropout,maxit=50)} will increase the number of iterations when fitting the model (see \texttt{help(glm.control)} for further details). 
+Additional arguments to \texttt{Simfit} are passed to the model fitting function. For example \texttt{Simfit(with.MCAR.dropout,maxit=50)} will increase the number of iterations when fitting the model (see \texttt{help(glm.control)} for further details). 
 
 This creates a \texttt{SingleSimFit} object:
 <<>>=
@@ -297,9 +298,9 @@ I haven't implemented plotting functions -- there is an argument for not includi
 \item We can discuss this further of course.
 \end{itemize}
 
-\section{Additional Information}
+\section{Additional Dropout and Imputing Information}
 
-\subsection{Additional Dropout mechanisms}
+\paragraph{Additional Dropout mechanisms}
 
 Alongside the \texttt{ConstantRateDrop} function. Additional dropout mechanisms have been implemented:
 
@@ -318,6 +319,66 @@ with.MAR.dropout <- SimulateDropout(complete,
 @
 
 Please let me know of any more you would like!
+
+\paragraph{Additional Imputing Mechanisms}
+
+By altering the \texttt{trt.weight} argument, the \texttt{weighted\_j2r} imputing mechanism can be used to generate different imputing mechanisms:
+
+If \texttt{trt.weight = 0} then imputation using this mechanism will follow the jump to reference (j2r) model whereby missing counts for subjects in both arms will be imputed according to the mean of the placebo arm conditioned on the subject's observed number of events
+
+If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
+
+Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $p=(p_c,p_a)$ and $\gamma=(\gamma_c,\gamma_a)$ from the model fit for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
+\begin{itemize}
+\item $NB(p=\frac{p_c t_i}{\gamma_c+p_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
+\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{p_c t_i}{\gamma_a + p_a(T-t_i)+p_c t_i}$ and $q_a=\frac{p_a t_i}{\gamma_a+p_aT}$.
+\end{itemize}
+
+Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be included. It should be a vector of length 2, \texttt{c(control.delta,treatment.delta)} and in this case the mean number of expected events for the imputed missing data is multipled by the appropriate delta (and so $p$ is adjusted appropriately):
+<<moreimp>>=
+  weighted_j2r(trt.weight=1,delta=c(1,1.4))
+@
+
+\section{Using covariates \& creating new dropout/imputing mechanisms}
+
+In this Section we show how to perform multiple imputation using a data set with covariates. Here we use a set of covariates to simulate a ``complete data set'' of events. However, it is also possible to import a complete/dropout data set on which imputation can be perfomed.
+
+In order to use the \texttt{SimulateComplete} function with covariates, we require a data frame containing the covariates together with three additional columns: subject Id, treatment arm (0 for control or 1 for active) and a rate column (typically a function of the covariates/treatment arm). The rate column will replace the \texttt{event.rates} argument, so it is a subject specific $\mu/T$.
+
+Users have complete freedom over the number and type of covariates. In this example we use two covariates \texttt{pre.exa}, the number of events in the previous year, and \texttt{steroid} a variable for whether the subject is using steroids (1 yes, 0 no).
+
+We first generate some covariates for a 100 subject trial with equal randomization proportions:
+<<>>=
+covar.df <- data.frame(Id=1:100,
+                       arm=c(rep(0,50),rep(1,50)),
+                       pre.exa=rbinom(n=100,size=15,prob=0.4),
+                       steroid=rbinom(n=100,size=1,prob=0.2))
+
+@
+
+We then define the subject specific event rate to be given by the following formula:
+$$0.001 + 0.002\mathrm{pre.exa} + 0.005(1-\mathrm{steroid}) + 0.008(1-\mathrm{arm})$$
+
+<<>>=
+covar.df$rate <- 0.001 + 0.002*covar.df$pre.exa + 
+                 0.005*(1-covar.df$steroid) + 0.008*(1-covar.df$arm) 
+
+head(covar.df)  
+@
+
+Finally we can simulate a complete data set using the \texttt{dejaData} argument to the \texttt{SimulateComplete} function:
+<<>>=
+complete.covar <- SimulateComplete(study.time=365,
+                      dispersion=0.25,
+                      dejaData = MakeDejaData(covar.df,arm="arm",
+                                              Id="Id",rate="rate"))
+
+head(complete.covar$data)
+
+@
+
+
+
 
 \paragraph{Implementing new drop out mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
@@ -366,28 +427,6 @@ with.my.dropout <- SimulateDropout(complete,
 
 head(with.my.dropout$data)
 @
-
-\subsection{Additional Imputing Mechanisms}
-
-By altering the \texttt{trt.weight} argument, the \texttt{weighted\_j2r} imputing mechanism can be used to generate different imputing mechanisms:
-
-If \texttt{trt.weight = 0} then imputation using this mechanism will follow the jump to reference (j2r) model whereby missing counts for subjects in both arms will be imputed according to the mean of the placebo arm conditioned on the subject's observed number of events
-
-If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
-
-Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $p=(p_c,p_a)$ and $\gamma=(\gamma_c,\gamma_a)$ from the model fit for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
-\begin{itemize}
-\item $NB(p=\frac{p_c t_i}{\gamma_c+p_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
-\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{p_c t_i}{\gamma_a + p_a(T-t_i)+p_c t_i}$ and $q_a=\frac{p_a t_i}{\gamma_a+p_aT}$.
-\end{itemize}
-
-Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be included. It should be a vector of length 2, \texttt{c(control.delta,treatment.delta)} and in this case the mean number of expected events for the imputed missing data is multipled by the appropriate delta (and so $p$ is adjusted appropriately):
-<<moreimp>>=
-  weighted_j2r(trt.weight=1,delta=c(1,1.4))
-@
-
-
-
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 

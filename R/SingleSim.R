@@ -26,7 +26,7 @@
 ##' sim2 <- SimulateComplete(study.time=365,number.subjects=c(50,75),
 ##'                         event.rates=c(0.01,0.005),dispersions=c(0,0.25))
 ##' @export
-SimulateComplete <- function(study.time,dejaData=NULL,number.subjects,event.rates,dispersions){
+SimulateComplete <- function(study.time,dejaData=NULL,number.subjects=NULL,event.rates=NULL,dispersions){
   
   if(is.null(dejaData)){
     dejaData <- defaultDejaData(number.subjects,event.rates)
@@ -113,7 +113,8 @@ print.SingleSim <- function(x,...){
 ##' @param impute.mechanism If the status is "imputed" then this contains the \code{ImputeMechanism} object
 ##' used to perform the imputation. See \code{\link{ImputeMechanism.object}}
 ##' @param study.time The study follow up period (see \code{SimulateComplete})
-##' @param event.rates The control/active event rates (see \code{SimulateComplete})
+##' @param event.rates The control/active event rates (see \code{SimulateComplete}), if data set was 
+##' generated without using these (e.g. the dejaData argument was used) then this is set to NULL 
 ##' @param dispersions  The control/active dispersion rates (see \code{SimulateComplete})
 ##' @name SingleSim.object
 ##' @aliases print.SingleSim summary.SingleSim
