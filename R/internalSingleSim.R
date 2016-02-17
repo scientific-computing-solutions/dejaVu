@@ -28,14 +28,19 @@ ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispe
   
 }
 
-# Return a vector of length number.subject of rates for the Poission process
-# 1 for each subject of a given arm. The arguments here are single values not
-# numeric vectors
-GetSimRates <- function(study.time,number.subject,event.rate,dispersion){
-  if(dispersion==0){
-    return(rep(event.rate,number.subject))  
+getDispersions <- function(arm,dispersions){
+  if(length(dispersions)==1){
+    dispersions <- rep(dispersions,2)
   }
-  lambda <- rgamma(n=number.subject,shape=1/dispersion,scale=event.rate*study.time*dispersion)
+  ifelse(arm==0,dispersions[1],dispersions[2])
+}
+
+
+GetSimRates <- function(study.time,event.rate,dispersion){
+  if(dispersion==0){
+    return(event.rate)  
+  }
+  lambda <- rgamma(n=1,shape=1/dispersion,scale=event.rate*study.time*dispersion)
   return(lambda/study.time)
 }
 

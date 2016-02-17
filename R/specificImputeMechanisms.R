@@ -87,7 +87,7 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     
     u <- (p/(1-p))*gamma*delta.factor
     
-    rate <- GetSimRates(time.left,number.subject=1,event.rate=u/time.left,dispersion=1/gamma) 
+    rate <- GetSimRates(time.left,event.rate=u/time.left,dispersion=1/gamma) 
     return(GetEventTimes(rate,time.left)+df$censored.time[i])  
     #note numeric(0)+x = numeric(0)
   })

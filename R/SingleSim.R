@@ -31,22 +31,31 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
   if(length(number.subjects)==1){
     number.subjects <- rep(number.subjects,2)
   }
+ 
+  dejaData <- defaultDejaData(number.subjects,event.rates)
   
   subject.rates <- unlist(mapply(GetSimRates,study.time=study.time,
-                          number.subject=number.subjects,
-                          event.rate=event.rates,
-                          dispersion=dispersions,SIMPLIFY=FALSE))
+                          event.rate=dejaData$data[,dejaData$rate],
+                          dispersion=getDispersions(dejaData$data[,dejaData$arm],dispersions),
+                          SIMPLIFY=FALSE))
 
   event.times <- lapply(subject.rates,GetEventTimes,study.time=study.time)
   
-  total.subjects <- sum(number.subjects)
   events <- vapply(event.times,length,FUN.VALUE=numeric(1))
   
-  data <- data.frame(Id=1:total.subjects,
-                     arm=as.factor(unlist(lapply(seq_along(number.subjects),function(x){rep(x-1,number.subjects[x])}))),   
-                     censored.time=rep(study.time,total.subjects),
+  data <- data.frame(Id=dejaData$data[,dejaData$Id],
+                     arm=as.factor(dejaData$data[,dejaData$arm]),   
+                     censored.time=rep(study.time,sum(number.subjects)),
                      observed.events=events,
                      actual.events=events)
+  
+  if(ncol(dejaData$data)>3){
+    dejaData$data[,dejaData$Id] <- NULL
+    dejaData$data[,dejaData$arm] <- NULL
+    dejaData$data[,dejaData$rate] <- NULL
+    data <- cbind(data,dejatData$data)
+  }
+  
   
   retVal <- list(data=data,
                  event.times=event.times,
