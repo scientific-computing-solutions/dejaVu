@@ -11,6 +11,8 @@
 ##' Different dispersions, event.rates and number of subjects can be specified for both arms of the trial 
 ##' 
 ##' @param study.time The study follow up period
+##' @param dejaData If not NULL this should contain a \code{DejaData} object. If this is used then
+##' number.subjects and event.rates arguments are ignored
 ##' @param number.subjects The number of subjects, if a vector \code{c(a,b)} then
 ##' \code{a} subjects on the control arm and \code{b} subjects on the active arm. If 
 ##' \code{number.subjects} is a single number then both arms have the given number of subjects.
@@ -24,15 +26,13 @@
 ##' sim2 <- SimulateComplete(study.time=365,number.subjects=c(50,75),
 ##'                         event.rates=c(0.01,0.005),dispersions=c(0,0.25))
 ##' @export
-SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions){
+SimulateComplete <- function(study.time,dejaData=NULL,number.subjects,event.rates,dispersions){
   
-  ValidateSimCompleteArgs(study.time,number.subjects,event.rates,dispersions)
-  
-  if(length(number.subjects)==1){
-    number.subjects <- rep(number.subjects,2)
+  if(is.null(dejaData)){
+    dejaData <- defaultDejaData(number.subjects,event.rates)
   }
- 
-  dejaData <- defaultDejaData(number.subjects,event.rates)
+  
+  ValidateSimCompleteArgs(dejaData,study.time,dispersions)
   
   subject.rates <- unlist(mapply(GetSimRates,study.time=study.time,
                           event.rate=dejaData$data[,dejaData$rate],
@@ -45,7 +45,7 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
   
   data <- data.frame(Id=dejaData$data[,dejaData$Id],
                      arm=as.factor(dejaData$data[,dejaData$arm]),   
-                     censored.time=rep(study.time,sum(number.subjects)),
+                     censored.time=rep(study.time,nrow(dejaData$data)),
                      observed.events=events,
                      actual.events=events)
   
@@ -53,7 +53,7 @@ SimulateComplete <- function(study.time,number.subjects,event.rates,dispersions)
     dejaData$data[,dejaData$Id] <- NULL
     dejaData$data[,dejaData$arm] <- NULL
     dejaData$data[,dejaData$rate] <- NULL
-    data <- cbind(data,dejatData$data)
+    data <- cbind(data,dejaData$data)
   }
   
   
@@ -107,7 +107,7 @@ print.SingleSim <- function(x,...){
 ##' @param event.times A list of event times. event.times[[1]] is a list of event times for subject with Id 1
 ##' The length of event.times[[1]] = the number of observed events of subject with Id 1 
 ##' @param status Either "complete", "dropout" or "imputed" denoting the status of the data set.
-##' @param subject.rates A vector of the specific rates used for the subjects when generating the data
+##' @param subject.rates A vector of the specific rates used for the Poisson process for subjects when generating the data
 ##' @param dropout.mechanism If status is not "complete" then this contains the \code{DropoutMechanism} object
 ##' used to perform the subject dropout. See \code{\link{DropoutMechanism.object}}.
 ##' @param impute.mechanism If the status is "imputed" then this contains the \code{ImputeMechanism} object

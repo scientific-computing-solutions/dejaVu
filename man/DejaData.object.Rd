@@ -2,8 +2,22 @@
 % Please edit documentation in R/dejaData.R
 \name{DejaData.object}
 \alias{DejaData.object}
-\title{Boo}
+\title{Data frame of covariates for simulating recurrent events}
+\arguments{
+\item{data}{A data frame containing the subject}
+
+\item{arm,}{character the column name of the treatment arm for each subject}
+
+\item{rate,}{character the column name of the rate to be used when simulating}
+
+\item{Id,}{character the column name of subject Id}
+}
 \description{
-Boo
+This object allows covariates to be included in the simulation procedure
+The object is created using the \code{\link{MakeDejaData}} function
+}
+\section{Structure}{
+ The above components must be included in
+a DejaData Object
 }
 

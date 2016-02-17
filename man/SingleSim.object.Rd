@@ -14,7 +14,7 @@ The length of event.times[[1]] = the number of observed events of subject with I
 
 \item{status}{Either "complete", "dropout" or "imputed" denoting the status of the data set.}
 
-\item{subject.rates}{A vector of the specific rates used for the subjects when generating the data}
+\item{subject.rates}{A vector of the specific rates used for the Poisson process for subjects when generating the data}
 
 \item{dropout.mechanism}{If status is not "complete" then this contains the \code{DropoutMechanism} object
 used to perform the subject dropout. See \code{\link{DropoutMechanism.object}}.}

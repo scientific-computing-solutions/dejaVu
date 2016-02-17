@@ -1,20 +1,17 @@
-# Validates the user arguments to SimulateComplete function
+# Validates the user arguments to create the DejaData object
+# within the SimulateComplete function
 # for arguments see SimulateComplete function
 # if invalid argument an exception is thrown
-ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispersions){
+validateDefaultDejaDataArgs <- function(number.subjects,event.rates){
   
-  if(!.internal.is.finite.number(study.time) || study.time < 0){
-    stop("Invalid study.time argument it must be a single positive finite numeric value")
-  }
-  
-  lapply(c(number.subjects,event.rates,dispersions),function(x){
+  lapply(c(number.subjects,event.rates),function(x){
     if(!is.numeric(x) || x<0|| is.na(x) || is.infinite(x)){
       stop("Invalid argument: number.subjects, event.rates and dispersions must be non-negative vectors of length at most 2")
     }
   })
   
-  if(length(number.subjects) > 2 ||length(event.rates) > 2 || length(dispersions) > 2 ){
-    stop("Invalid argument: number.subjects, event.rates and dispersions must be non-negative vectors of length at most 2")
+  if(length(number.subjects) > 2 ||length(event.rates) > 2 ){
+    stop("Invalid argument: number.subjects, event.rates must be non-negative vectors of length at most 2")
   }
   
   if(!all(.internal.is.wholenumber(number.subjects))){
@@ -24,10 +21,36 @@ ValidateSimCompleteArgs <- function(study.time,number.subjects,event.rates,dispe
   if(any(event.rates==0)|| any(number.subjects==0)){
     stop("Invalid argument: number.subjects and event.rates cannot be zero")
   }
+}
+
+#validate the arguments to simcomplete which are not needed to create
+#a default dejaData argument. If invalid argument an exception is thrown
+ValidateSimCompleteArgs <- function(dejaData,study.time,dispersions){
+  if(!.internal.is.finite.number(study.time) || study.time < 0){
+    stop("Invalid study.time argument it must be a single positive finite numeric value")
+  }
   
+  if(class(dejaData) != "DejaData"){
+    stop("Invalid dejaData argument")
+  }
+  
+  if(length(dispersions) > 2){
+    stop("Invalid argument: dispersions must be non-negative vectors of length at most 2")
+  }
+  
+  lapply(dispersions,function(x){
+    if(!is.numeric(x) || x<0|| is.na(x) || is.infinite(x)){
+      stop("Invalid argument: dispersions must be non-negative vectors of length at most 2")
+    }
+  })
   
 }
 
+#given a vector of subject arms (e.g. c(0,1,1,0)) and a vector
+#for subject dispersions (e.g. 0.25 or c(0.28,0.25)) output a vector
+#of subject specific dispersions where if dispersion is length 2 then
+#subjects in arm 0 are given dispersions[1] and subjects in arm 1 are given
+#dispersions[2]
 getDispersions <- function(arm,dispersions){
   if(length(dispersions)==1){
     dispersions <- rep(dispersions,2)
@@ -35,7 +58,8 @@ getDispersions <- function(arm,dispersions){
   ifelse(arm==0,dispersions[1],dispersions[2])
 }
 
-
+#Output a single subject's Poisson process rate given study.time,
+#event.rate and dispersion parameter
 GetSimRates <- function(study.time,event.rate,dispersion){
   if(dispersion==0){
     return(event.rate)  

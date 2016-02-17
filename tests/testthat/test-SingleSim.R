@@ -1,5 +1,11 @@
 context("SingleSim")
 
+test_that("getDispersions",{
+  expect_equal(c(0.5,0.5,0.5,0.5),getDispersions(c(0,0,0,0),c(0.5,0.3)))
+  expect_equal(c(0.5,0.3,0.3,0.5),getDispersions(c(0,1,1,0),c(0.5,0.3)))
+  expect_equal(c(0.3,0.3,0.3,0.3),getDispersions(c(0,1,1,0),0.3))
+})
+
 test_that("Simulate_Complete_Invalid_Args",{
   expect_error(SimulateComplete(study.time=-1,number.subjects=50,event.rates=0.5,dispersions=0.5))
   expect_error(SimulateComplete(study.time=0,number.subjects=50,event.rates=0.5,dispersions=0.5))

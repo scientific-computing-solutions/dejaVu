@@ -4,10 +4,14 @@
 \alias{SimulateComplete}
 \title{Simulate a complete data set}
 \usage{
-SimulateComplete(study.time, number.subjects, event.rates, dispersions)
+SimulateComplete(study.time, dejaData = NULL, number.subjects, event.rates,
+  dispersions)
 }
 \arguments{
 \item{study.time}{The study follow up period}
+
+\item{dejaData}{If not NULL this should contain a \code{DejaData} object. If this is used then
+number.subjects and event.rates arguments are ignored}
 
 \item{number.subjects}{The number of subjects, if a vector \code{c(a,b)} then
 \code{a} subjects on the control arm and \code{b} subjects on the active arm. If
