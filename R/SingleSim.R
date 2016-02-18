@@ -49,26 +49,15 @@ SimulateComplete <- function(study.time,dejaData=NULL,number.subjects=NULL,event
                      observed.events=events,
                      actual.events=events)
   
-  if(ncol(dejaData$data)>3){
-    dejaData$data[,dejaData$Id] <- NULL
-    dejaData$data[,dejaData$arm] <- NULL
-    dejaData$data[,dejaData$rate] <- NULL
-    data <- cbind(data,dejaData$data)
-  }
-  
-  
-  retVal <- list(data=data,
-                 event.times=event.times,
-                 status="complete",
-                 subject.rates=subject.rates, #needed? 
-                 dropout.mechanism=NULL,
-                 impute.mechanism=NULL,
-                 study.time=study.time,
-                 event.rates=event.rates,
-                 dispersions=dispersions)
-                 
-  class(retVal) <- "SingleSim"
-  return(retVal)
+  .singleSimConstructor(data=cbind(data,remove.dejacols(dejaData)),
+              event.times=event.times,
+              status="complete",
+              subject.rates=subject.rates,  
+              dropout.mechanism=NULL,
+              impute.mechanism=NULL,
+              study.time=study.time,
+              event.rates=event.rates,
+              dispersions=dispersions)
 }
 
 
@@ -77,8 +66,9 @@ print.SingleSim <- function(x,...){
   
   cat(x$status,"dataset\n")
   cat("Study follow up period:",x$study.time,"\n")
-  cat("Negative binomial event rates:",x$event.rates,"\n")
-  cat("Negative binomial dispersion:",x$dispersions,"\n")
+  if(!is.null(x$event.rates)) cat("Negative binomial event rates:",x$event.rates,"\n")
+  if(!is.null(x$dispersions)) cat("Negative binomial dispersion:",x$dispersions,"\n")
+  
   if(x$status!="complete"){
     print(x$dropout.mechanism)
     cat("\n")

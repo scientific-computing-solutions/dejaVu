@@ -4,16 +4,17 @@
 \alias{MakeDejaData}
 \title{Create a \code{DejaData} object}
 \usage{
-MakeDejaData(data, arm, rate, Id)
+MakeDejaData(data, arm, Id, rate = NULL)
 }
 \arguments{
 \item{data}{A data frame containing the subject}
 
 \item{arm,}{character the column name of the treatment arm for each subject}
 
-\item{rate,}{character the column name of the rate to be used when simulating}
-
 \item{Id,}{character the column name of subject Id}
+
+\item{rate,}{character the column name of the rate to be used when simulating (or NULL,
+if using DejaData to import a data set, see \code{\link{ImportSim}})}
 }
 \value{
 A \code{DejaData} object

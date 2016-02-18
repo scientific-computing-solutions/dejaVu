@@ -34,6 +34,10 @@ ValidateSimCompleteArgs <- function(dejaData,study.time,dispersions){
     stop("Invalid dejaData argument")
   }
   
+  if(is.null(dejaData$rate)){
+    stop("Cannot use a DejaData object without a rate column when simulating")
+  }
+  
   if(length(dispersions) > 2){
     stop("Invalid argument: dispersions must be non-negative vectors of length at most 2")
   }
@@ -151,4 +155,28 @@ ValidateSimFitArguments <- function(family,equal.dispersion){
     stop("equal.dispersion argument cannot be used unless negative binomial model is to be fit")
   }
   
+}
+
+#simple wrapper to create singleSim objects
+.singleSimConstructor <- function(data, event.times, status, subject.rates,
+                      dropout.mechanism, impute.mechanism,
+                      study.time, event.rates, dispersions){
+
+  retVal <- list(data=data, event.times=event.times, status=status, 
+                 subject.rates=subject.rates,
+                 dropout.mechanism=dropout.mechanism, 
+                 impute.mechanism=impute.mechanism,
+                 study.time=study.time, event.rates=event.rates,
+                 dispersions=dispersions)
+  class(retVal) <- "SingleSim"
+  return(retVal)
+}
+
+#strip the dejaData object's data frame to leave only covariates
+#(not subject Id, arm or rate)
+remove.dejacols <- function(dejaData){
+  dejaData$data[,dejaData$Id] <- NULL
+  dejaData$data[,dejaData$arm] <- NULL
+  if(!is.null(dejaData$rate)) dejaData$data[,dejaData$rate] <- NULL
+  dejaData$data
 }

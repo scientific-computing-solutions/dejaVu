@@ -19,8 +19,9 @@ NULL
 ##' 
 ##' @param data A data frame containing the subject
 ##' @param arm, character the column name of the treatment arm for each subject
-##' @param rate, character the column name of the rate to be used when simulating
 ##' @param Id, character the column name of subject Id
+##' @param rate, character the column name of the rate to be used when simulating (or NULL,
+##' if using DejaData to import a data set, see \code{\link{ImportSim}})
 ##' @return A \code{DejaData} object
 ##' @examples
 ##' 
@@ -35,13 +36,13 @@ NULL
 ##' my.dejaData <- MakeDejaData(my.df,arm="arm",rate="rate",Id="Id")
 ##' 
 ##' @export
-MakeDejaData <- function(data,arm,rate,Id){
+MakeDejaData <- function(data,arm,Id,rate=NULL){
   
   if(!"data.frame" %in% class(data)){
     stop("data must be a data frame")
   }
   
-  if(any(!c(arm,rate,Id) %in% colnames(data))){
+  if(any(!c(arm,Id) %in% colnames(data))){
     stop("Invalid argument check the arm, rate and Id column names")
   }
   
@@ -57,9 +58,14 @@ MakeDejaData <- function(data,arm,rate,Id){
     stop("Data frame only contains one treatment group!")
   }
   
-  if(any(!is.numeric(data[,rate]) || data[,rate] < 0)){
-    stop("Invalid rate, must be non-negative number")
-  }
+  if(!is.null(rate)){
+    if(!rate %in% colnames(data)){
+      stop("Invalid rate column")
+    }
+    if(any(!is.numeric(data[,rate]) || data[,rate] < 0)){
+      stop("Invalid rate, must be non-negative number")
+    }
+  }  
   
   if(nrow(data)!=length(unique(data[,Id]))){
     stop("Subject Ids must be unique")

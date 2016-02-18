@@ -37,6 +37,11 @@ test_that("MakeDejaData_valid",{
   expect_equal("myrate",dd$rate)
   expect_equal("Id",dd$Id)
   
+  #OK with rate =NULL
+  dd <- MakeDejaData(data=df,arm="myarm",Id="Id")
+  expect_equal("DejaData",class(dd))
+  expect_equal(df,dd$data)
+  expect_true(is.null(dd$rate))
 })
 
 test_that("MakeDejaData_invalid",{
