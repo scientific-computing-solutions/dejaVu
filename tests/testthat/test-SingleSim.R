@@ -16,6 +16,12 @@ test_that("Simulate_Complete_Invalid_Args",{
   expect_error(SimulateComplete(study.time=10,number.subjects=c(1.4,5),event.rates=0.5,dispersions=0.5))
   expect_error(SimulateComplete(study.time=10,number.subjects=2,event.rates=c(-0.5,5),dispersions=0.5))
   expect_error(SimulateComplete(study.time=10,number.subjects=2,event.rates=0.5,dispersions=-5))
+  
+  expect_error(SimulateComplete(study.time=10,dejaData = "hello",dispersions=5))
+  dejaData <- MakeDejaData(data=data.frame(Id=1:10,arm=c(0,rep(1,9))),Id="Id",arm="arm")
+  
+  #No rate in dejaData
+  expect_error(SimulateComplete(study.time=10,dejaData =dejaData,dispersions=5))
 })
 
 test_that("CompleteSim_creation_as_expected",{
@@ -62,6 +68,38 @@ test_that("CompleteSim_creation_as_expected",{
   expect_equal(rep(12,6),data$censored.time)
   expect_true(all(unlist(c(sim$event.times))<=12))
   invisible(lapply(1:6,function(i)expect_true(all(sim$event.times[[i]]==sort(sim$event.times[[i]])))))
+})
+
+
+test_that("SimComplete_with_deja_matches_without",{
+  set.seed(20)
+  sim <- SimulateComplete(study.time=10,number.subjects=2,event.rates=c(0.5,0.6),dispersions=0.5)
+  
+  set.seed(20)
+  dejaData <- MakeDejaData(data=data.frame(Id=1:4,arm=c(0,0,1,1),rate=c(0.5,0.5,0.6,0.6)),
+                           Id="Id",arm="arm",rate="rate")
+  simdeja <- SimulateComplete(study.time=10,dejaData=dejaData,dispersions=0.5)
+  
+  #the event.rates are different as they are not included in simdeja so remove them before
+  #checking for equality
+  sim$event.rates <- NULL
+  simdeja$event.rates <- NULL
+  expect_equal(sim,simdeja)
+  
+})
+
+
+test_that("Simcomplete_with_deja",{
+  set.seed(20)
+  dejaData <- MakeDejaData(data=data.frame(Z=c(0,1,1,0),id=1:4,Arm=c(0,0,1,1),rate=c(0.5,0,0.5,0)),
+                           Id="id",arm="Arm",rate="rate")
+  simdeja <- SimulateComplete(study.time=10,dejaData=dejaData,dispersions=0)
+  
+  expect_equal(c("Id","arm","censored.time","observed.events","actual.events","Z"),colnames(simdeja$data))
+  expect_equal(c(0,1,1,0),simdeja$data$Z)
+  
+  #rate zero gives us zero
+  expect_equal(c(0,0),simdeja$data$observed.events[c(2,4)])
 })
 
 test_that("SimulateDropout",{
