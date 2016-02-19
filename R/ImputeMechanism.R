@@ -30,7 +30,7 @@ NULL
 
 ##' @export
 print.ImputeMechanism <- function(x,...){
-  cat("Imputation Method:",x$name)
+  cat("Imputation Method:",x$name,"\n")
   .internal.output.list(x$parameters)
 }
 

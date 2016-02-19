@@ -106,7 +106,10 @@ test_that("simfit_poisson_and_qpoisson",{
   
   fit.pois <- Simfit(sim,family="poisson")
   
-  expect_equal(list(equal.dispersion=TRUE),fit.pois$impute.parameters)
+  params <- list(equal.dispersion=TRUE)
+  class(params) <- "ImputeParameters"
+  
+  expect_equal(params,fit.pois$impute.parameters)
   mod <- glm(observed.events ~ arm + offset(log(censored.time)), family="poisson",data=sim$data)
   #hack call so they match
   mod$call <- fit.pois$model$call
@@ -114,7 +117,7 @@ test_that("simfit_poisson_and_qpoisson",{
   
   fit.qpois <- Simfit(sim,family="quasipoisson")
   
-  expect_equal(list(equal.dispersion=TRUE),fit.qpois$impute.parameters)
+  expect_equal(params,fit.qpois$impute.parameters)
   mod <- glm(observed.events ~ arm + offset(log(censored.time)), family="quasipoisson",data=sim$data)
   #hack call so they match
   mod$call <- fit.qpois$model$call

@@ -177,14 +177,15 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
     p <-     vapply(model,function(mod){exp(summary(mod)$coeffi[1,1])},FUN.VALUE = numeric(1))
   }
   
+  
+  impute.parameters <- list(equal.dispersion=equal.dispersion)
+  class(impute.parameters) <- "ImputeParameters"
+  
   if(family=="negbin"){
-    impute.parameters <- list(gamma=gamma,p=p,equal.dispersion=equal.dispersion)
-    class(impute.parameters) <- "ImputeParameters"
-  }
-  else{
-    impute.parameters <- list(equal.dispersion=equal.dispersion)
-  }
-    
+    impute.parameters$gamma <- gamma
+    impute.parameters$p <- p
+  }  
+  
   retVal <- list(singleSim=x,
                  model=model,
                  impute.parameters=impute.parameters)

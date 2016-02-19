@@ -26,6 +26,7 @@
 ##' @seealso \code{\link{ImputeMechanism.object}}
 ##' @export
 weighted_j2r <- function(trt.weight,delta=c(1,1)){
+  #first validate the arguments
   
   if(!.internal.is.finite.number(trt.weight) || trt.weight < 0 || trt.weight > 1){
     stop("Invalid argument trt.weight should be in [0,1]")
@@ -40,11 +41,16 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     stop("Invalid argument delta must be c(1,1) unless trt.weight=1")  
   }
   
+  #define a helper function to be used in .internal.impute, using
+  #the parameter trt.weight
   treatment.p.choice <- function(ps){
     return(ps[1]*(1-trt.weight)+ps[2]*(trt.weight))
   }
   
-  
+  #A function which takes SimFit object and outputs a list of 2 elements
+  #1) newevent.times a list of vectors, the imputed event times for each subject (if subject has no new imputed
+  #events then the vector should be numeric(0))
+  #2) new.censored.times - the time at which subjects are censored in the imputed data set
   f <- function(fit){
     return(list(newevent.times=.internal.impute(fit,treatment.p.choice,delta),
                 new.censored.times=rep(fit$singleSim$study.time,numberSubjects(fit))
@@ -58,18 +64,30 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
                            parameters=list(trt.weight=trt.weight,delta=delta))
 }
 
-# performs the weighted_j2r method using the given SimFit object
-# a function which chooses the appropriate weighting on the treatment arm 
-# and the scaling factors delta
-# returns the imputed event times for each subjects as a list of vectors
+
 .internal.impute <- function(fit,treatment.p.choice,delta){
+  # performs the weighted_j2r method using the given SimFit object
+  # a function which chooses the appropriate weighting on the treatment arm 
+  # and the scaling factors delta
+  # returns the imputed event times for each subjects as a list of vectors
   
+  #@param fit is a SimFit object
+  #@param treatment.p.choice is a function which given a vector of p's for a subject 
+  #which returns the appropriately weighted value of p to be used in the imputation
+  #@param delta argument in weighted_j2r function
+  #@return returns a list of vectors, the imputed event times for each subject (if subject has no new imputed
+  #events then the vector should be numeric(0))
+  
+  
+  #the data frame from the SimFit object  
   df <- fit$singleSim$data
   
+  #take each subject in turn
   lapply(1:nrow(df), function(i){
+    
     study.time <- fit$singleSim$study.time 
     time.left <- study.time - df$censored.time[i]
-    if(time.left==0){return(numeric(0))}
+    if(time.left==0){return(numeric(0))} #subject was not censored
     
     if(df$arm[i]==0){
       p <- (fit$impute.parameters$p[1] * time.left)/(fit$impute.parameters$gamma[1]+fit$impute.parameters$p[1]*study.time)
