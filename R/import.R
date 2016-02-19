@@ -76,7 +76,7 @@ ImportSim <- function(dejaData, event.times, status, study.time,
   }  
   
   importvalidate.actual.events(actual.events,observed.events)        
-  importvalidate.censored.time(censored.time,event.times)  
+  importvalidate.censored.time(censored.time,study.time,event.times)  
   
   data <- data.frame(Id=dejaData$data[,dejaData$Id],
                      arm=as.factor(dejaData$data[,dejaData$arm]),
@@ -97,14 +97,64 @@ ImportSim <- function(dejaData, event.times, status, study.time,
 }
 
 
+#check that event.times are a list of the appropriate length and each element is a 
+#sorted vector of numbers >= 0 and <= study.time
 importvalidate.event.times <- function(event.times,study.time,number.subjects){
+  if(!is.list(event.times) || length(event.times) != number.subjects){
+    stop("event.times must be a list of length",number.subjects,"\n")
+  }
   
+  lapply(event.times,function(x){
+    if(!is.numeric(x)) stop("event.times must be numeric")
+    if(any(x<0 | x>study.time)) stop("Cannot have event.times < 0 or > study.time")
+    if(length(x)!= 0 && sort(x) != x) stop("Event times for subjects must be given in ascending order")
+  })
 }
 
+#Check that actual.events is a vector of the appropriate length and all elements are >=
+#observed events (which has been calculated from a validated event.times)
 importvalidate.actual.events <- function(actual.events,observed.events){
+  if(length(actual.events)!= length(observed.events)){
+    stop("invalid length of actual.events")
+  }
+
+  lapply(actual.events,function(x){
+    if(!is.na(x) && !!.internal.is.finite.number(x) &&
+       !.internal.is.wholenumber(x)){
+      stop("actual.events must be integers")
+    }
+  })
+  
+  
+  if(any(!is.na(actual.events) & actual.events < observed.events)){
+    stop("actual.events cannot be < the number of observed events")
+  }
   
 } 
 
-importvalidate.censored.time <- function(censored.time,event.times){
+#check that the censored.time argument is of correct length <= study.time and
+#all event.times events occur before the censored time, note event.times
+#has already been validated
+importvalidate.censored.time <- function(censored.time,study.time,event.times){
+  
+  if(length(censored.time) != length(event.times)){
+    stop("censored.time does not have one element per subject")
+  }
+  
+  lapply(censored.time,function(x){
+    if(!.internal.is.finite.number(x) || 
+       x < 0 || x > study.time){
+      stop("censored.time must be non-negative and <= study.time")
+    }
+    
+  })
+  
+  checkmax <- function(censored.time,event.times){
+    if(length(event.times)!=0 && censored.time < tail(event.times,1)){
+      stop("event.times cannot occur after censored.time")
+    }
+  }
+  
+  mapply(checkmax,censored.time,event.times)
   
 }  

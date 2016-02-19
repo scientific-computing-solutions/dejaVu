@@ -341,7 +341,7 @@ Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be 
 
 \section{Using covariates \& creating new dropout/imputing mechanisms}
 
-In this Section we show how to perform multiple imputation using a data set with covariates. Here we use a set of covariates to simulate a ``complete data set'' of events. Note that it is possible to import a complete/dropout data set on which imputation can be perfomed, see \texttt{help(ImportSim)} for examples.
+In this Section we show how to perform multiple imputation using a data set with covariates. Here we use a set of covariates to simulate a ``complete data set'' of events. \textbf{Note} that it is possible to import a complete/dropout data set on which imputation can be perfomed, see \texttt{help(ImportSim)} for examples.
 
 In order to use the \texttt{SimulateComplete} function with covariates, we require a data frame containing the covariates together with three additional columns: subject Id, treatment arm (0 for control or 1 for active) and a rate column (typically a function of the covariates/treatment arm). The rate column will replace the \texttt{event.rates} argument, so it is a subject specific $\mu/T$.
 
