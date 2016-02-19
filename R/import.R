@@ -10,11 +10,10 @@
 ##' @param actual.events If status is "dropout" and the total number of events (i.e. not just the number observed)
 ##' is known (e.g. if a different simulation procedure was used) a vector of total number of events should be included. If
 ##' the number is not known or status is "complete" then this should be set to NULL 
-##' known (this is real data and a subject drops out) then use NA
+##' 
 ##' @return A SingleSim object   
 ##' @examples 
 ##' 
-##' set.seed(10)
 ##' covar.df <- data.frame(Id=1:6,
 ##'                        arm=c(rep(0,3),rep(1,3)),
 ##'                        Z=c(0,1,1,0,1,0))
@@ -72,7 +71,7 @@ ImportSim <- function(dejaData, event.times, status, study.time,
   }
   
   if(is.null(actual.events)){
-    actual.events <- rep(NA,number.subjects)
+    actual.events <- rep(as.numeric(NA),number.subjects)
   }  
   
   importvalidate.actual.events(actual.events,observed.events)        
@@ -82,7 +81,7 @@ ImportSim <- function(dejaData, event.times, status, study.time,
                      arm=as.factor(dejaData$data[,dejaData$arm]),
                      censored.time=censored.time,
                      observed.events=observed.events,
-                     actual.events=if(status=="complete") observed.events else rep(as.numeric(NA),number.subjects))
+                     actual.events=actual.events)
   
   .singleSimConstructor(data=cbind(data, remove.dejacols(dejaData)),
                         event.times=event.times,

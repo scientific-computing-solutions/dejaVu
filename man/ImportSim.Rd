@@ -22,8 +22,7 @@ follow up period) or "dropout" (if not)}
 
 \item{actual.events}{If status is "dropout" and the total number of events (i.e. not just the number observed)
 is known (e.g. if a different simulation procedure was used) a vector of total number of events should be included. If
-the number is not known or status is "complete" then this should be set to NULL
-known (this is real data and a subject drops out) then use NA}
+the number is not known or status is "complete" then this should be set to NULL}
 }
 \value{
 A SingleSim object
@@ -32,7 +31,6 @@ A SingleSim object
 Import an existing data frame for use with the package
 }
 \examples{
-set.seed(10)
 covar.df <- data.frame(Id=1:6,
                        arm=c(rep(0,3),rep(1,3)),
                        Z=c(0,1,1,0,1,0))
