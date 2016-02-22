@@ -524,7 +524,7 @@ my.example.impute(0.5)
 my.imputed <- Impute(my.fit,impute.mechanism = my.example.impute(0.5),N=10)
 @
 
-For a more complex example (aimed for developers) see the functions: \texttt{weighted_j2r} and \texttt{dejaVu:::.internal.impute}. 
+For a more complex example (aimed for developers) see the functions: \texttt{weighted\_j2r} and \newline  \texttt{dejaVu:::.internal.impute}. 
 
 \bibliographystyle{plain}
 \bibliography{userguide}

@@ -160,32 +160,23 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
   ValidateSimFitArguments(family,equal.dispersion) #No formula validation yet
   
   data <- x$data[x$data$censored.time>0,]
-  gamma <- NULL
-  p <- NULL
- 
-  if(equal.dispersion && family=="negbin"){
-    model <- glm.nb(formula=formula,data=data,...)
-    mod.summary <- summary(model)
-    gamma <- rep(mod.summary$theta,2)
-    p <- exp(mod.summary$coeffi[1,1])*c(1,exp(mod.summary$coeffi[2,1]))
-  } else if(equal.dispersion){
+  
+  if(family!="negbin"){
     model <- glm(formula=formula,data=data,family=do.call(family,args=list()),...)
-  }
-  else{ #only in negbinomial case
-    model <- lapply(0:1,function(i){glm.nb(formula=formula,data=data[data$arm==i,],...)})
-    gamma <- vapply(model,function(mod){summary(mod)$theta},FUN.VALUE = numeric(1)) 
-    p <-     vapply(model,function(mod){exp(summary(mod)$coeffi[1,1])},FUN.VALUE = numeric(1))
-  }
-  
-  
-  impute.parameters <- list(equal.dispersion=equal.dispersion)
-  class(impute.parameters) <- "ImputeParameters"
-  
-  if(family=="negbin"){
-    impute.parameters$gamma <- gamma
-    impute.parameters$p <- p
   }  
+  else if(equal.dispersion){
+    model <- glm.nb(formula=formula,data=data,...)  
+  }
+  else{
+    model <- lapply(0:1,function(i){glm.nb(formula=formula,data=data[data$arm==i,],...)})  
+  }
   
+  
+  impute.parameters <- if(family=="negbin") GetGammaP(model,data,equal.dispersion) 
+                       else list(equal.dispersion=equal.dispersion) 
+  
+  class(impute.parameters) <- "ImputeParameters"
+ 
   retVal <- list(singleSim=x,
                  model=model,
                  impute.parameters=impute.parameters)
