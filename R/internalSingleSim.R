@@ -52,16 +52,14 @@ GetModelFormula <- function(equal.dispersion,covar){
     stop("Invalid equal.dispersion argument")
   }
   
-  if(!is.null(covar)) validatecovar(covar)
-  
-  
   rhs <- if(equal.dispersion) "arm + offset(log(censored.time))" else "offset(log(censored.time)"
-    
   
-    
+  if(!is.null(covar)) {
+    validatecovar(covar)
+    return(update.formula(covar,paste("observed.events~",rhs,"+.")))
+  }  
   
-  
-  formula("observed.events ~ offset(log(censored.time))")
+  formula(paste("observed.events ~",rhs))
   
 } 
 
