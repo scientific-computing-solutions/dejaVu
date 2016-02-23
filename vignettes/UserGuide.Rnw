@@ -440,7 +440,12 @@ By using the \texttt{covar} argument with the \texttt{SimFit} function, covariat
 dropout.fit <- Simfit(dropout.covar,
                  equal.dispersion=TRUE,
                  covar=~pre.exa)
+
+#The values of mu now depend on subject's pre.exa value
+head(dropout.fit$impute.parameters$m)
 @
+
+%%%%%% TOEDIT %%%%%%%%%
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
@@ -537,6 +542,21 @@ my.imputed <- Impute(my.fit,impute.mechanism = my.example.impute(0.5),N=10)
 @
 
 For a more complex example (aimed for developers) see the functions: \texttt{weighted\_j2r} and \newline  \texttt{dejaVu:::.internal.impute}. 
+%%%%END TOEDIT %%%%%%
+
+<<>>=
+imputed.covar <- Impute(fit = dropout.fit,
+                        impute.mechanism = weighted_j2r(trt.weight=0),
+                        N=10)
+
+fitted.covar <- Simfit(imputed.covar,
+                 family="negbin",
+                 covar=~pre.exa)
+
+summary(fitted.covar)
+@
+
+
 
 \bibliographystyle{plain}
 \bibliography{userguide}
