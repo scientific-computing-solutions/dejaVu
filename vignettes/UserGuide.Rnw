@@ -434,7 +434,7 @@ dropout.covar <- SimulateDropout(complete.covar,
 summary(dropout.covar)
 @
 
-By using the \texttt{covar} argument with the \texttt{SimFit} function, covariates can be included in the model fit. In the code below we include the covariate \texttt{pre.exa} in the model fit (so the model becomes \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))+ pre.exa}
+By using the \texttt{covar} argument with the \texttt{SimFit} function, covariates can be included in the model fit. In the code below we include the covariate \texttt{pre.exa} in the model fit (so the model becomes \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))+ pre.exa})
 
 <<>>=
 dropout.fit <- Simfit(dropout.covar,
@@ -442,21 +442,20 @@ dropout.fit <- Simfit(dropout.covar,
                  covar=~pre.exa)
 
 #The values of mu now depend on subject's pre.exa value
-head(dropout.fit$impute.parameters$m)
+head(dropout.fit$impute.parameters$mu)
 @
-
-%%%%%% TOEDIT %%%%%%%%%
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
 It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details (again it isn't much work to allow covariates/other columns of the data frame to be used when imputing data).
 
-In our toy\footnote{this is clearly not a sensible imputing method but shows how to implement imputing mechanisms} example we would like subjects in the treatment group to have no imputed events and subjects in the control group to have either 0 or 1 events with a given probability and if subjects have an event it is midway between dropping out and the end of the follow up period. 
+In our toy\footnote{this is clearly not a sensible imputing method but shows how to implement imputing mechanisms} example we would like subjects in the treatment group to have no imputed events and subjects in the control group to have either 0 or 1 events with a given probability which depends on their \texttt{steroid} covariate value. If subjects have an event it is midway between dropping out and the end of the follow up period. 
 
 <<newimp>>=
 
 #we create a function which returns the new dropout mechanism
-my.example.impute <- function(prob){ # parameters for probability control arm having event
+#arguments are parameters for probability control arm having event
+my.example.impute <- function(steroid.prob,non.steroid.prob){ 
   
   
   #We need a function which takes in a SingleSimFit object
@@ -468,7 +467,7 @@ my.example.impute <- function(prob){ # parameters for probability control arm ha
   impute <- function(fit){
     
     #how many subjects are there in the data frame?
-    number.of.subjects <- nrow(fit$singleSim$data)
+    number.of.subjects <- numberSubjects(fit)
     
     #subject follow up time
     study.time <- fit$singleSim$study.time
@@ -477,44 +476,37 @@ my.example.impute <- function(prob){ # parameters for probability control arm ha
     #for study.time 
     new.censored.times <- rep(study.time,number.of.subjects)
     
+    #The subject data
+    data <- fit$singleSim$data
+    
     #the imputed event times for each subject
     newevent.times <- list()
     
     #for each subject create a vector of imputed event times
     #if no events are imputed then use numeric(0)
     for(id in 1:number.of.subjects){
-   
-      #what arm is the subject on?
-      arm <- fit$singleSim$data[id,]$arm
       
-      if(arm==1){
-        #if in treatment group then no new events
-        newevent.times[[id]] <- numeric(0)
-        break
-      }
+      #assume by default no events are imputed
+      newevent.times[[id]] <- numeric(0) 
       
-      time.left <- study.time - fit$singleSim$data[id,]$censored.time
-        
+      #time left on study
+      time.left <- study.time - data[id,]$censored.time
+      
       #if ti = 0 then subject didn't drop out so 
-      #no imputed events
-      if(time.left==0){
-        newevent.times[[id]] <- numeric(0)
-        break
-      }  
+      #no imputed events and if in treatment group then no new events
+      if(data[id,]$arm==1 || time.left==0) break;
         
       #Note could access the mu, gamma from the fit
       mu <-  my.fit$impute.parameters$mu
       gamma <- my.fit$impute.parameters$gamma
-      
       #so mu[i,] is (mu_c,mu_a) for subject i
       
+      #get the probability of an event 
+      prob <- if(data[id,]$steroid==1)steroid.prob else non.steroid.prob 
+      
       #did subject have an event?
-      is.event <- rbinom(n=1,size = 1,prob=prob)
-      if(is.event==0){ #if not...
-        newevent.times[[id]] <- numeric(0) 
-      }
-      else{ #if so
-        newevent.times[[id]] <- fit$singleSim$data[id,]$censored.time + 0.5*time.left
+      if(rbinom(n=1,size = 1,prob=prob)!= 0){
+        newevent.times[[id]] <- data[id,]$censored.time + 0.5*time.left
       }
     }
     
@@ -526,27 +518,25 @@ my.example.impute <- function(prob){ # parameters for probability control arm ha
   
   #we create a vector of the columns from the data frame that
   #are used in the impute function
-  cols.needed <- c("censored.time","arm")
+  cols.needed <- c("censored.time","arm","steroid")
   
   CreateNewImputeMechanism(name="my new impute mechanism", #name for outputting
                     cols.needed=cols.needed, #see above
                     impute=impute, #see above
-                    parameters=list(prob.control.arm.have.event=prob)) #extra parameter
+                    parameters=list(steroid.prob=steroid.prob,
+                                    non.steroid.prob=non.steroid.prob)) #extra parameters
 }
 
 #we can view the impute mechanism
-my.example.impute(0.5)
-
-#we can use it
-my.imputed <- Impute(my.fit,impute.mechanism = my.example.impute(0.5),N=10)
+my.example.impute(steroid.prob=0.5,non.steroid.prob = 0.9)
 @
 
 For a more complex example (aimed for developers) see the functions: \texttt{weighted\_j2r} and \newline  \texttt{dejaVu:::.internal.impute}. 
-%%%%END TOEDIT %%%%%%
-
+Using the imputation mechanim, MI can be performed and models (with covariates) fitted to the data as before: 
 <<>>=
 imputed.covar <- Impute(fit = dropout.fit,
-                        impute.mechanism = weighted_j2r(trt.weight=0),
+                        impute.mechanism = my.example.impute(steroid.prob=0.5,
+                                              non.steroid.prob = 0.9),
                         N=10)
 
 fitted.covar <- Simfit(imputed.covar,
