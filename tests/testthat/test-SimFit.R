@@ -1,12 +1,12 @@
 context("SingleSimFit")
 
-test_that("GetDefaultFormula",{
+test_that("GetModelFormula",{
   
-  expect_error(GetDefaultFormula(c(TRUE,TRUE)))
-  expect_error(GetDefaultFormula("x"))
+  expect_error(GetModelFormula(c(TRUE,TRUE),covar=NULL))
+  expect_error(GetModelFormula("x",covar=NULL))
   
-  expect_equal(as.character(GetDefaultFormula(TRUE)),as.character(formula(observed.events~arm+offset(log(censored.time)))))
-  expect_equal(as.character(GetDefaultFormula(FALSE)),as.character(formula(observed.events~offset(log(censored.time)))))
+  expect_equal(as.character(GetModelFormula(TRUE,covar=NULL)),as.character(formula(observed.events~arm+offset(log(censored.time)))))
+  expect_equal(as.character(GetModelFormula(FALSE,covar=NULL)),as.character(formula(observed.events~offset(log(censored.time)))))
   
 })
 
