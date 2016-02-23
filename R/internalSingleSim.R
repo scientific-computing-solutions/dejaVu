@@ -47,14 +47,19 @@ GetEventTimes <- function(rate,study.time){
 #If no formula is given to the fit function then 
 #a default formula is used (different depending on whether the arms
 #have the same dispersion parameters)
-GetDefaultFormula <- function(equal.dispersion){
+GetModelFormula <- function(equal.dispersion,covar){
   if(!is.logical(equal.dispersion) || length(equal.dispersion)>1){
     stop("Invalid equal.dispersion argument")
   }
   
-  if(equal.dispersion){
-    return(formula("observed.events ~ arm + offset(log(censored.time))"))
-  }
+  if(!is.null(covar)) validatecovar(covar)
+  
+  
+  rhs <- if(equal.dispersion) "arm + offset(log(censored.time))" else "offset(log(censored.time)"
+    
+  
+    
+  
   
   formula("observed.events ~ offset(log(censored.time))")
   

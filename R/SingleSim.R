@@ -156,13 +156,9 @@ numberSubjects.SingleSim <- function(x){
 
 ##' @export
 Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,...){
-  ValidateSimFitArguments(family,equal.dispersion) #No formula validation yet
+  ValidateSimFitArguments(family,equal.dispersion)
   
-  formula=GetDefaultFormula(equal.dispersion=equal.dispersion)
-  if(!is.null(covar)){
-    #validate covar formula here
-    formula <- update.formula(formula, ~. + covar)
-  }
+  formula <- GetModelFormula(equal.dispersion=equal.dispersion,covar=covar)
   
   data <- x$data[x$data$censored.time>0,]
   

@@ -434,6 +434,14 @@ dropout.covar <- SimulateDropout(complete.covar,
 summary(dropout.covar)
 @
 
+By using the \texttt{covar} argument with the \texttt{SimFit} function, covariates can be included in the model fit. In the code below we include the covariate \texttt{pre.exa} in the model fit (so the model becomes \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))+ pre.exa}
+
+<<>>=
+dropout.fit <- Simfit(dropout.covar,
+                 equal.dispersion=TRUE,
+                 covar=~pre.exa)
+@
+
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
 It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details (again it isn't much work to allow covariates/other columns of the data frame to be used when imputing data).

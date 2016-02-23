@@ -17,7 +17,8 @@ Simfit(x, family = "negbin", equal.dispersion = TRUE, covar, ...)
 fitting negative binomial models}
 
 \item{covar}{A formula containing the additional covariates to be used when calling \code{glm.nb} if
-no covariates are included in the model this should be NULL. See vignette for further details}
+no covariates are included in the model this should be NULL, for example \code{~covar1 + covar2}
+See vignette for further details}
 
 \item{...}{Additional arguments to be passed to \code{glm} or \code{glm.nb}}
 }

@@ -94,3 +94,37 @@ ValidateSimFitArguments <- function(family,equal.dispersion){
   }
   
 }
+
+
+#validates the covar argument to ensure it is not empty and
+#does not include the treatment arm 
+validatecovar <- function(covar){
+  
+  if(class(covar)!="formula") stop("Invalid covar is not of type formula")
+  
+  if(length(.getResponse(covar))!=0){
+    stop("covar cannot have any variables on the left hand side.")
+  }
+  
+  covariates <- attr(terms(covar),"term.labels")
+  if(length(covariates)==0){
+    stop("Empty covar argument!")
+  }
+  
+  ans <- unlist(lapply(covariates,function(x){
+    "arm" %in% unlist(strsplit(x,split=c(":")))
+  }))
+    
+  if(any(ans)){
+    stop("The covar argument cannot include interactions between treatment arm and covariates.")
+  }
+
+}
+
+#from http://stackoverflow.com/questions/13217322/how-to-reliably-get-dependent-variable-name-from-formula-object
+.getResponse <- function(formula) {
+  tt <- terms(formula)
+  vars <- as.character(attr(tt, "variables"))[-1] ## [1] is the list call
+  response <- attr(tt, "response") # index of response var
+  vars[response] 
+}
