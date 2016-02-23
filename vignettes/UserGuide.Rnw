@@ -26,7 +26,8 @@
 
 \section{Introduction}
 
-TODO (not worth writing until I have a better idea of the functionality the package will take). Include a description of the sections
+The \texttt{dejaVu} package performs multiple imputation on recurrent event data sets. The package allows users to import or simulate a ``complete" data set (one without any subjects dropping out). User-specified dropout mechanisms can then be applied to this data to generate a ``dropout” data set (or a dropout set can be imported directly).
+A multiple imputation procedure is then applied to the dropout data set and the package allows user specified imputation mechanisms to be created. Finally, the imputed data sets can be analysed and their results combined using Rubin's rules.
 
 \section{Running a Single MI Example}
 
@@ -135,7 +136,7 @@ The function \texttt{glm.nb} from the package \texttt{MASS} is used with the fol
 \item \texttt{observed.events} $\sim$ \texttt{offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
 \end{itemize}
 
-Additional arguments to \texttt{Simfit} are passed to the model fitting function. For example \texttt{Simfit(with.MCAR.dropout,maxit=50)} will increase the number of iterations when fitting the model (see \texttt{help(glm.control)} for further details). 
+It is possible to include covariates in the model formula using the \texttt{covar} argument; see Section \ref{covar} for further details. Additional arguments to \texttt{Simfit} are passed to the model fitting function. For example \newline \texttt{Simfit(with.MCAR.dropout,maxit=50)} will increase the number of iterations when fitting the model (see \texttt{help(glm.control)} for further details). 
 
 This creates a \texttt{SingleSimFit} object:
 <<>>=
@@ -148,10 +149,11 @@ x <- summary(my.fit)
 x$pval
 @
 
-We can output $\gamma$ and $p$ for the model fit (see Equation \eqref{nbpdf}) -- they are vectors containing the value for first the control arm and then the active arm:
+We can output $\gamma$ and $\mu$ for the model fit (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the value for first the control arm and then the active arm and $\mu$ a matrix, one row per subject\footnote{if there are covariates then $\mu$ is subject specific}, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm :
 <<ip>>=
 my.fit$impute.parameters$gamma
-my.fit$impute.parameters$p
+
+head(my.fit$impute.parameters$mu, 5)
 @
 
 Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
@@ -188,7 +190,7 @@ sixth.fit <- Simfit(sixth.data.set,
 summary(sixth.fit)
 @
 
-It is possible to fit the entire set of imputed data sets in one go, again using the \texttt{Simfit} function:
+It is possible to fit the entire set of imputed data sets in one go, again using the \texttt{Simfit} function (again the \texttt{covar} argument can be used to include covariates in the model fit):
 <<>>=
 fitted <- Simfit(imputed.data.sets,
                  family="negbin") #negbin is the default
@@ -328,10 +330,10 @@ If \texttt{trt.weight = 0} then imputation using this mechanism will follow the 
 
 If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
 
-Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $p=(p_c,p_a)$ and $\gamma=(\gamma_c,\gamma_a)$ from the model fit for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
+Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $\mu=(\mu_c,\mu_a)$, the (possibly subject-specific) expected means, and $\gamma=(\gamma_c,\gamma_a)$ are $1/$dispersions from the model fit, for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
 \begin{itemize}
-\item $NB(p=\frac{p_c t_i}{\gamma_c+p_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
-\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{p_c t_i}{\gamma_a + p_a(T-t_i)+p_c t_i}$ and $q_a=\frac{p_a t_i}{\gamma_a+p_aT}$.
+\item $NB(p=\frac{\mu_c t_i}{\gamma_c+\mu_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
+\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{\mu_c t_i}{\gamma_a + \mu_a(T-t_i)+\mu_c t_i}$ and $q_a=\frac{\mu_a t_i}{\gamma_a+\mu_aT}$.
 \end{itemize}
 
 Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be included. It should be a vector of length 2, \texttt{c(control.delta,treatment.delta)} and in this case the mean number of expected events for the imputed missing data is multipled by the appropriate delta (and so $p$ is adjusted appropriately):
@@ -340,7 +342,7 @@ Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be 
 @
 
 \section{Using covariates \& creating new dropout/imputing mechanisms}
-
+\label{covar}
 In this Section we show how to perform multiple imputation using a data set with covariates. Here we use a set of covariates to simulate a ``complete data set'' of events. \textbf{Note} that it is possible to import a complete/dropout data set on which imputation can be perfomed, see \texttt{help(ImportSim)} for examples.
 
 In order to use the \texttt{SimulateComplete} function with covariates, we require a data frame containing the covariates together with three additional columns: subject Id, treatment arm (0 for control or 1 for active) and a rate column (typically a function of the covariates/treatment arm). The rate column will replace the \texttt{event.rates} argument, so it is a subject specific $\mu/T$.
@@ -487,9 +489,11 @@ my.example.impute <- function(prob){ # parameters for probability control arm ha
         break
       }  
         
-      #Note could access the p, gamma from the fit
-      p <-  my.fit$impute.parameters$p
+      #Note could access the mu, gamma from the fit
+      mu <-  my.fit$impute.parameters$mu
       gamma <- my.fit$impute.parameters$gamma
+      
+      #so mu[i,] is (mu_c,mu_a) for subject i
       
       #did subject have an event?
       is.event <- rbinom(n=1,size = 1,prob=prob)

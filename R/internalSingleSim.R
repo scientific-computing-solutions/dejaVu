@@ -86,15 +86,31 @@ remove.dejacols <- function(dejaData){
 }
 
 
-GetGammaP <- function(model,data,equal.dispersion){
+#helper function for GetGamma_mu
+.getPredict <- function(models,data){
+  data$censored.time <- rep(1,nrow(data))
+  data$arm <- factor(rep(0,nrow(data)))
+  mu <- exp(predict(models[[1]],newdata=data,type="link"))
+  data$arm <- factor(rep(1,nrow(data)))  
+  c(mu,exp(predict(models[[2]],newdata=data,type="link")))  
+}
+
+#given model (or list of models) of from creating a SimFit object
+#output a list of impute.parameters which contains
+#the value of equal.dispersion
+#a vector of gamma (1/dispersion) values, control then active arm
+#a matrix of mu (mean of negative binomial) values, one row per subject
+#first column control arm, second column active arm
+GetGamma_mu <- function(model,data,equal.dispersion){
   if(equal.dispersion){
     mod.summary <- summary(model)
     gamma <- rep(mod.summary$theta,2)
-    p <- exp(mod.summary$coeffi[1,1])*c(1,exp(mod.summary$coeffi[2,1]))
+    mu<- .getPredict(list(model,model),data)
   }
   else{
     gamma <- vapply(model,function(mod){summary(mod)$theta},FUN.VALUE = numeric(1)) 
-    p <-  vapply(model,function(mod){exp(summary(mod)$coeffi[1,1])},FUN.VALUE = numeric(1)) 
+    mu <-  .getPredict(model,data) 
   }
-  return(list(gamma=gamma,p=p,equal.dispersion=equal.dispersion))
+  
+  return(list(gamma=gamma,mu=matrix(mu,ncol = 2,byrow=FALSE),equal.dispersion=equal.dispersion))
 }

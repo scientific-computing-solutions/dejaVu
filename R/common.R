@@ -40,18 +40,18 @@ numberSubjects.default <- function(x){
 ##' \code{glm} 
 ##' @param equal.dispersion logical, should the arms have the same dispersion parameter when
 ##' fitting negative binomial models
-##' @param formula The formula to be used when calling \code{glm.nb} this should be
-##' left as the default value for all but advanced users 
+##' @param covar A formula containing the additional covariates to be used when calling \code{glm.nb} if 
+##' no covariates are included in the model this should be NULL. See vignette for further details  
 ##' @param ... Additional arguments to be passed to \code{glm} or \code{glm.nb}
 ##' @return A \code{SingleSimFit} object
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @export
-Simfit <- function(x,family="negbin",equal.dispersion=TRUE,formula,...){
+Simfit <- function(x,family="negbin",equal.dispersion=TRUE,covar,...){
   UseMethod("Simfit")
 }
 
 ##' @export
-Simfit.default <- function(x,family="negbin",equal.dispersion=TRUE,formula,...){
+Simfit.default <- function(x,family="negbin",equal.dispersion=TRUE,covar,...){
   stop("Invalid x for Simfit")
 }
 

@@ -155,9 +155,14 @@ numberSubjects.SingleSim <- function(x){
 }
 
 ##' @export
-Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=GetDefaultFormula(equal.dispersion=equal.dispersion),...){
-  
+Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,...){
   ValidateSimFitArguments(family,equal.dispersion) #No formula validation yet
+  
+  formula=GetDefaultFormula(equal.dispersion=equal.dispersion)
+  if(!is.null(covar)){
+    #validate covar formula here
+    formula <- update.formula(formula, ~. + covar)
+  }
   
   data <- x$data[x$data$censored.time>0,]
   
@@ -172,7 +177,7 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,formula=Get
   }
   
   
-  impute.parameters <- if(family=="negbin") GetGammaP(model,data,equal.dispersion) 
+  impute.parameters <- if(family=="negbin") GetGamma_mu(model,data,equal.dispersion) 
                        else list(equal.dispersion=equal.dispersion) 
   
   class(impute.parameters) <- "ImputeParameters"

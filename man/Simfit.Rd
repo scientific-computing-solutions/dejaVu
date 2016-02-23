@@ -4,7 +4,7 @@
 \alias{Simfit}
 \title{S3 generic for fitting models}
 \usage{
-Simfit(x, family = "negbin", equal.dispersion = TRUE, formula, ...)
+Simfit(x, family = "negbin", equal.dispersion = TRUE, covar, ...)
 }
 \arguments{
 \item{x}{The S3 object}
@@ -16,8 +16,8 @@ Simfit(x, family = "negbin", equal.dispersion = TRUE, formula, ...)
 \item{equal.dispersion}{logical, should the arms have the same dispersion parameter when
 fitting negative binomial models}
 
-\item{formula}{The formula to be used when calling \code{glm.nb} this should be
-left as the default value for all but advanced users}
+\item{covar}{A formula containing the additional covariates to be used when calling \code{glm.nb} if
+no covariates are included in the model this should be NULL. See vignette for further details}
 
 \item{...}{Additional arguments to be passed to \code{glm} or \code{glm.nb}}
 }

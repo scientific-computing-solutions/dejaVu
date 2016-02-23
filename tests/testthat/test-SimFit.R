@@ -59,9 +59,9 @@ test_that("Simfit_diff_dispersions",{
   expect_equal(mymod.2,fit.diff.disp$model[[2]])
   
   expect_equal(c(mymod.1$theta,mymod.2$theta), fit.diff.disp$impute.parameters$gamma)
-  p <- exp(c(coefficients(mymod.1),coefficients(mymod.2)))
-  names(p) <- NULL
-  expect_equal(p, fit.diff.disp$impute.parameters$p)
+  mu <- matrix(rep(exp(c(coefficients(mymod.1),coefficients(mymod.2))),100),ncol=2,byrow=TRUE)
+  names(mu) <- NULL
+  expect_equal(mu, fit.diff.disp$impute.parameters$mu)
 })
 
 
@@ -88,10 +88,10 @@ test_that("sim_fit_equal_dispersion",{
   expect_true(fit$impute.parameters$equal.dispersion)
   expect_equal(rep(mymod$theta,2),fit$impute.parameters$gamma )
   
-  #checking p
-  p <- exp(mymod$coefficients[1])*c(1,exp(mymod$coefficients[2]))
-  names(p) <- NULL
-  expect_equal(p,fit$impute.parameters$p )
+  #checking mu
+  mu <- mu <- matrix(rep(exp(mymod$coefficients[1])*c(1,exp(mymod$coefficients[2])),100),ncol=2,byrow=TRUE)
+  names(mu) <- NULL
+  expect_equal(mu,fit$impute.parameters$mu )
   
 })
 
@@ -150,7 +150,7 @@ test_that("summary.SingleSimFit",{
   tr <- coefficients(fit$model)
   names(tr) <- NULL
   expect_equal(exp(tr[2]),s$treatment.effect)
-  expect_equal(fit$impute.parameters$p, s$rate.estimate)
+  expect_equal(fit$impute.parameters$mu[1,], s$rate.estimate)
   expect_equal(fit$model$df.residual,s$df)
   expect_equal("dropout",s$datastatus)
   expect_equal(1/fit$impute.parameters$gamma[1], s$dispersion)

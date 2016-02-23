@@ -8,9 +8,9 @@
 ##' @param singleSim The \code{SingleSim} object to which a model has been fitted
 ##' @param model The model which has been fitted
 ##' @param impute.parameters A list of parameters from the model
-##' (i.e. p and gamma) fit which are used when imputing data
+##' (i.e. mu and gamma) fit which are used when imputing data
 ##' If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
-##' then this parameter list will not include p and gamma and therefore could not be used to 
+##' then this parameter list will not include mu and gamma and therefore could not be used to 
 ##' impute data
 ##' 
 ##' @name SingleSimFit.object
@@ -116,7 +116,7 @@ validateImputeArguments <- function(fit,impute.mechanism,N){
     stop("Invalid fit argument, must be of class SingleSimFit")
   }
   
- if(is.null(fit$impute.parameters$p)){
+ if(is.null(fit$impute.parameters$mu)){
     stop("Cannot impute using this SingleSimFit object (a negative binomial model was not fit)")
   }
   

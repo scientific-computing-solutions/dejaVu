@@ -9,9 +9,9 @@
 \item{model}{The model which has been fitted}
 
 \item{impute.parameters}{A list of parameters from the model
-(i.e. p and gamma) fit which are used when imputing data
+(i.e. mu and gamma) fit which are used when imputing data
 If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
-then this parameter list will not include p and gamma and therefore could not be used to
+then this parameter list will not include mu and gamma and therefore could not be used to
 impute data}
 }
 \description{

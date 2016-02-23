@@ -90,14 +90,14 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     if(time.left==0){return(numeric(0))} #subject was not censored
     
     if(df$arm[i]==0){
-      p <- (fit$impute.parameters$p[1] * time.left)/(fit$impute.parameters$gamma[1]+fit$impute.parameters$p[1]*study.time)
+      p <- (fit$impute.parameters$mu[i,1] * time.left)/(fit$impute.parameters$gamma[1]+fit$impute.parameters$mu[i,1]*study.time)
       gamma <- fit$impute.parameters$gamma[1] + df$observed.events[i]
       delta.factor <- delta[1]
     }
     else{
-      p <- (fit$impute.parameters$p[1]*time.left)/
-           (fit$impute.parameters$gamma[2] + fit$impute.parameters$p[2]*df$censored.time[i] + fit$impute.parameters$p[1]*time.left)
-      p <- c(p, (fit$impute.parameters$p[2]*time.left)/(fit$impute.parameters$gamma[2]+fit$impute.parameters$p[2]*study.time))
+      p <- (fit$impute.parameters$mu[i,1]*time.left)/
+           (fit$impute.parameters$gamma[2] + fit$impute.parameters$mu[i,2]*df$censored.time[i] + fit$impute.parameters$mu[i,1]*time.left)
+      p <- c(p, (fit$impute.parameters$mu[i,2]*time.left)/(fit$impute.parameters$gamma[2]+fit$impute.parameters$mu[i,2]*study.time))
       p <- treatment.p.choice(p)
       gamma <- fit$impute.parameters$gamma[2] + df$observed.events[i]
       delta.factor <- delta[2]
