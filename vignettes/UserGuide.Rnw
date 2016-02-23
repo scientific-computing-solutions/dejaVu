@@ -26,7 +26,7 @@
 
 \section{Introduction}
 
-The \texttt{dejaVu} package performs multiple imputation on recurrent event data sets. The package allows users to import or simulate a ``complete" data set (one without any subjects dropping out). User-specified dropout mechanisms can then be applied to this data to generate a ``dropout” data set (or a dropout set can be imported directly).
+The \texttt{dejaVu} package performs multiple imputation on recurrent event data sets. The package allows users to import or simulate a ``complete" data set (one without any subjects dropping out). User-specified dropout mechanisms can then be applied to this data to generate a ``dropout" data set (or a dropout set can be imported directly).
 A multiple imputation procedure is then applied to the dropout data set and the package allows user specified imputation mechanisms to be created. Finally, the imputed data sets can be analysed and their results combined using Rubin's rules.
 
 \section{Running a Single MI Example}
