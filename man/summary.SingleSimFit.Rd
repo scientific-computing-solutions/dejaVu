@@ -26,6 +26,8 @@ CI of \code{x} instead.}
 \item{df}{The number of degrees of freedom of the model}
 
 \item{dropout}{The number of dropouts of each arm}
+
+\item{number.subjects}{The number of subjects in each arm}
 }
 \description{
 The summary object for a \code{SingleSimFit} object

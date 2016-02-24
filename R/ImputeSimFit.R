@@ -40,8 +40,8 @@ as.data.frame.ImputeSimFit <- function(x,row.names = NULL, optional = FALSE,...)
 
   
 ##' @export
-numberSubjects.ImputeSimFit <- function(x,...){
-  numberSubjects(x$imputeSim)
+subjectsPerArm.ImputeSimFit <- function(x,...){
+  subjectsPerArm(x$imputeSim)
 } 
 
 ##' summary.ImputeSimFit object
@@ -80,7 +80,7 @@ summary.ImputeSimFit <- function(object,...){
   retVal <- .rubinsformula(data$treatment.effect,data$se, object$summaries[[1]]$df,N)
   retVal$dropout <- object$imputeSim$dropout
   retVal$dispersion <- mean(data$dispersion)
-  retVal$number.subjects <- subjectsPerArm(object$imputeSim)
+  retVal$number.subjects <- subjectsPerArm(object)
   class(retVal) <- "summary.ImputeSimFit"
   retVal
 }

@@ -71,6 +71,12 @@ test_that("CompleteSim_creation_as_expected",{
 })
 
 
+test_that("numberSubjects_subjectsperarm",{
+  sim <- SimulateComplete(study.time=12,number.subjects=c(2,4),event.rates=0.1,dispersions=c(0,0.5))
+  expect_equal(c(2,4),subjectsPerArm(sim))
+  expect_equal(6,numberSubjects(sim))
+})
+
 test_that("SimComplete_with_deja_matches_without",{
   set.seed(20)
   sim <- SimulateComplete(study.time=10,number.subjects=2,event.rates=c(0.5,0.6),dispersions=0.5)

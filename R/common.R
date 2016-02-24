@@ -22,7 +22,7 @@ NULL
 
 ##' S3 generic to output the number of subjects in each arm for a given object
 ##' @param x The object
-##' @return A vector of the number of subjects
+##' @return A vector of the number of subjects in each arm
 ##' @export
 subjectsPerArm <- function(x){
   UseMethod("subjectsPerArm")
