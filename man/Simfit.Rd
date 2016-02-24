@@ -4,7 +4,7 @@
 \alias{Simfit}
 \title{S3 generic for fitting models}
 \usage{
-Simfit(x, family = "negbin", equal.dispersion = TRUE, covar, ...)
+Simfit(x, family = "negbin", equal.dispersion = TRUE, covar = NULL, ...)
 }
 \arguments{
 \item{x}{The S3 object}

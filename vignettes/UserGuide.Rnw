@@ -149,11 +149,14 @@ x <- summary(my.fit)
 x$pval
 @
 
-We can output $\gamma$ and $\mu$ for the model fit (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the value for first the control arm and then the active arm and $\mu$ a matrix, one row per subject\footnote{if there are covariates then $\mu$ is subject specific}, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm :
+We can output $\gamma$ and $\mu$ for the model fit (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the value for first the control arm and then the active arm and $\mu$ a matrix, one row per subject\footnote{if there are covariates then $\mu$ is subject specific}, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm:
 <<ip>>=
-my.fit$impute.parameters$gamma
 
-head(my.fit$impute.parameters$mu, 5)
+gamma_and_mu <- my.fit$impute.parameters$gamma_mu_function()
+
+gamma_mu$gamma
+
+head(gamma_$mu, 5)
 @
 
 Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
@@ -442,7 +445,8 @@ dropout.fit <- Simfit(dropout.covar,
                  covar=~pre.exa)
 
 #The values of mu now depend on subject's pre.exa value
-head(dropout.fit$impute.parameters$mu)
+gamma_mu <- dropout.fit$impute.parameters$gamma_mu_function()
+head(gamma_mu$mu)
 @
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
@@ -497,9 +501,8 @@ my.example.impute <- function(steroid.prob,non.steroid.prob){
       if(data[id,]$arm==1 || time.left==0) break;
         
       #Note could access the mu, gamma from the fit
-      mu <-  my.fit$impute.parameters$mu
-      gamma <- my.fit$impute.parameters$gamma
-      #so mu[i,] is (mu_c,mu_a) for subject i
+      gamma_mu <-  my.fit$impute.parameters$gamma_mu_function()
+      #so gamma_mu$mu[i,] is (mu_c,mu_a) for subject i
       
       #get the probability of an event 
       prob <- if(data[id,]$steroid==1)steroid.prob else non.steroid.prob 

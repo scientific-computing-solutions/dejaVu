@@ -78,6 +78,7 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
   #@return returns a list of vectors, the imputed event times for each subject (if subject has no new imputed
   #events then the vector should be numeric(0))
   
+  gamma_mu <- fit$impute.parameters$gamma_mu_function()
   
   #the data frame from the SimFit object  
   df <- fit$singleSim$data
@@ -90,16 +91,16 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     if(time.left==0){return(numeric(0))} #subject was not censored
     
     if(df$arm[i]==0){
-      p <- (fit$impute.parameters$mu[i,1] * time.left)/(fit$impute.parameters$gamma[1]+fit$impute.parameters$mu[i,1]*study.time)
-      gamma <- fit$impute.parameters$gamma[1] + df$observed.events[i]
+      p <- (gamma_mu$mu[i,1] * time.left)/(gamma_mu$gamma[1]+gamma_mu$mu[i,1]*study.time)
+      gamma <- gamma_mu$gamma[1] + df$observed.events[i]
       delta.factor <- delta[1]
     }
     else{
-      p <- (fit$impute.parameters$mu[i,1]*time.left)/
-           (fit$impute.parameters$gamma[2] + fit$impute.parameters$mu[i,2]*df$censored.time[i] + fit$impute.parameters$mu[i,1]*time.left)
-      p <- c(p, (fit$impute.parameters$mu[i,2]*time.left)/(fit$impute.parameters$gamma[2]+fit$impute.parameters$mu[i,2]*study.time))
+      p <- (gamma_mu$mu[i,1]*time.left)/
+           (gamma_mu$gamma[2] + gamma_mu$mu[i,2]*df$censored.time[i] + gamma_mu$mu[i,1]*time.left)
+      p <- c(p, (gamma_mu$mu[i,2]*time.left)/(gamma_mu$gamma[2]+gamma_mu$mu[i,2]*study.time))
       p <- treatment.p.choice(p)
-      gamma <- fit$impute.parameters$gamma[2] + df$observed.events[i]
+      gamma <- gamma_mu$gamma[2] + df$observed.events[i]
       delta.factor <- delta[2]
     }  
     

@@ -114,6 +114,10 @@ GetGamma_mu <- function(model,data,equal.dispersion){
     gamma <- vapply(model,function(mod){summary(mod)$theta},FUN.VALUE = numeric(1)) 
     mu <-  .getPredict(model,data) 
   }
+  #when this function is changed then don't forget to update SingleSimFit.object in Roxygen
+  #and the user guide
+  gamma_mu_function <- function(){list(gamma=gamma,mu=matrix(mu,ncol = 2,byrow=FALSE))}
   
-  return(list(gamma=gamma,mu=matrix(mu,ncol = 2,byrow=FALSE),equal.dispersion=equal.dispersion))
+  return(list(gamma_mu_function=gamma_mu_function,
+              equal.dispersion=equal.dispersion))
 }
