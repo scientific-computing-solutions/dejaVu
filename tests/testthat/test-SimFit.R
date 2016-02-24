@@ -11,7 +11,7 @@ test_that("GetModelFormula",{
 })
 
 test_that("Simfit.SingleSim",{
-  #not testing formula argument
+  #not testing formula argument here
   
   set.seed(143)
   
@@ -58,10 +58,10 @@ test_that("Simfit_diff_dispersions",{
   expect_equal(mymod.1,fit.diff.disp$model[[1]])
   expect_equal(mymod.2,fit.diff.disp$model[[2]])
   
-  expect_equal(c(mymod.1$theta,mymod.2$theta), fit.diff.disp$impute.parameters$gamma)
+  expect_equal(c(mymod.1$theta,mymod.2$theta), fit.diff.disp$impute.parameters$gamma_mu_function()$gamma)
   mu <- matrix(rep(exp(c(coefficients(mymod.1),coefficients(mymod.2))),100),ncol=2,byrow=TRUE)
   names(mu) <- NULL
-  expect_equal(mu, fit.diff.disp$impute.parameters$mu)
+  expect_equal(mu, fit.diff.disp$impute.parameters$gamma_mu_function()$mu)
 })
 
 
@@ -86,12 +86,12 @@ test_that("sim_fit_equal_dispersion",{
   expect_equal(mymod,fit$model)
   
   expect_true(fit$impute.parameters$equal.dispersion)
-  expect_equal(rep(mymod$theta,2),fit$impute.parameters$gamma )
+  expect_equal(rep(mymod$theta,2),fit$impute.parameters$gamma_mu_function()$gamma)
   
   #checking mu
   mu <- mu <- matrix(rep(exp(mymod$coefficients[1])*c(1,exp(mymod$coefficients[2])),100),ncol=2,byrow=TRUE)
   names(mu) <- NULL
-  expect_equal(mu,fit$impute.parameters$mu )
+  expect_equal(mu,fit$impute.parameters$gamma_mu_function()$mu)
   
 })
 
@@ -150,10 +150,10 @@ test_that("summary.SingleSimFit",{
   tr <- coefficients(fit$model)
   names(tr) <- NULL
   expect_equal(exp(tr[2]),s$treatment.effect)
-  expect_equal(fit$impute.parameters$mu[1,], s$rate.estimate)
+  expect_equal(fit$impute.parameters$gamma_mu_function()$mu[1,], s$rate.estimate)
   expect_equal(fit$model$df.residual,s$df)
   expect_equal("dropout",s$datastatus)
-  expect_equal(1/fit$impute.parameters$gamma[1], s$dispersion)
+  expect_equal(1/fit$impute.parameters$gamma_mu_function()$gamma[1], s$dispersion)
   expect_equal(coefficients(summary(fit$model))[2,2],s$se)
   expect_equal(2*pnorm(log(s$treatment.effect)/s$se),s$pval)
   
