@@ -154,9 +154,9 @@ We can output $\gamma$ and $\mu$ for the model fit (see Equation \eqref{nbpdf}) 
 
 gamma_and_mu <- my.fit$impute.parameters$gamma_mu_function()
 
-gamma_mu$gamma
+gamma_and_mu$gamma
 
-head(gamma_$mu, 5)
+head(gamma_and_mu$mu, 5)
 @
 
 Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
@@ -500,7 +500,7 @@ my.example.impute <- function(steroid.prob,non.steroid.prob){
       #no imputed events and if in treatment group then no new events
       if(data[id,]$arm==1 || time.left==0) break;
         
-      #Note could access the mu, gamma from the fit
+      #Note could access the mu, gamma for the imputation
       gamma_mu <-  my.fit$impute.parameters$gamma_mu_function()
       #so gamma_mu$mu[i,] is (mu_c,mu_a) for subject i
       
