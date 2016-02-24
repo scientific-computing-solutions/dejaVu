@@ -150,8 +150,8 @@ SimulateDropout <- function(simComplete,drop.mechanism){
 
 
 ##' @export
-numberSubjects.SingleSim <- function(x){
-  return(nrow(x$data))  
+subjectsPerArm.SingleSim <- function(x){
+  c(nrow(x$data[x$data$arm==0,]),nrow(x$data[x$data$arm==1,]))  
 }
 
 ##' @export

@@ -62,6 +62,7 @@ numberSubjects.ImputeSimFit <- function(x,...){
 ##' @param adjusted.pval The p-value for the test log(treatment.effect)=0 using Rubin's
 ##' formula and the adjusted number of degrees of freedom 
 ##' @param dropout The number of subjects who drop out (per arm) for this imputed data set
+##' @param number.subjects The number of subjects (per arm) for this imputed data set
 ##' @name summary.ImputeSimFit.object
 NULL
 
@@ -79,6 +80,7 @@ summary.ImputeSimFit <- function(object,...){
   retVal <- .rubinsformula(data$treatment.effect,data$se, object$summaries[[1]]$df,N)
   retVal$dropout <- object$imputeSim$dropout
   retVal$dispersion <- mean(data$dispersion)
+  retVal$number.subjects <- subjectsPerArm(object$imputeSim)
   class(retVal) <- "summary.ImputeSimFit"
   retVal
 }

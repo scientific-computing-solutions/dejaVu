@@ -39,7 +39,7 @@ In this section we walk through a single MI example:
 \item Analysing results using Rubin's formula 
 \end{itemize}
 
-See later in the guide for details of running a large number of examples and combining the results to estimate summary statistics such as power and Type I error.
+See later in the guide for using covariates with the package and for details of running a large number of examples and combining the results to estimate summary statistics such as power and Type I error.
 
 In order to use the functionality of the package, it must be loaded:
 <<load,message=FALSE>>=
@@ -57,9 +57,9 @@ set.seed(1298711)
 
 The \texttt{SimulateComplete} function is used to generate a complete data set of subject outcomes for a recurrent event study with follow up time $T$ and the number of events for each subject, $n_i$ is given by a negative binomial process. 
 
-Under the negative binomial assumption the time interval between adjacent event for a given subject are exponentially distributed with rate $\lambda_i/T$ where $\lambda_i \sim \mathrm{Gamma}(1/k,k\mu)$ and $k$ is the dispersion parameter and $\mu$ the mean number of events ($k$ and $\mu$ can be different for each treatment group)
+Under the negative binomial assumption the time interval between adjacent event for a given subject are exponentially distributed with rate $\lambda_i/T$ where $\lambda_i \sim \mathrm{Gamma}(1/k,k\mu)$ and $k$ is the dispersion parameter and $\mu$ the mean number of events ($k$ and $\mu$ can be different for each treatment group).
 
-Specifically
+Specifically,
 \begin{equation}
 \label{nbpdf}
 \mathbb{P}(n_i=r) = NB(p,\gamma) = \left.\frac{\Gamma(\gamma+ r)}{\Gamma(r+1)\Gamma(\gamma)}p^r(1-p)^{\gamma}\right.\end{equation} where $\gamma=1/k$ and $p=\frac{k\mu}{1+k\mu}$.
@@ -149,7 +149,7 @@ x <- summary(my.fit)
 x$pval
 @
 
-We can output $\gamma$ and $\mu$ for the model fit (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the value for first the control arm and then the active arm and $\mu$ a matrix, one row per subject\footnote{if there are covariates then $\mu$ is subject specific}, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm:
+We can output $\gamma$ and $\mu$ which would be used for the imputation (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the 1/dispersion for first the control arm and then the active arm and $\mu$ a matrix containing the predicted mean number of events per subject, one row per subject\footnote{if there are covariates then $\mu$ is subject specific}, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm:
 <<ip>>=
 
 gamma_and_mu <- my.fit$impute.parameters$gamma_mu_function()
@@ -170,7 +170,7 @@ imputed.data.sets$dropout
 @
 
 The \texttt{Impute} function requires three arguments, the fit, an impute mechanism and $N$ the number of data sets to impute.
-We are using the weighted j2r impute mechanism with treatment weight$=0$ which implies missing counts for subjects in both arms will be imputed according to the mean of the control arm conditioned on the number of subject's observed events. See later in the tutorial for further details, other available impute mechanisms and a description of how to implement your own.   
+We are using the weighted j2r impute mechanism with treatment weight $=0$ which implies missing counts for subjects in both arms will be imputed according to the mean of the control arm conditioned on the number of subject's observed events. See later in the tutorial for further details, other available impute mechanisms and a description of how to implement your own.   
 
 \subsection{Fitting MI datasets}
 
@@ -183,7 +183,7 @@ summary(sixth.data.set)
 head(sixth.data.set$data)
 @
 
-Note the \texttt{actual.censored.time} column is the time the subject was actually censored at whereas the \texttt{censored.time} column is the time the subject was censored after applying the imputation. Similarly the \texttt{actual.events} is the actual number of events which occurred and \texttt{observed.events} is the number of events which were `observed' after imputation.
+Note the \texttt{actual.censored.time} column is the time the subject was actually censored at whereas the \texttt{censored.time} column is the time the subject was censored after applying the imputation. Similarly the \texttt{actual.events} is the actual number of events which occurred and \texttt{observed.events} is the number of events which were `observed' including imputed events.
 
 We can fit a model to imputed data sets. By default the \texttt{Simfit} function fits a negative binomial model, however, by using the family argument a Poission or quasi-Poisson model can be used instead (the same model formula is used as in the negative binomial case however \texttt{glm} is used rather than \texttt{glm.nb})
 <<>>=
@@ -204,14 +204,14 @@ We can create a data frame collating the fitted values:
 head(as.data.frame(fitted))
 @
 
-We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987} (Note I am using the formula from the Handling Missing Recurrent Events Data in Clinical Trials document given to me by Mattis).
+We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987}. 
 <<>>=
 summary(fitted)
 @
 
 \section{Running Complete Scenarios}
 
-In order to calculate the summary statistics such as power it is necessary to repeat the procedure multiple times. In this example we show how to easily replicate and combine the results
+In order to calculate the summary statistics such as power it is necessary to repeat the procedure multiple times. In this example we show how to easily replicate and combine the results.
 
 First we create a function which outputs a list of the summaries of the fits we are interested in:
 <<scenario>>=
@@ -258,7 +258,7 @@ length(answer)
 #we can create a list with only the MI results
 MI.fits <- lapply(answer,"[[","MI")
 
-MI.fits[[1]]
+#the 2nd MI fit
 MI.fits[[2]]
 
 #and create the scenario
@@ -273,8 +273,6 @@ dropout.answer <- extract_results(answer,name="dropout",
                             description="Using no imputation")
 complete.answer <- extract_results(answer,name="complete",
                             description="Using complete data sets")
-
-
 
 
 class(MI.answer)
@@ -296,13 +294,6 @@ x <- summary(MI.answer,use.adjusted.pval=TRUE,alpha=0.025)
 x$power
 @
 
-I haven't implemented plotting functions -- there is an argument for not including them directly in the package:
-\begin{itemize} 
-\item Given the outputs from the summaries above it should be quite easy to plot exactly what is wanted and an example could be included in the vignette and the possibilites of what is wanted is very general
-\item As soon as specific plots are added, users typically (though not always..) want to be able to customize them exactly how they would like them to look and adding so many options to the plots that it becomes easy to just give an example and direct users to lattice/ggplot2.
-\item We can discuss this further of course.
-\end{itemize}
-
 \section{Additional Dropout and Imputing Information}
 
 \paragraph{Additional Dropout mechanisms}
@@ -323,7 +314,7 @@ with.MAR.dropout <- SimulateDropout(complete,
 
 @
 
-Please let me know of any more you would like!
+See later in the guide for creating custom dropout mechanisms.
 
 \paragraph{Additional Imputing Mechanisms}
 
@@ -412,7 +403,7 @@ steroidMCAR <- function(steroid.rate, non.steroid.rate,var=0){
   
   #we call the CreateNewDropoutMechanism function
   #with the following arguments
-  CreateNewDropoutMechanism(type="MCAR", 
+  CreateNewDropoutMechanism(type="MNAR", 
                             text="Rate dependent on steroid use", #the text to be output
                             cols.needed=cols.needed, #see above
                             GetDropTime=GetDropTime, #see above
@@ -437,7 +428,7 @@ dropout.covar <- SimulateDropout(complete.covar,
 summary(dropout.covar)
 @
 
-By using the \texttt{covar} argument with the \texttt{SimFit} function, covariates can be included in the model fit. In the code below we include the covariate \texttt{pre.exa} in the model fit (so the model becomes \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))+ pre.exa})
+By using the \texttt{covar} argument with the \texttt{SimFit} function, covariates can be included in the model fit. In the code below we include the covariate \texttt{pre.exa} in the model fit (so the model becomes \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))+ pre.exa}).
 
 <<>>=
 dropout.fit <- Simfit(dropout.covar,
@@ -451,7 +442,7 @@ head(gamma_mu$mu)
 
 \paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
 
-It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details (again it isn't much work to allow covariates/other columns of the data frame to be used when imputing data).
+It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details.
 
 In our toy\footnote{this is clearly not a sensible imputing method but shows how to implement imputing mechanisms} example we would like subjects in the treatment group to have no imputed events and subjects in the control group to have either 0 or 1 events with a given probability which depends on their \texttt{steroid} covariate value. If subjects have an event it is midway between dropping out and the end of the follow up period. 
 
@@ -535,7 +526,7 @@ my.example.impute(steroid.prob=0.5,non.steroid.prob = 0.9)
 @
 
 For a more complex example (aimed for developers) see the functions: \texttt{weighted\_j2r} and \newline  \texttt{dejaVu:::.internal.impute}. 
-Using the imputation mechanim, MI can be performed and models (with covariates) fitted to the data as before: 
+Using the imputation mechanism, MI can be performed and models (with covariates) fitted to the data as before: 
 <<>>=
 imputed.covar <- Impute(fit = dropout.fit,
                         impute.mechanism = my.example.impute(steroid.prob=0.5,

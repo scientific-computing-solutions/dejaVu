@@ -61,8 +61,8 @@ as.data.frame.Scenario <- function(x,row.names = NULL, optional = FALSE,use.adju
              pval=.extract(paste(adjusted.string,"pval",sep="")),
              df=.extract(paste(adjusted.string,"df",sep="")),
              dispersion=if(length(x$summaries[[1]]$dispersion)>0) .extract("dispersion") else NA,
-             dropout.control=dropout[1,],
-             dropout.active=dropout[2,]
+             dropout.control.rate=dropout[1,]/x$summaries[[1]]$number.subjects[1],
+             dropout.active.rate=dropout[2,]/x$summaries[[1]]$number.subjects[2]
             )
 
 }
@@ -155,7 +155,8 @@ summary.Scenario <- function(object,alpha=0.05,use.adjusted.pval=FALSE,...){
     se=mean(data$se),
     power=sum(data$pval<alpha)/nrow(data),
     alpha=alpha,
-    dropout=list(summary(data$dropout.control),summary(data$dropout.active)))
+    dropout=list(summary(data$dropout.control.rate),
+                 summary(data$dropout.active.rate)))
 }
 
 ##' @export
@@ -173,7 +174,7 @@ print.summary.Scenario <- function(x,...){
   }
   cat("\n  power:",x$power,fill=TRUE)
   
-  cat("Dropout numbers summary statistics\n")
+  cat("Dropout rate summary statistics\n")
   cat("Control arm:\n")
   print(x$dropout[[1]])
   cat("Active arm:\n")

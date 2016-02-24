@@ -88,8 +88,8 @@ test_that("as.data.frame.scenario",{
   
   expect_equal(2,nrow(df1))
   expect_equal(1:2,df1$replica)
-  expect_equal(s1$summaries[[1]]$dropout[1],df1$dropout.control[1] )
-  expect_equal(c(0,0),df1$dropout.active )
+  expect_equal(s1$summaries[[1]]$dropout[1],df1$dropout.control.rate[1] )
+  expect_equal(c(0,0),df1$dropout.active.rate )
   
   expect_equal(c(198,198),df1$df)
   expect_equal(s1$summaries[[1]]$treatment.effect,df1$treatment.effect[1])
@@ -100,7 +100,7 @@ test_that("as.data.frame.scenario",{
   expect_equal(df3$pval[2],s2$summaries[[2]]$adjusted.pval)
   expect_equal(df2$dispersion[1],s2$summaries[[1]]$dispersion)
   
-  expect_equal(df2$dropout.active[1],s2$summaries[[1]]$dropout[2])
+  expect_equal(df2$dropout.active.rate[1]*100,s2$summaries[[1]]$dropout[2])
 
 })
 
@@ -133,8 +133,8 @@ test_that("internal.summary.Scenario",{
   my.df <- data.frame(treatment.effect=c(5,6,7),
                       se=c(0.7,0.9,1.4),
                       pval=c(0.6,0.06,0.01),
-                      dropout.control=c(1,2,3),
-                      dropout.active=c(4,5,6))
+                      dropout.control.rate=0.01*c(1,2,3),
+                      dropout.active.rate=0.01*c(4,5,6))
   
   ans <- .internal.summary.Scenario(my.df,alpha=0.05)
   
@@ -143,8 +143,8 @@ test_that("internal.summary.Scenario",{
   expect_equal(1/3,ans$power)
   expect_equal(1,ans$se)
   
-  expect_equal(2,mean(ans$dropout[[1]]))
-  expect_equal(6,max(ans$dropout[[2]]))
+  expect_equal(0.02,mean(ans$dropout[[1]]))
+  expect_equal(0.06,max(ans$dropout[[2]]))
   
   
   ans <- .internal.summary.Scenario(my.df,alpha=0.1)

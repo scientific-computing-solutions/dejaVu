@@ -35,6 +35,7 @@ NULL
 ##' @param datastatus The status of SingleSim object to which the fit was applied
 ##' @param df The number of degrees of freedom of the model
 ##' @param dropout The number of dropouts of each arm
+##' @param number.subjects The number of subjects in each arm
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @name summary.SingleSimFit
 NULL
@@ -62,7 +63,8 @@ summary.SingleSimFit <- function(object,CI.limit=0.95,...){
                  pval=model.summary$coefficient[2,4],
                  datastatus=object$singleSim$status,
                  df=object$model$df.residual,
-                 dropout=dropout)
+                 dropout=dropout,
+                 number.subjects=subjectsPerArm(object))
   
   class(retVal) <- "summary.SingleSimFit"
   retVal
@@ -105,8 +107,8 @@ Impute <- function(fit,impute.mechanism,N){
 }
 
 ##' @export
-numberSubjects.SingleSimFit <- function(x){
-  numberSubjects(x$singleSim)
+subjectsPerArm.SingleSimFit <- function(x){
+  subjectsPerArm(x$singleSim)
 }
 
 # check the arguments to Impute function are valid

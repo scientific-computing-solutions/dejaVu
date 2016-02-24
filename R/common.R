@@ -20,6 +20,20 @@ NULL
 }
 
 
+##' S3 generic to output the number of subjects in each arm for a given object
+##' @param x The object
+##' @return A vector of the number of subjects
+##' @export
+subjectsPerArm <- function(x){
+  UseMethod("subjectsPerArm")
+}
+
+##' @export
+subjectsPerArm.default <- function(x){
+  stop("Invalid x for calculating number of subjects")
+}
+
+
 ##' S3 generic to output the number of subjects in a given object
 ##' @param x The object
 ##' @return The number of subjects
@@ -30,7 +44,7 @@ numberSubjects <- function(x){
 
 ##' @export
 numberSubjects.default <- function(x){
-  stop("Invalid x for numberSubjects")
+  sum(subjectsPerArm(x))
 }
 
 ##' S3 generic for fitting models
@@ -58,5 +72,7 @@ Simfit.default <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,..
 
 
 .onAttach <- function(libname,pkgname){
-  packageStartupMessage("Warning: This package is in development. DO NOT USE without contacting David Ruau or Paul Metcalfe")
+  packageStartupMessage("Warning: This package is in development. DO NOT USE without contacting David Ruau or Paul Metcalfe. ",
+                        "Note due to namespace conflicts between MASS and trafficlight this package will not work if trafficlight ",
+                        "is loaded")
 }
