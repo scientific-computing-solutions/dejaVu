@@ -1,7 +1,7 @@
 Package: dejaVu
 Type: Package
 Title: Multiple Imputation for recurrent events
-Version: 0.0.1
+Version: 0.1.0
 Author: c(person("Nikolas", "Burkoff", role=c("aut")),
 Maintainer: David Ruau <David.Ruau@astrazeneca.com>
 Description: Package to provide simulation and analysis of multiple imputation methods for recurrent events
