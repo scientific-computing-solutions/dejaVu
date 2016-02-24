@@ -29,7 +29,6 @@ test_that("Simfit.SingleSim",{
   expect_error(Simfit(sim.dropout,family="poisson",equal.dispersion=FALSE))
 })
 
-
 test_that("Simfit_diff_dispersions",{
   set.seed(143)
 
@@ -125,6 +124,30 @@ test_that("simfit_poisson_and_qpoisson",{
   
 })
 
+
+test_that("SimFit_covar",{
+  
+  set.seed(20)
+  dejaData <- MakeDejaData(data=data.frame(Z=rep(c(0,1),20),
+                                           id=1:40,
+                                           Arm=c(rep(0,20),rep(1,20)),
+                                           rate=c(rep(0.5,40))),
+                           Id="id",arm="Arm",rate="rate")
+  simdeja <- SimulateComplete(study.time=10,dejaData=dejaData,dispersions=0)
+  
+  expect_error(Simfit(simdeja,covar=~arm))
+  expect_error(Simfit(simdeja,covar="hello"))
+  expect_error(Simfit(simdeja,covar=~arm*Z))
+  
+  sf <- Simfit(simdeja,covar=~Z)
+  mod <- glm.nb(observed.events ~ arm + Z + offset(log(censored.time)),data=simdeja$data)
+  expect_equal(sf$model$coefficients,mod$coefficients)
+  expect_equal(vcov(sf$model),vcov(mod))
+  #apart from call they should be the same
+  mod$call <- sf$model$call
+  expect_equal(sf$model,mod)
+})
+
 test_that("summary.SingleSimFit",{
   set.seed(3143)
   
@@ -193,77 +216,5 @@ test_that("summary.SingleSimFit_for_poisson",{
   expect_equal(2*pnorm(log(s$treatment.effect)/s$se),s$pval)
 })
 
-test_that("Impute_valid_args",{
-  set.seed(33143)
-  
-  sim <- SimulateComplete(study.time=365, 
-                          number.subjects=100, 
-                          event.rates=c(0.01,0.005),
-                          dispersions=0.25) 
-  
-  sim.dropout <- SimulateDropout(sim, 
-                                 drop.mechanism=ConstantRateDrop(rate=0.0025,var=1))
-  
-  fit <- Simfit(sim.dropout)
-  
-  impute.mechanism <- weighted_j2r(0.5)
-  
-  expect_error(Impute(fit="sd",impute.mechanism=impute.mechanism,N=10))
-  expect_error(Impute(fit=fit,impute.mechanism=c(1,2,3),N=10))
-  expect_error(Impute(fit=fit,impute.mechanism=impute.mechanism,N=0))
-  expect_error(Impute(fit=fit,impute.mechanism=impute.mechanism,N=11.5))
-  expect_error(Impute(fit=fit,impute.mechanism=impute.mechanism,N=c(1,0.5)))
-})
 
-test_that("Impute_general_mechanism",{
-  
-  set.seed(33143)
-  
-  sim <- SimulateComplete(study.time=365, 
-                          number.subjects=100, 
-                          event.rates=c(0.01,0.005),
-                          dispersions=0.25) 
-  
-  sim.dropout <- SimulateDropout(sim, 
-                                 drop.mechanism=ConstantRateDrop(rate=0.0025,var=1))
-  
-  fit <- Simfit(sim.dropout)
-  impute.mechanism <- CreateNewImputeMechanism(name="my.imp",cols.needed=c("censored.time","arm"),parameters=list(W=1),
-                        impute=function(fit){
-                          df <- fit$singleSim$data
-                          number.of.subjects <- numberSubjects(fit$singleSim)
-                          study.time <- fit$singleSim$study.time
-                          
-                          newevent.times <- lapply(1:number.of.subjects,function(i){
-                            time.left <- fit$singleSim$study.time - df$censored.time[i]
-                            if(df$arm[i]==1|| time.left==0) return(numeric(0))
-                            new.event.times <- fit$singleSim$study.time  
-                            
-                          })
-                        
-                          return(list(new.censored.times=rep(fit$singleSim$study.time,numberSubjects((fit))),
-                                                           newevent.times=newevent.times))
-                                                 
-                        })
-  
-  imputed <- Impute(fit,impute.mechanism,N=1)
-  
-  expect_equal("ImputeSim",class(imputed))
-  expect_equal(summary(sim.dropout)$number.dropouts,imputed$dropout)
-  
-  expect_equal(fit$impute.parameters,imputed$impute.parameters)
-  expect_equal(impute.mechanism,imputed$impute.mechanism)
-  expect_equal(sim.dropout$data,imputed$singleSim$data)
-  
-  expect_equal(1,ncol(imputed$imputed.values))
-  expect_equal(2,nrow(imputed$imputed.values))
-  
-  expect_equal(rep(365,200),imputed$imputed.values[,1]$new.censored.times)
-  
-  retVal <- ifelse(sim.dropout$data$arm==1 | sim.dropout$data$censored.time==365,NA,365)
-  retVal <- lapply(retVal,function(x){if(is.na(x)) numeric(0) else x})
-  
-  expect_equal(retVal,imputed$imputed.values[,1]$newevent.times)
-  
-})
 
