@@ -133,10 +133,12 @@ NULL
 SimulateDropout <- function(simComplete,drop.mechanism){
   validateSimulateDropout(simComplete,drop.mechanism)
   
+  #get censored time for each subject
   censored.time <- vapply(seq_along(simComplete$event.times),function(i){
     drop.mechanism$GetDropTime(event.times=simComplete$event.times[[i]],data=simComplete$data[i,])
   },FUN.VALUE=numeric(1))
   
+  #extract the event times which are less < cenored time for each subject
   simComplete$event.times <- mapply(function(censor.time,event.times){ 
                           return(event.times[event.times<=censor.time]) },
                         censor.time=censored.time,event.times=simComplete$event.times,SIMPLIFY = FALSE)

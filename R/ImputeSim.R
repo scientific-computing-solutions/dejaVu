@@ -72,7 +72,7 @@ Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,
     stop("Invalid argument equal.dispersion must be TRUE")
   }
   
-  imputed.summaries <- lapply(1:.internal.number.data.sets(x),
+  imputed.summaries <- lapply(seq_len(.internal.number.data.sets(x)),
                          function(index){
                            singleSim <- GetImputedDataSet(x,index)                     
                            summary(Simfit(singleSim,family=family,equal.dispersion=equal.dispersion,covar=covar,...))

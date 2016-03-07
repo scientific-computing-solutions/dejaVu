@@ -84,7 +84,7 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
   df <- fit$singleSim$data
   
   #take each subject in turn
-  lapply(1:nrow(df), function(i){
+  lapply(seq_along(nrow(df)), function(i){
     
     study.time <- fit$singleSim$study.time 
     time.left <- study.time - df$censored.time[i]
