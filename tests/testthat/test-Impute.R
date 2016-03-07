@@ -58,7 +58,6 @@ test_that("Impute_general_mechanism",{
   expect_equal("ImputeSim",class(imputed))
   expect_equal(summary(sim.dropout)$number.dropouts,imputed$dropout)
   
-  expect_equal(fit$impute.parameters,imputed$impute.parameters)
   expect_equal(impute.mechanism,imputed$impute.mechanism)
   expect_equal(sim.dropout$data,imputed$singleSim$data)
   

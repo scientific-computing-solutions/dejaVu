@@ -152,7 +152,7 @@ x$pval
 We can output $\gamma$ and $\mu$ which would be used for the imputation (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the 1/dispersion for first the control arm and then the active arm and $\mu$ a matrix containing the predicted mean number of events per subject, one row per subject\footnote{if there are covariates then $\mu$ is subject specific}, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm:
 <<ip>>=
 
-gamma_and_mu <- my.fit$impute.parameters$gamma_mu_function()
+gamma_and_mu <- my.fit$genCoeff.function()
 
 gamma_and_mu$gamma
 
@@ -243,7 +243,7 @@ example.scenario <- function(){
 
 Next we run the simulation a large number of times:
 <<rep>>=
-answer <- replicate(500,example.scenario(),simplify = FALSE)
+answer <- replicate(10,example.scenario(),simplify = FALSE)
 @
 
 and process the results using the \texttt{extract\_results} function (note the \texttt{extract\_results} is a simple wrapper around the \texttt{CreateScenario} function): 
@@ -436,7 +436,7 @@ dropout.fit <- Simfit(dropout.covar,
                  covar=~pre.exa)
 
 #The values of mu now depend on subject's pre.exa value
-gamma_mu <- dropout.fit$impute.parameters$gamma_mu_function()
+gamma_mu <- dropout.fit$genCoeff.function()
 head(gamma_mu$mu)
 @
 
@@ -477,6 +477,11 @@ my.example.impute <- function(steroid.prob,non.steroid.prob){
     #the imputed event times for each subject
     newevent.times <- list()
     
+    #Note could access the mu, gamma for the imputation
+    gamma_mu <-  my.fit$genCoeff.function()
+    #so gamma_mu$mu[i,] is (mu_c,mu_a) for subject i
+    
+    
     #for each subject create a vector of imputed event times
     #if no events are imputed then use numeric(0)
     for(id in 1:number.of.subjects){
@@ -491,10 +496,6 @@ my.example.impute <- function(steroid.prob,non.steroid.prob){
       #no imputed events and if in treatment group then no new events
       if(data[id,]$arm==1 || time.left==0) break;
         
-      #Note could access the mu, gamma for the imputation
-      gamma_mu <-  my.fit$impute.parameters$gamma_mu_function()
-      #so gamma_mu$mu[i,] is (mu_c,mu_a) for subject i
-      
       #get the probability of an event 
       prob <- if(data[id,]$steroid==1)steroid.prob else non.steroid.prob 
       

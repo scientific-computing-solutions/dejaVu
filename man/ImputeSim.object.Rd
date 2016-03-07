@@ -7,8 +7,6 @@
 \item{singleSim}{The \code{SingleSim} object from which the imputed data sets
 have been derived}
 
-\item{impute.parameters}{The \code{SingleSimFit$impute.parameters} used to perform the imputation}
-
 \item{impute.mechanism}{The \code{ImputeMechanism} object used to perform the
 imputation}
 

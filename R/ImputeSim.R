@@ -5,7 +5,6 @@
 ##' 
 ##' @param singleSim The \code{SingleSim} object from which the imputed data sets
 ##' have been derived
-##' @param impute.parameters The \code{SingleSimFit$impute.parameters} used to perform the imputation
 ##' @param impute.mechanism The \code{ImputeMechanism} object used to perform the
 ##' imputation
 ##' @param imputed.values A matrix with 1 column per imputed data set and two rows:

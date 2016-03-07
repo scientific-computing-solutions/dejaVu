@@ -175,14 +175,13 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,
   }
   
   
-  impute.parameters <- if(family=="negbin") GetGamma_mu(model,data,equal.dispersion) 
-                       else list(equal.dispersion=equal.dispersion) 
+  genCoeff.function <- if(family=="negbin") GetgenCoeff(model,data,equal.dispersion) 
+                       else NULL 
   
-  class(impute.parameters) <- "ImputeParameters"
- 
   retVal <- list(singleSim=x,
                  model=model,
-                 impute.parameters=impute.parameters)
+                 genCoeff.function=genCoeff.function,
+                 equal.dispersion=equal.dispersion)
   class(retVal) <- "SingleSimFit"
   return(retVal)
 }

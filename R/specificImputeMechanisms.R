@@ -78,7 +78,7 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
   #@return returns a list of vectors, the imputed event times for each subject (if subject has no new imputed
   #events then the vector should be numeric(0))
   
-  gamma_mu <- fit$impute.parameters$gamma_mu_function()
+  gamma_mu <- fit$genCoeff.function()
   
   #the data frame from the SimFit object  
   df <- fit$singleSim$data

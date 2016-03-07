@@ -8,11 +8,12 @@
 
 \item{model}{The model which has been fitted}
 
-\item{impute.parameters}{A list of parameters from the model including a function gamma_mu_function which
-outputs the values of mu and gamma for the imputation (these could be adapted to include uncertainty in these parameters)
+\item{genCoeff.function}{A function which returns a list of parameters from the model fit(s) which can
+be used when performing the gamma imputation (these could be adapted to include uncertainty in these parameters)
 If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
-then this parameter list will not include gamma_mu_function and therefore could not be used to
-impute data}
+then this will be NULL}
+
+\item{equal}{dispersion whether equal dispersions were used when fitting model(s) to the data}
 }
 \description{
 A \code{SingleSimFit} object is returned from calling \code{Simfit} with
