@@ -34,13 +34,16 @@ SimulateComplete <- function(study.time,dejaData=NULL,number.subjects=NULL,event
   
   ValidateSimCompleteArgs(dejaData,study.time,dispersions)
   
+  #get subject Poisson process rates from negative binomial event rates 
   subject.rates <- unlist(mapply(GetSimRates,study.time=study.time,
                           event.rate=dejaData$data[,dejaData$rate],
                           dispersion=getDispersions(dejaData$data[,dejaData$arm],dispersions),
                           SIMPLIFY=FALSE))
 
+  #get the specific event times for each subject given Poisson process rates
   event.times <- lapply(subject.rates,GetEventTimes,study.time=study.time)
   
+  #Count up number of events for each subject
   events <- vapply(event.times,length,FUN.VALUE=numeric(1))
   
   data <- data.frame(Id=dejaData$data[,dejaData$Id],
