@@ -1,6 +1,8 @@
 ##' @importFrom MASS glm.nb
 NULL
 
+##' @importFrom MASS mvrnorm
+
 #cat a named list
 .internal.output.list <- function(x){ 
   if(!is.null(x)){

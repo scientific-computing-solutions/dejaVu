@@ -542,9 +542,9 @@ For a more complex example (aimed for developers) see the functions: \texttt{wei
 Using the imputation mechanism, MI can be performed and models (with covariates) fitted to the data as before: 
 <<>>=
 imputed.covar <- Impute(fit = dropout.fit,
-                        impute.mechanism = my.example.impute(steroid.prob=0.5,
-                                              non.steroid.prob = 0.9),
-                        N=10)
+                  impute.mechanism = my.example.impute(steroid.prob=0.5,
+                                       non.steroid.prob = 0.9),
+                  N=10)
 
 fitted.covar <- Simfit(imputed.covar,
                  family="negbin",

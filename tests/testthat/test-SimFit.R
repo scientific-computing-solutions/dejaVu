@@ -88,7 +88,7 @@ test_that("sim_fit_equal_dispersion",{
   expect_equal(rep(mymod$theta,2),fit$genCoeff.function(FALSE)$gamma)
   
   #checking mu
-  mu <- mu <- matrix(rep(exp(mymod$coefficients[1])*c(1,exp(mymod$coefficients[2])),100),ncol=2,byrow=TRUE)
+  mu <- matrix(rep(exp(mymod$coefficients[1])*c(1,exp(mymod$coefficients[2])),100),ncol=2,byrow=TRUE)
   names(mu) <- NULL
   expect_equal(mu,fit$genCoeff.function(FALSE)$mu)
   

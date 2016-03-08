@@ -9,7 +9,8 @@
 \item{model}{The model which has been fitted}
 
 \item{genCoeff.function}{A function which returns a list of parameters from the model fit(s) which can
-be used when performing the gamma imputation (these could be adapted to include uncertainty in these parameters)
+be used when performing the gamma imputation. It takes one argument, use.uncertainty (by default is TRUE) which
+if TRUE stochastically incorporates uncertainty into the parameter estimates in preparation for use with imputation
 If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
 then this will be NULL}
 

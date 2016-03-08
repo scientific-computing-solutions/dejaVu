@@ -178,7 +178,7 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,
   }
   
   
-  genCoeff.function <- if(family=="negbin") GetgenCoeff(model,data,equal.dispersion) 
+  genCoeff.function <- if(family=="negbin") GetgenCoeff(model,data,equal.dispersion,formula) 
                        else NULL 
   
   retVal <- list(singleSim=x,
