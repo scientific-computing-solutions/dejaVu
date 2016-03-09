@@ -255,7 +255,7 @@ example.scenario <- function(){
 
 Next we run the simulation a large number of times:
 <<rep>>=
-answer <- replicate(10,example.scenario(),simplify = FALSE)
+answer <- replicate(500,example.scenario(),simplify = FALSE)
 @
 
 and process the results using the \texttt{extract\_results} function (note the \texttt{extract\_results} is a simple wrapper around the \texttt{CreateScenario} function): 
