@@ -7,12 +7,12 @@
 ##' 
 ##' @param singleSim The \code{SingleSim} object to which a model has been fitted
 ##' @param model The model which has been fitted
-##' @param impute.parameters A list of parameters from the model including a function gamma_mu_function which 
-##' outputs the values of mu and gamma for the imputation (these could be adapted to include uncertainty in these parameters) 
+##' @param genCoeff.function A function which returns a list of parameters from the model fit(s) which can 
+##' be used when performing the gamma imputation. It takes one argument, use.uncertainty (by default is TRUE) which
+##' if TRUE stochastically incorporates uncertainty into the parameter estimates in preparation for use with imputation 
 ##' If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
-##' then this parameter list will not include gamma_mu_function and therefore could not be used to 
-##' impute data
-##' 
+##' then this will be NULL
+##' @param equal dispersion whether equal dispersions were used when fitting model(s) to the data
 ##' @name SingleSimFit.object
 NULL
 
@@ -42,7 +42,7 @@ NULL
 
 ##' @export
 summary.SingleSimFit <- function(object,CI.limit=0.95,...){
-  if(!object$impute.parameters$equal.dispersion){
+  if(!object$equal.dispersion){
     stop("Cannot generate a summary if equal.dispersion is FALSE")
   }  
 
@@ -98,7 +98,6 @@ Impute <- function(fit,impute.mechanism,N){
   validateImputeArguments(fit,impute.mechanism,N)
 
   retVal <- list(singleSim=fit$singleSim,
-                 impute.parameters=fit$impute.parameters,
                  impute.mechanism=impute.mechanism,
                  imputed.values=replicate(n=N, impute.mechanism$impute(fit),simplify="list"))
   retVal$dropout <- summary(fit$singleSim)$number.dropouts
@@ -118,7 +117,7 @@ validateImputeArguments <- function(fit,impute.mechanism,N){
     stop("Invalid fit argument, must be of class SingleSimFit")
   }
   
- if(is.null(fit$impute.parameters$gamma_mu_function)){
+ if(is.null(fit$genCoeff.function)){
     stop("Cannot impute using this SingleSimFit object (a negative binomial model was not fit)")
   }
   

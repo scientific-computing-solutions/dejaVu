@@ -5,7 +5,6 @@
 ##' 
 ##' @param singleSim The \code{SingleSim} object from which the imputed data sets
 ##' have been derived
-##' @param impute.parameters The \code{SingleSimFit$impute.parameters} used to perform the imputation
 ##' @param impute.mechanism The \code{ImputeMechanism} object used to perform the
 ##' imputation
 ##' @param imputed.values A matrix with 1 column per imputed data set and two rows:
@@ -72,7 +71,7 @@ Simfit.ImputeSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,
     stop("Invalid argument equal.dispersion must be TRUE")
   }
   
-  imputed.summaries <- lapply(1:.internal.number.data.sets(x),
+  imputed.summaries <- lapply(seq_len(.internal.number.data.sets(x)),
                          function(index){
                            singleSim <- GetImputedDataSet(x,index)                     
                            summary(Simfit(singleSim,family=family,equal.dispersion=equal.dispersion,covar=covar,...))

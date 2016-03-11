@@ -34,13 +34,16 @@ SimulateComplete <- function(study.time,dejaData=NULL,number.subjects=NULL,event
   
   ValidateSimCompleteArgs(dejaData,study.time,dispersions)
   
+  #get subject Poisson process rates from negative binomial event rates 
   subject.rates <- unlist(mapply(GetSimRates,study.time=study.time,
                           event.rate=dejaData$data[,dejaData$rate],
                           dispersion=getDispersions(dejaData$data[,dejaData$arm],dispersions),
                           SIMPLIFY=FALSE))
 
+  #get the specific event times for each subject given Poisson process rates
   event.times <- lapply(subject.rates,GetEventTimes,study.time=study.time)
   
+  #Count up number of events for each subject
   events <- vapply(event.times,length,FUN.VALUE=numeric(1))
   
   data <- data.frame(Id=dejaData$data[,dejaData$Id],
@@ -133,10 +136,12 @@ NULL
 SimulateDropout <- function(simComplete,drop.mechanism){
   validateSimulateDropout(simComplete,drop.mechanism)
   
+  #get censored time for each subject
   censored.time <- vapply(seq_along(simComplete$event.times),function(i){
     drop.mechanism$GetDropTime(event.times=simComplete$event.times[[i]],data=simComplete$data[i,])
   },FUN.VALUE=numeric(1))
   
+  #extract the event times which are less < cenored time for each subject
   simComplete$event.times <- mapply(function(censor.time,event.times){ 
                           return(event.times[event.times<=censor.time]) },
                         censor.time=censored.time,event.times=simComplete$event.times,SIMPLIFY = FALSE)
@@ -173,14 +178,14 @@ Simfit.SingleSim <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,
   }
   
   
-  impute.parameters <- if(family=="negbin") GetGamma_mu(model,data,equal.dispersion) 
-                       else list(equal.dispersion=equal.dispersion) 
+  genCoeff.function <- if(family=="negbin") 
+                         GetgenCoeff(model=if(equal.dispersion) list(model) else model, data, formula) 
+                       else NULL 
   
-  class(impute.parameters) <- "ImputeParameters"
- 
   retVal <- list(singleSim=x,
                  model=model,
-                 impute.parameters=impute.parameters)
+                 genCoeff.function=genCoeff.function,
+                 equal.dispersion=equal.dispersion)
   class(retVal) <- "SingleSimFit"
   return(retVal)
 }

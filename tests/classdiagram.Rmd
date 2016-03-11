@@ -1,0 +1,41 @@
+---
+title: "Class Diagram"
+author: "Nikolas Burkoff"
+date: "3/11/2016"
+output: pdf_document
+---
+
+#Class diagram
+
+Classes are bold, functions are italisied
+
+**SingleSim** --- *summary* ---> **summary.SingleSim**   
+    |   
+    |   
+ *Simfit*   
+    |   
+    |   
+    V   
+ **SingleSimFit** --- *summary* ---> **summary.SingleSimFit**   
+    |   
+    |   
+ *Impute*   
+    |   
+    |   
+    V  
+ **ImputeSim** --- *GetImputedDataSet* ---> **SingleSim** (see top left)  
+    |   
+    |   
+ *Simfit*   
+    |   
+    |   
+    V  
+ **ImputeSimFit**  --- *summary* ---> **summary.ImputeSimFit** 
+
+Given a list of either **summary.SingleSimFit** or **summary.ImputeSimFit** objects the *CreateScenario* function can be used to create a **Scenario** object and the *summary* function on a **Scenario** object will output a **summary.Scenario** object. 
+
+The **SingleSim** object can be created with the *ImportSim*, *SimulateComplete* or *SimulateDropout* functions.
+
+**DejaData** objects contain covariates which can be used when creating a **SingleSim** object and a **DropoutMechanism** object is used with a **SingleSim** object to output a **SingleSim** object with subject dropouts.
+
+An **ImputeMechanism** object is used with the *Impute* function to generate an **ImputeSim** object. 
