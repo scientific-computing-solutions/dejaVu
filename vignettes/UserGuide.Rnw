@@ -253,7 +253,7 @@ example.scenario <- function(){
 }
 @
 
-Next we run the simulation a large number of times:
+Next we run the simulation a large number of times (In this example, two of the 6000 model fits did not fully converge, hence the warning messages):
 <<rep>>=
 answer <- replicate(500,example.scenario(),simplify = FALSE)
 @
