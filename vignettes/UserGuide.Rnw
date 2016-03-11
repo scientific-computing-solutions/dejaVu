@@ -336,7 +336,7 @@ If \texttt{trt.weight = 0} then imputation using this mechanism will follow the 
 
 If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
 
-Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $\mu=(\mu_c,\mu_a)$, the (possibly subject-specific) expected means, and $\gamma=(\gamma_c,\gamma_a)$ are $1/$dispersions, which are parameter estimates sampled with uncertainty from a model fit, for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
+Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $\mu=(\mu_c,\mu_a)$, the (possibly subject-specific) expected means, and $\gamma=(\gamma_c,\gamma_a)$ are $1/$dispersions, which are parameter estimates sampled with uncertainty from a model fit\footnote{using a normal approximation to sample the coefficeints and log(1/dispersion) which are asymptotically uncorrelated}, for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
 \begin{itemize}
 \item $NB(p=\frac{\mu_c t_i}{\gamma_c+\mu_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
 \item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{\mu_c t_i}{\gamma_a + \mu_a(T-t_i)+\mu_c t_i}$ and $q_a=\frac{\mu_a t_i}{\gamma_a+\mu_aT}$.
@@ -385,7 +385,7 @@ head(complete.covar$data)
 
 @
 
-The \texttt{MakeDejaData} function requires 4 arguments: the data frame and the column names used for the treatment arm, the subject Id and the event rate.
+The \texttt{MakeDejaData} function requires 4 arguments: the data frame and the column names used for the treatment arm, the subject Id and the event rate. The value in the event rate column for each subject is used as the negative binomial event rate ($\mu/T$) for this subject when simulating event times.  
 
 \paragraph{Implementing new drop out mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users can follow these instructions.}
 

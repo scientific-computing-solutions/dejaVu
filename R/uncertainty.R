@@ -62,6 +62,10 @@ GetgenCoeff <- function(model,data,formula){
   
   function(use.uncertainty=TRUE){
     
+    if(!use.uncertainty){
+      warning("Not using uncertainty in parameters therefore imputation will not be proper")
+    }
+    
     #if we use uncertainty then sample gamma
     if(use.uncertainty){
       gamma <- vapply(seq_along(gamma),

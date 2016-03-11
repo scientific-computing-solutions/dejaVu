@@ -8,3 +8,5 @@ working/*
 vignettes/*
 !vignettes/*.Rnw
 !vignettes/*.bib
+
+tests/*.pdf

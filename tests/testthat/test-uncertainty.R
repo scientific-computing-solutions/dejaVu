@@ -71,7 +71,7 @@ test_that("takes_into_account_uncertainty",{
   sf <- getSimFit(TRUE)  
   
   x1 <- sf$genCoeff.function(TRUE)
-  x2 <- sf$genCoeff.function(FALSE)
+  expect_warning(x2 <- sf$genCoeff.function(FALSE))
   
   expect_true(all(x1$gamma != x2$gamma))
   expect_false(x1$mu[1,1]==x2$mu[1,1])
