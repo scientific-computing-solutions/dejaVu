@@ -4,7 +4,7 @@ NULL
 ##' @importFrom MASS mvrnorm
 
 #cat a named list
-.internal.output.list <- function(x){ 
+.internal.output.list <- function(x){
   if(!is.null(x)){
     cat("Parameters:",fill=TRUE)
     invisible(lapply(seq_along(x),function(i){
@@ -53,12 +53,12 @@ numberSubjects.default <- function(x){
 ##' @param x The S3 object
 ##' @param family Either "negbin" for fitting a negative binomial model (using \code{MASS::glm.nb}),
 ##' "poisson" for fitting a poisson model (\code{glm}) or "quasipoisson" for fitting a quasipoisson model
-##' \code{glm} 
+##' \code{glm}
 ##' @param equal.dispersion logical, should the arms have the same dispersion parameter when
 ##' fitting negative binomial models
-##' @param covar A formula containing the additional covariates to be used when calling \code{glm.nb} if 
+##' @param covar A formula containing the additional covariates to be used when calling \code{glm.nb} if
 ##' no covariates are included in the model this should be NULL, for example \code{~covar1 + covar2}
-##' See vignette for further details  
+##' See vignette for further details
 ##' @param ... Additional arguments to be passed to \code{glm} or \code{glm.nb}
 ##' @return A \code{SingleSimFit} object
 ##' @seealso \code{\link{SingleSimFit.object}}
@@ -74,7 +74,6 @@ Simfit.default <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,..
 
 
 .onAttach <- function(libname,pkgname){
-  packageStartupMessage("Warning: This package is in development. DO NOT USE without contacting David Ruau or Paul Metcalfe. ",
-                        "Note due to namespace conflicts between MASS and trafficlight this package will not work if trafficlight ",
+  packageStartupMessage("Note due to namespace conflicts between MASS and trafficlight this package will not work if trafficlight ",
                         "is loaded")
 }
