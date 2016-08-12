@@ -138,11 +138,6 @@ test_that("invalid_censored_time",{
   expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
                          status="dropout",study.time=365,censored.time=censored.time))
   
-  #censored > study.time
-  censored.time <- rep(400,6)
-  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
-                         status="dropout",study.time=365,censored.time=censored.time))
-  
   #not number
   censored.time <- rep(TRUE,6)
   expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
