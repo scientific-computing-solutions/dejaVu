@@ -97,7 +97,7 @@ ImportSim <- function(dejaData, event.times, status, study.time,
 
 
 #check that event.times are a list of the appropriate length and each element is a 
-#sorted vector of numbers >= 0 and <= study.time
+#sorted vector of numbers >= 0
 importvalidate.event.times <- function(event.times,study.time,number.subjects){
   if(!is.list(event.times) || length(event.times) != number.subjects){
     stop("event.times must be a list of length",number.subjects,"\n")
@@ -105,7 +105,7 @@ importvalidate.event.times <- function(event.times,study.time,number.subjects){
   
   lapply(event.times,function(x){
     if(!is.numeric(x)) stop("event.times must be numeric")
-    if(any(x<0 | x>study.time)) stop("Cannot have event.times < 0 or > study.time")
+    if(any(x<0)) stop("Cannot have event.times < 0 or > study.time")
     if(length(x)!= 0 && sort(x) != x) stop("Event times for subjects must be given in ascending order")
   })
 }
@@ -142,7 +142,7 @@ importvalidate.censored.time <- function(censored.time,study.time,event.times){
   
   lapply(censored.time,function(x){
     if(!.internal.is.finite.number(x) || 
-       x < 0 || x > study.time){
+       x < 0 ){
       stop("censored.time must be non-negative and <= study.time")
     }
     

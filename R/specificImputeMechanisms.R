@@ -53,7 +53,7 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
   #2) new.censored.times - the time at which subjects are censored in the imputed data set
   f <- function(fit){
     return(list(newevent.times=.internal.impute(fit,treatment.p.choice,delta),
-                new.censored.times=rep(fit$singleSim$study.time,numberSubjects(fit))
+                new.censored.times=pmax(fit$singleSim$data$censored.time,fit$singleSim$study.time)
     ))
     
   }
@@ -88,7 +88,7 @@ weighted_j2r <- function(trt.weight,delta=c(1,1)){
     
     study.time <- fit$singleSim$study.time 
     time.left <- study.time - df$censored.time[i]
-    if(time.left==0){return(numeric(0))} #subject was not censored
+    if(time.left<=0){return(numeric(0))} #subject was not censored, so don't impute
     
     if(df$arm[i]==0){
       p <- (gamma_mu$mu[i,1] * time.left)/(gamma_mu$gamma[1]+gamma_mu$mu[i,1]*study.time)
