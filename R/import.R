@@ -105,7 +105,7 @@ importvalidate.event.times <- function(event.times,study.time,number.subjects){
   
   lapply(event.times,function(x){
     if(!is.numeric(x)) stop("event.times must be numeric")
-    if(any(x<0)) stop("Cannot have event.times < 0 or > study.time")
+    if(any(x<0)) stop("Cannot have event.times < 0")
     if(length(x)!= 0 && sort(x) != x) stop("Event times for subjects must be given in ascending order")
   })
 }
@@ -143,7 +143,7 @@ importvalidate.censored.time <- function(censored.time,study.time,event.times){
   lapply(censored.time,function(x){
     if(!.internal.is.finite.number(x) || 
        x < 0 ){
-      stop("censored.time must be non-negative and <= study.time")
+      stop("censored.time must be non-negative")
     }
     
   })
