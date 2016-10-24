@@ -7,8 +7,9 @@ test_that("simple_invalid_args",{
   event.times <- list(c(25.6,100,121,200,225),c(100,110),c(55),numeric(0),150,45)
   
   #check valid
-  expect_that(ImportSim(dejaData=dejaData,event.times=event.times,
-                        status="complete",study.time=365),not(throws_error()))
+  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
+                         status="complete",study.time=365),
+               regexp=NA)
   
   
   #dejaData invalid class
@@ -36,14 +37,21 @@ test_that("event.times",{
   
   covar.df <- data.frame(Id=1:6,arm=c(rep(0,3),rep(1,3)),Z=c(0,1,1,0,1,0))
   dejaData <- MakeDejaData(covar.df,arm="arm",Id="Id")
-  event.times <- list(c(25.6,100,121,200,225),c(100,110),c(55),numeric(0),150,45)
+  event.times <-
+      list(c(25.6,100,121,200,225),
+           c(100,110),
+           c(55),
+           numeric(0),
+           150,45)
   
   #wrong number of event.times
   e <- event.times
   e[[7]] <- numeric(0)
   
-  expect_error(ImportSim(dejaData=dejaData,event.times=e,
-                        status="complete",study.time=365))
+  expect_error(ImportSim(dejaData=dejaData,
+                         event.times=e,
+                         status="complete",
+                         study.time=365))
   
   #event.times not sorted
   e <- event.times
@@ -68,13 +76,27 @@ test_that("event.times",{
   e[[2]] <- c(5,10,100,900)
   expect_error(ImportSim(dejaData=dejaData,event.times=e,
                          status="complete",study.time=365))
+
+  ## event time > study time and allow.beyond.study
+  expect_error(ImportSim(dejaData=dejaData,
+                         event.times=e,
+                         status="complete",
+                         study.time=365,
+                         allow.beyond.study=TRUE),
+               regexp=NA)
 })
 
 test_that("Invalid_args_for_complete",{
   
   covar.df <- data.frame(Id=1:6,arm=c(rep(0,3),rep(1,3)),Z=c(0,1,1,0,1,0))
   dejaData <- MakeDejaData(covar.df,arm="arm",Id="Id")
-  event.times <- list(c(25.6,100,121,200,225),c(100,110),c(55),numeric(0),150,45)
+  event.times <- list(
+      c(25.6,100,121,200,225),
+      c(100,110),
+      c(55),
+      numeric(0),
+      150,
+      45)
   
   #cannot use censored.time
   expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
@@ -133,6 +155,19 @@ test_that("invalid_censored_time",{
   expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
                          status="dropout",study.time=365,censored.time=censored.time))
   
+  #censored > study.time
+  censored.time <- rep(400,6)
+  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
+                         status="dropout",study.time=365,
+                         censored.time=censored.time))
+
+  ## allow censored > study.time if allow.beyond.study is TRUE
+  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
+                         status="dropout", study.time=365,
+                         censored.time=censored.time,
+                         allow.beyond.study=TRUE),
+               regexp=NA)
+  
   #wrong length
   censored.time <- rep(300,7)
   expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
@@ -154,21 +189,30 @@ test_that("invalid_actual.events",{
 
   #wrong length
   actual.events <- rep(10,5)
-  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
-                         status="dropout",study.time=365,censored.time=censored.time,
+  expect_error(ImportSim(dejaData=dejaData,
+                         event.times=event.times,
+                         status="dropout",
+                         study.time=365,
+                         censored.time=censored.time,
                          actual.events=actual.events))
   
   #not integers
   actual.events <- rep(10.5,6)
-  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
-                         status="dropout",study.time=365,censored.time=censored.time,
+  expect_error(ImportSim(dejaData=dejaData,
+                         event.times=event.times,
+                         status="dropout",
+                         study.time=365,
+                         censored.time=censored.time,
                          actual.events=actual.events))
   
   
   #< observed.events
   actual.events <- c(4,3,1,1,2,5)
-  expect_error(ImportSim(dejaData=dejaData,event.times=event.times,
-                         status="dropout",study.time=365,censored.time=censored.time,
+  expect_error(ImportSim(dejaData=dejaData,
+                         event.times=event.times,
+                         status="dropout",
+                         study.time=365,
+                         censored.time=censored.time,
                          actual.events=actual.events))
   
 })
