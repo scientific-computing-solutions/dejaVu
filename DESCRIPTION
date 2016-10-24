@@ -4,7 +4,8 @@ Title: Multiple Imputation for recurrent events
 Version: 0.1.1
 Author: c(person("Nikolas", "Burkoff", role=c("aut")),
 Maintainer: David Ruau <David.Ruau@astrazeneca.com>
-Description: Package to provide simulation and analysis of multiple imputation methods for recurrent events
+Description: Package to provide simulation and analysis of multiple imputation
+    methods for recurrent events
 License: GPL (>=2)
 LazyLoad: yes
 Suggests:
@@ -15,3 +16,4 @@ Depends:
 Imports:
     MASS
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1
