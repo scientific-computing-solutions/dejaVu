@@ -1,0 +1,561 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{url}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{User Guide}
+
+\begin{document}
+
+\title{DejaVu User Guide}
+\author[**]{Nikolas S. Burkoff}
+\author[*]{David Ruau}
+
+\affil[*]{AstraZeneca, B\&I, Advanced Analytics Centre, UK}
+\affil[**]{Tessella, 26 The Quadrant, Abingdon Science Park, Abingdon, OX14 3YS, UK}
+
+
+\renewcommand\Authands{ and }
+
+\maketitle
+
+\section{Introduction}
+
+The \texttt{dejaVu} package performs multiple imputation on recurrent event data sets. The package allows users to import or simulate a ``complete" data set (one without any subjects dropping out). User-specified dropout mechanisms can then be applied to this data to generate a ``dropout" data set (or a dropout set can be imported directly).
+A multiple imputation procedure is then applied to the dropout data set and the package allows user specified imputation mechanisms to be created. Finally, the imputed data sets can be analysed and their results combined using Rubin's rules.
+
+\section{Running a Single MI Example}
+
+In this section we walk through a single MI example:
+\begin{itemize}
+\item Simulating Complete Data
+\item Simulating Subject Dropout
+\item Generating MI data sets
+\item Analysing results using Rubin's formula 
+\end{itemize}
+
+See later in the guide for using covariates with the package and for details of running a large number of examples and combining the results to estimate summary statistics such as power and Type I error.
+
+In order to use the functionality of the package, it must be loaded:
+<<load,message=FALSE>>=
+library(dejaVu)
+@
+
+\textbf{Note:} due to namespace conflicts between libraries \texttt{MASS} and \texttt{trafficlight}, \texttt{dejaVu} does will not work if \texttt{trafficlight} is loaded. 
+
+For reproducibility we set the random seed:
+<<seed>>=
+set.seed(1298711)
+@
+
+\subsection{Simulating Complete Data}
+
+The \texttt{SimulateComplete} function is used to generate a complete data set of subject outcomes for a recurrent event study with follow up time $T$ and the number of events for each subject, $n_i$ is given by a negative binomial process. 
+
+Under the negative binomial assumption the time interval between adjacent event for a given subject are exponentially distributed with rate $\lambda_i/T$ where $\lambda_i \sim \mathrm{Gamma}(1/k,k\mu)$ and $k$ is the dispersion parameter and $\mu$ the mean number of events ($k$ and $\mu$ can be different for each treatment group).
+
+Specifically,
+\begin{equation}
+\label{nbpdf}
+\mathbb{P}(n_i=r) = NB(p,\gamma) = \left.\frac{\Gamma(\gamma+ r)}{\Gamma(r+1)\Gamma(\gamma)}p^r(1-p)^{\gamma}\right.\end{equation} where $\gamma=1/k$ and $p=\frac{k\mu}{1+k\mu}$.
+
+
+The \texttt{SimulateComplete} function takes the following arguments:
+\begin{itemize}
+\item \texttt{study.time} $=T$
+\item \texttt{number.subjects}: the number of subjects in each arm to simulate - if it is a single number then this will be used for both arms, otherwise a vector \texttt{c(number.control,number.active)}
+\item \texttt{event.rates} $=\mu/T$: the event rates for each arm
+\item \texttt{dispersions} $=k$, again either a single number if $k$ is the same for both arms otherwise a vector.
+\item \texttt{dejaData}, this advanced option is used only when subject covariates are included; see later in the guide for further information 
+\end{itemize}
+
+An example of the data generation procedure:
+<<complete>>=
+complete <- SimulateComplete(study.time=365, 
+                      number.subjects=50, 
+                      event.rates=c(0.01,0.005),
+                      dispersions=0.25) 
+print(complete)
+summary(complete)
+@
+
+We can also access the data directly:
+<<>>=
+head(complete$data)
+
+#The event times for subject with Id 1
+complete$event.times[[1]]
+
+@
+
+The \texttt{SimulateComplete} function returns a \texttt{SingleSim} object. See \texttt{help(SingleSim)} for further details.
+
+\subsection{Subject Dropout}
+
+Given a \texttt{SingleSim} object, we can use the \texttt{SimulateDropout} function to apply a dropout mechanism to create a data set which includes subject dropout. In this example we use a simple MCAR example. 
+
+The \texttt{ConstantRateDrop} mechanism will give subjects exponentially distributed drop out times with subject specific rate $R$ where $R=$ \texttt{(rate)}$\exp(X_i)$ where $X_i \sim \mathcal{N}(0,$\texttt{var}$)$. If the simulated drop out time is $<T$ then the subject drops out and any events which occur after dropout are not observed.
+
+<<CRdrop>>=
+ConstantRateDrop(rate=0.0025,var=1)
+@
+
+This dropout mechanism can be used to create a data set with subject dropouts.
+<<drop>>=
+with.MCAR.dropout <- SimulateDropout(complete,
+                    drop.mechanism=ConstantRateDrop(rate=0.0025,
+                                                    var=1)) #var by default=0
+
+@
+
+Note the \texttt{censored.time} and \texttt{observed.events} have been updated:
+<<dropsummary>>=
+summary(with.MCAR.dropout)
+
+head(with.MCAR.dropout$data)
+@
+
+See later in the tutorial for other available dropout mechanisms and a description of how to implement your own.   
+
+\subsection{Generating MI data sets}
+
+Given a \texttt{SingleSim} object we can fit a negative binomial model using the \texttt{Simfit} function. \textbf{Note a warning will be displayed if the model fit does not converge this is possible, especially if there are a small number of subjects}. 
+<<fit>>=
+my.fit <- Simfit(with.MCAR.dropout,
+                 equal.dispersion=TRUE)
+@
+
+The function \texttt{glm.nb} from the package \texttt{MASS} is used with the following models:
+\begin{itemize}
+\item \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{TRUE}
+\item \texttt{observed.events} $\sim$ \texttt{offset(log(censored.time))} if \texttt{equal.dispersion} is \texttt{FALSE} and separate models are fitted for each arm 
+\end{itemize}
+
+It is possible to include covariates in the model formula using the \texttt{covar} argument; see Section \ref{covar} for further details. Additional arguments to \texttt{Simfit} are passed to the model fitting function. For example \newline \texttt{Simfit(with.MCAR.dropout,maxit=50)} will increase the number of iterations when fitting the model (see \texttt{help(glm.control)} for further details). 
+
+This creates a \texttt{SingleSimFit} object:
+<<>>=
+class(my.fit)
+
+summary(my.fit)
+
+#Can access the individual elements of the summary object
+x <- summary(my.fit)
+x$pval
+@
+
+We can output $\gamma$ and $\mu$ which would be used for the imputation (see Equation \eqref{nbpdf}) -- $\gamma$, a vector containing the 1/dispersion for first the control arm and then the active arm and $\mu$ a matrix containing the predicted mean number of events per subject, one row per subject, one column for if the subject were to have been in the control arm, the second for if the subject had been in the active arm.
+
+The function \texttt{genCoeff.function} inside the \texttt{SingleSimFit} object takes one logical argument \texttt{use.uncertainty}. If \texttt{FALSE} then no uncertainty is incorporated into the parameter estimates output. By default, it is set to \texttt{TRUE}, whereby each call to the function generates its own sample of $\gamma$ and $\mu$ which takes into account uncertainty using the \texttt{mvrnorm} function from \texttt{MASS}.  
+
+Note that if there are covariates in the model then $\mu$ is a function of these covariates.
+
+<<ip>>=
+
+#First get values direct from model fit
+gamma_and_mu <- my.fit$genCoeff.function(use.uncertainty=FALSE)
+gamma_and_mu$gamma
+head(gamma_and_mu$mu, 5)
+
+
+#Now sample uncertainty in coefficients
+#each imputation will call this function
+#itself and so generate its own coefficients
+#for the imputation
+head(my.fit$genCoeff.function(use.uncertainty=TRUE)$mu,5)
+
+@
+
+Given a \texttt{SingleSimFit} object we can generate a set of imputed data sets:
+<<imp>>=
+imputed.data.sets <- Impute(fit = my.fit,
+                            impute.mechanism = weighted_j2r(trt.weight=0),
+                            N=10)
+
+#output the number of subject dropouts in each arm 
+imputed.data.sets$dropout
+@
+
+The \texttt{Impute} function requires three arguments, the fit, an impute mechanism and $N$ the number of data sets to impute.
+We are using the weighted j2r impute mechanism with treatment weight $=0$ which implies missing counts for subjects in both arms will be imputed according to the mean of the control arm conditioned on the number of subject's observed events. See later in the tutorial for further details, other available impute mechanisms and a description of how to implement your own.   
+
+\subsection{Fitting MI datasets}
+
+It is possible to access the individual imputed data sets (note these data sets assume the imputed data is `truth' and hence as far as this data set is concerned the number of subject dropouts is 0):
+<<>>=
+sixth.data.set <- GetImputedDataSet(imputed.data.sets,index=6)
+
+summary(sixth.data.set)
+
+head(sixth.data.set$data)
+@
+
+Note the \texttt{actual.censored.time} column is the time the subject was actually censored at whereas the \texttt{censored.time} column is the time the subject was censored after applying the imputation. Similarly the \texttt{actual.events} is the actual number of events which occurred and \texttt{observed.events} is the number of events which were `observed' including imputed events.
+
+We can fit a model to imputed data sets. By default the \texttt{Simfit} function fits a negative binomial model, however, by using the family argument a Poission or quasi-Poisson model can be used instead (the same model formula is used as in the negative binomial case however \texttt{glm} is used rather than \texttt{glm.nb})
+<<>>=
+sixth.fit <- Simfit(sixth.data.set,
+                    family="poisson") 
+                  
+summary(sixth.fit)
+@
+
+It is possible to fit the entire set of imputed data sets in one go, again using the \texttt{Simfit} function (again the \texttt{covar} argument can be used to include covariates in the model fit):
+<<>>=
+fitted <- Simfit(imputed.data.sets,
+                 family="negbin") #negbin is the default
+@
+
+We can create a data frame collating the fitted values:
+<<>>=
+head(as.data.frame(fitted))
+@
+
+We can also summarise the results -- the values shown here are calculated using Rubin's formula \cite{Rubin1987}. 
+<<>>=
+summary(fitted)
+@
+
+\section{Running Complete Scenarios}
+
+In order to calculate the summary statistics such as power it is necessary to repeat the procedure multiple times. In this example we show how to easily replicate and combine the results.
+
+First we create a function which outputs a list of the summaries of the fits we are interested in:
+<<scenario>>=
+example.scenario <- function(){ 
+
+  #simulate a complete data set
+  sim <- SimulateComplete(study.time=365,number.subjects=125,
+                       event.rates=c(0.01,0.005),dispersions=0.25)
+
+  #take the simulated data set and apply an MCAR dropout mechanism...                         
+  sim.with.MCAR.dropout <- SimulateDropout(sim,
+                    drop.mechanism=ConstantRateDrop(rate=0.0025)) 
+
+  #fit a Negative Binomial model 
+  with.MCAR.fit <- Simfit(sim.with.MCAR.dropout,equal.dispersion=TRUE)
+
+  #we can impute a set of 10 sets following the j2r mechanism using the fit
+  impute.data.sets <- Impute(with.MCAR.fit,impute.mechanism = weighted_j2r(trt.weight=0),N=10)
+
+  #we can then fit models to the entire imputed data set
+  fit.imputed.set <- Simfit(impute.data.sets)
+
+  #output the summary values
+  return(list(MI=summary(fit.imputed.set), #for MI
+              dropout=summary(with.MCAR.fit), #for dropout
+              complete=summary(Simfit(sim)))) #for complete data set
+}
+@
+
+Next we run the simulation a large number of times (In this example, two of the 6000 model fits did not fully converge, hence the warning messages):
+<<rep>>=
+answer <- replicate(500,example.scenario(),simplify = FALSE)
+@
+
+and process the results using the \texttt{extract\_results} function (note the \texttt{extract\_results} is a simple wrapper around the \texttt{CreateScenario} function): 
+<<extract>>=
+
+#answer contains a list of lists each containing 3 SimFit objects
+names(answer[[1]])
+answer[[1]]$MI
+names(answer[[2]])
+length(answer)
+
+#we can create a list with only the MI results
+MI.fits <- lapply(answer,"[[","MI")
+
+#the 2nd MI fit
+MI.fits[[2]]
+
+#and create the scenario
+MI.answer <- CreateScenario(MI.fits,description="the description of the scenario")
+
+
+#The extract_results function can be used to both extract the list and
+#create the scenario in one go
+MI.answer <- extract_results(answer,name="MI",
+                            description="Using j2r multiple imputation")
+dropout.answer <- extract_results(answer,name="dropout",
+                            description="Using no imputation")
+complete.answer <- extract_results(answer,name="complete",
+                            description="Using complete data sets")
+
+
+class(MI.answer)
+@
+
+We can output a summary of the simulations as a data frame and summarize the results:
+<<scenario.df>>=
+head(as.data.frame(MI.answer))
+
+summary(dropout.answer)
+
+summary(complete.answer)
+
+#and can access individual elements
+x <- summary(MI.answer,use.adjusted.pval=TRUE,alpha=0.025)
+
+#power is calculated as the proportion of replicas which have
+#pvalue < alpha
+x$power
+@
+
+\section{Additional Dropout and Imputing Information}
+
+\paragraph{Additional Dropout mechanisms}
+
+Alongside the \texttt{ConstantRateDrop} function. Additional dropout mechanisms have been implemented:
+
+The \texttt{LinearRateChangeDrop} function allows a piecewise exponential drop out function where after $j$ events subjects have drop out rate $R_j$ where $R_j = C_j\exp(X_j)$ where $X_j \sim \mathcal{N}(0,\sigma^2)$ and $C_j = C+jD$ for constants $C$ and $D$.
+<<linear>>=
+drop.mec <- LinearRateChangeDrop(starting.rate=0.0025, #C in text above
+                                 rate.change=0.0005, #D in text above
+                                 var=1) #sigma^2 in text above by default var=0
+
+drop.mec
+
+with.MAR.dropout <- SimulateDropout(complete,
+                    drop.mechanism=drop.mec)
+
+
+@
+
+See later in the guide for creating custom dropout mechanisms.
+
+\paragraph{Additional Imputing Mechanisms}
+
+By altering the \texttt{trt.weight} argument, the \texttt{weighted\_j2r} imputing mechanism can be used to generate different imputing mechanisms:
+
+If \texttt{trt.weight = 0} then imputation using this mechanism will follow the jump to reference (j2r) model whereby missing counts for subjects in both arms will be imputed according to the mean of the placebo arm conditioned on the subject's observed number of events
+
+If \texttt{trt.weight = 1} then imputation using this mechanism will follow the MAR model whereby missing counts for subjects in each arm will be imputed according to the event rate of subjects in its treatment group conditioned on the subject's observed number of events
+
+Explicitly, when using the \texttt{weighted\_j2r} function, with \texttt{trt.weight}$=\omega$, $\mu=(\mu_c,\mu_a)$, the (possibly subject-specific) expected means, and $\gamma=(\gamma_c,\gamma_a)$ are $1/$dispersions, which are parameter estimates sampled with uncertainty from a model fit\footnote{using a normal approximation to sample the coefficeints and log(1/dispersion) which are asymptotically uncorrelated}, for a subject with $O_i$ observed events and `imputation time' $t_i=T-$censor.time, the number of imputed events is negative binomial given by
+\begin{itemize}
+\item $NB(p=\frac{\mu_c t_i}{\gamma_c+\mu_cT},\gamma=\gamma_c+O_i)$ for subjects in the control arm. 
+\item $NB(p=(1-\omega)q_c+\omega q_a,\gamma=\gamma_a+O_i)$ for subjects in the active arm where $q_c=\frac{\mu_c t_i}{\gamma_a + \mu_a(T-t_i)+\mu_c t_i}$ and $q_a=\frac{\mu_a t_i}{\gamma_a+\mu_aT}$.
+\end{itemize}
+
+Finally if \texttt{trt.weight = 1} an additional argument \texttt{delta} can be included. It should be a vector of length 2, \texttt{c(control.delta,treatment.delta)} and in this case the mean number of expected events for the imputed missing data is multipled by the appropriate delta (and so $p$ is adjusted appropriately):
+<<moreimp>>=
+  weighted_j2r(trt.weight=1,delta=c(1,1.4))
+@
+
+\section{Using covariates \& creating new dropout/imputing mechanisms}
+\label{covar}
+In this Section we show how to perform multiple imputation using a data set with covariates. Here we use a set of covariates to simulate a ``complete data set'' of events. \textbf{Note} that it is possible to import a complete/dropout data set on which imputation can be perfomed, see \texttt{help(ImportSim)} for examples.
+
+In order to use the \texttt{SimulateComplete} function with covariates, we require a data frame containing the covariates together with three additional columns: subject Id, treatment arm (0 for control or 1 for active) and a rate column (typically a function of the covariates/treatment arm). The rate column will replace the \texttt{event.rates} argument, so it is a subject specific $\mu/T$.
+
+Users have complete freedom over the number and type of covariates. In this example we use two covariates: \texttt{pre.exa}, the number of events in the previous year, and \texttt{steroid} a variable for whether the subject is using steroids (1 yes, 0 no).
+
+We first generate some covariates for a 100 subject trial with equal randomization proportions:
+<<>>=
+covar.df <- data.frame(Id=1:100,
+                       arm=c(rep(0,50),rep(1,50)),
+                       pre.exa=rbinom(n=100,size=15,prob=0.4),
+                       steroid=rbinom(n=100,size=1,prob=0.2))
+
+@
+
+We then define the subject specific event rate to be given by the following formula:
+$$0.001 + 0.002\mathrm{pre.exa} + 0.005(1-\mathrm{steroid}) + 0.008(1-\mathrm{arm})$$
+
+<<>>=
+covar.df$rate <- 0.001 + 0.002*covar.df$pre.exa + 
+                 0.005*(1-covar.df$steroid) + 0.008*(1-covar.df$arm) 
+
+head(covar.df)  
+@
+
+Finally we can simulate a complete data set using the \texttt{dejaData} argument to the \texttt{SimulateComplete} function:
+<<>>=
+complete.covar <- SimulateComplete(study.time=365,
+                      dispersion=0.25,
+                      dejaData = MakeDejaData(covar.df,arm="arm",
+                                              Id="Id",rate="rate"))
+
+head(complete.covar$data)
+
+@
+
+The \texttt{MakeDejaData} function requires 4 arguments: the data frame and the column names used for the treatment arm, the subject Id and the event rate. The value in the event rate column for each subject is used as the negative binomial event rate ($\mu/T$) for this subject when simulating event times.  
+
+\paragraph{Implementing new drop out mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users can follow these instructions.}
+
+It is possible to implement your own drop out mechanisms using the \texttt{CreateNewDropoutMechanism} function. A \texttt{DropoutMechanism} object should be created which contains 5 elements. We show a very simple example here and see \newline \texttt{help(DropoutMechanism.object)} and \texttt{help(CreateNewDropoutMechanism)} for further details.
+
+In our example we say subject dropouts are exponentially distributed with subject specific rate $R$ where $R=($\texttt{rate}$)\exp(X_i)$ where $X_i \sim \mathcal{N}(0,$ \texttt{var}$)$ and there are different rates dependent on whether the subject is on steroids.
+
+<<newdropout>>=
+
+#we create a function which returns the new dropout mechanism
+steroidMCAR <- function(steroid.rate, non.steroid.rate,var=0){ 
+  
+  #First we create a function which must take in two arguments,
+  #event.times - a list of a single subject's event times
+  #data - a row of the data frame containing the subject details
+  #and outputs the time of subject dropout 
+  GetDropTime <- function(event.times,data){
+    rate <- if(data$steroid==1) steroid.rate else non.steroid.rate  
+    rate <- rate*exp(rnorm(1,mean = 0,sd = sqrt(var)))
+    dropout.time <- rexp(1,rate)
+    return(min(dropout.time, data$censored.time))
+  }
+  
+  #we create a vector of the columns from the data frame that
+  #are used in the GetDropTime function
+  cols.needed <- c("censored.time","steroid")
+  
+  #we call the CreateNewDropoutMechanism function
+  #with the following arguments
+  CreateNewDropoutMechanism(type="MNAR", 
+                            text="Rate dependent on steroid use", #the text to be output
+                            cols.needed=cols.needed, #see above
+                            GetDropTime=GetDropTime, #see above
+                            parameters=list(steroid.rate=steroid.rate,
+                                            non.steroid.rate=non.steroid.rate,
+                                            var=var) #The parameters to be output
+                            )
+
+}
+@
+
+We can then use the \texttt{steroidMCAR} function:
+<<>>=
+#we can view the dropout mechanism
+steroidMCAR(steroid.rate = 0.005, non.steroid.rate = 0.025)
+
+#we can use it
+dropout.covar <- SimulateDropout(complete.covar,
+                    drop.mechanism=steroidMCAR(steroid.rate = 0.0025,
+                                   non.steroid.rate = 0.001))
+
+summary(dropout.covar)
+@
+
+By using the \texttt{covar} argument with the \texttt{SimFit} function, covariates can be included in the model fit. In the code below we include the covariate \texttt{pre.exa} in the model fit (so the model becomes \texttt{observed.events} $\sim$ \texttt{arm + offset(log(censored.time))+ pre.exa}).
+
+<<>>=
+dropout.fit <- Simfit(dropout.covar,
+                 equal.dispersion=TRUE,
+                 covar=~pre.exa)
+
+#The values of mu now depend on subject's pre.exa value
+gamma_mu <- dropout.fit$genCoeff.function(use.uncertainty=TRUE)
+head(gamma_mu$mu)
+@
+
+\paragraph{Implementing new imputing mechanisms (advanced!) - the idea is for a developer to add new mechanisms, though advanced R users could follow these instructions}
+
+It is possible to implement your own imputing mechanisms using the \texttt{CreateNewImputeMechanism} function. A \texttt{ImputeMechanism} object should be created which contains 4 elements. We show a toy example here and see \texttt{help(ImputeMechanism.object)} and \texttt{help(CreateNewImputeMechanism)} for further details.
+
+In our toy\footnote{this is clearly not a sensible imputing method but shows how to implement imputing mechanisms} example we would like subjects in the treatment group to have no imputed events and subjects in the control group to have either 0 or 1 events with a given probability which depends on their \texttt{steroid} covariate value. If subjects have an event it is midway between dropping out and the end of the follow up period. 
+
+<<newimp>>=
+
+#we create a function which returns the new dropout mechanism
+#arguments are parameters for probability control arm having event
+my.example.impute <- function(steroid.prob,non.steroid.prob){ 
+  
+  
+  #We need a function which takes in a SingleSimFit object
+  #and returns a list with 2 elements:
+  #newevent.times which contains vectors of the imputed event times for each subject
+  #new.censored.times, a vector of the times the imputed data subjects dropout
+  #(the code in this function has been designed for clarity as does NOT follow 
+  #R best practice)
+  impute <- function(fit){
+    
+    #how many subjects are there in the data frame?
+    number.of.subjects <- numberSubjects(fit)
+    
+    #subject follow up time
+    study.time <- fit$singleSim$study.time
+    
+    #After imputing data, all subjects are followed up
+    #for study.time 
+    new.censored.times <- rep(study.time,number.of.subjects)
+    
+    #The subject data
+    data <- fit$singleSim$data
+    
+    #the imputed event times for each subject
+    newevent.times <- list()
+    
+    #Note could access the mu, gamma taking into 
+    #account uncertainty in parameter estimates for the imputation
+    gamma_mu <-  fit$genCoeff.function(use.uncertainty=TRUE)
+    #so gamma_mu$mu[i,] is (mu_c,mu_a) for subject i
+    
+    #for each subject create a vector of imputed event times
+    #if no events are imputed then use numeric(0)
+    for(id in 1:number.of.subjects){
+    
+      #assume by default no events are imputed
+      newevent.times[[id]] <- numeric(0) 
+      
+      #time left on study
+      time.left <- study.time - data[id,]$censored.time
+      
+      #if ti = 0 then subject didn't drop out so 
+      #no imputed events and if in treatment group then no new events
+      if(data[id,]$arm==1 || time.left==0) next;
+        
+      #get the probability of an event 
+      prob <- if(data[id,]$steroid==1)steroid.prob else non.steroid.prob 
+      
+      #did subject have an event?
+      if(rbinom(n=1,size = 1,prob=prob)!= 0){
+        newevent.times[[id]] <- data[id,]$censored.time + 0.5*time.left
+      }
+    }
+    
+    #return the appropriate list
+    return(list(new.censored.times=new.censored.times,
+                newevent.times=newevent.times))
+    
+  }
+  
+  #we create a vector of the columns from the data frame that
+  #are used in the impute function
+  cols.needed <- c("censored.time","arm","steroid")
+  
+  CreateNewImputeMechanism(name="my new impute mechanism", #name for outputting
+                    cols.needed=cols.needed, #see above
+                    impute=impute, #see above
+                    parameters=list(steroid.prob=steroid.prob,
+                                    non.steroid.prob=non.steroid.prob)) #extra parameters
+}
+
+#we can view the impute mechanism
+my.example.impute(steroid.prob=0.5,non.steroid.prob = 0.9)
+@
+
+For a more complex example (aimed for developers) see the functions: \texttt{weighted\_j2r} and \newline  \texttt{dejaVu:::.internal.impute}. 
+Using the imputation mechanism, MI can be performed and models (with covariates) fitted to the data as before: 
+<<>>=
+imputed.covar <- Impute(fit = dropout.fit,
+                  impute.mechanism = my.example.impute(steroid.prob=0.5,
+                                       non.steroid.prob = 0.9),
+                  N=10)
+
+fitted.covar <- Simfit(imputed.covar,
+                 family="negbin",
+                 covar=~pre.exa)
+
+summary(fitted.covar)
+@
+
+
+
+\bibliographystyle{plain}
+\bibliography{userguide}
+
+\end{document}
