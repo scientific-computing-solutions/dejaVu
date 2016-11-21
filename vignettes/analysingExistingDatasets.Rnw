@@ -12,7 +12,7 @@
 
 \begin{document}
 
-\title{Imputation for existing datasets}
+\title{Using dejaVu for imputation of an existing study dataset}
 \author[*]{Jonathan W. Bartlett}
 
 \affil[*]{AstraZeneca, B\&I, Advanced Analytics Centre, UK}
