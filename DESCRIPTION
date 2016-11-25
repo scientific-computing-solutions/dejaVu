@@ -7,7 +7,7 @@ Maintainer: David Ruau <David.Ruau@astrazeneca.com>
 Description: Package to provide simulation and analysis of multiple imputation
     methods for recurrent events
 License: GPL (>=2)
-LazyLoad: yes
+LazyData: true
 Suggests:
     knitr,
     testthat,

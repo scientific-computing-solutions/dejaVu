@@ -8,7 +8,7 @@
 \usepackage{amssymb}
 
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{User Guide}
+%\VignetteIndexEntry{Using dejaVu for imputation of an existing study dataset}
 
 \begin{document}
 
@@ -75,7 +75,7 @@ obsData <-
   event.times = eventTimes,
   status = "dropout",
   study.time = 1,
-  censored.time = fupTime,
+  censored.time = simData$fupTime,
   allow.beyond.study = T
   )
 @
