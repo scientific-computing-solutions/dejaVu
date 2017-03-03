@@ -130,7 +130,8 @@ NULL
 ##' sim.with.MCAR.dropout <- SimulateDropout(sim,
 ##'                      drop.mechanism=ConstantRateDrop(rate=0.0025)) 
 ##' sim.with.MAR.dropout <- SimulateDropout(sim,
-##'                      drop.mechanism=LinearRateChangeDrop(starting.rate=0.0025,rate.change=0.0005))                       
+##'                      drop.mechanism=LinearRateChangeDrop(starting.rate=0.0025,
+##'                      rate.change=0.0005))                       
 ##'                                                                    
 ##' @export 
 SimulateDropout <- function(simComplete,drop.mechanism){
