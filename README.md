@@ -1,6 +1,6 @@
 # dejaVu
 
-[![Build Status](https://travis-ci.org/scientific-computing-solutions/dejavu.svg?branch=master)](https://travis-ci.org/scientific-computing-solutions/dejavu)
+[![Build Status](https://travis-ci.org/scientific-computing-solutions/dejaVu.svg?branch=master)](https://travis-ci.org/scientific-computing-solutions/dejaVu)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/dejaVu)](https://cran.r-project.org/package=dejaVu)
 [![Coverage Status](https://coveralls.io/repos/scientific-computing-solutions/dejavu/badge.svg?branch=master&service=github)](https://coveralls.io/github/scientific-computing-solutions/eventPrediction?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/43a360wj22o4oho5/branch/master?svg=true)](https://ci.appveyor.com/project/bobthecat/dejavu/branch/master)
