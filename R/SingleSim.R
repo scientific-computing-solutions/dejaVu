@@ -128,11 +128,12 @@ NULL
 ##'                         event.rates=c(0.01,0.005),dispersions=0.25)
 ##'                         
 ##' sim.with.MCAR.dropout <- SimulateDropout(sim,
-##'                      drop.mechanism=ConstantRateDrop(rate=0.0025)) 
-##' sim.with.MAR.dropout <- SimulateDropout(sim,
-##'                      drop.mechanism=LinearRateChangeDrop(starting.rate=0.0025,
-##'                      rate.change=0.0005))                       
-##'                                                                    
+##'                       drop.mechanism = ConstantRateDrop(rate = 0.0025)) 
+##' sim.with.MAR.dropout <- SimulateDropout(sim, 
+##'                      drop.mechanism = LinearRateChangeDrop(
+##'                                           starting.rate = 0.0025,
+##'                                           rate.change = 0.0005))
+##'
 ##' @export 
 SimulateDropout <- function(simComplete,drop.mechanism){
   validateSimulateDropout(simComplete,drop.mechanism)

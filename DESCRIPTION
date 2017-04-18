@@ -12,8 +12,9 @@ Author: c(person("Nikolas", "Burkoff",
             role=c("aut"))
         )
 Maintainer: Jonathan Bartlett <jonathan.bartlett1@astrazeneca.com>
-Description: Package to provide simulation and analysis of multiple imputation
-    methods for recurrent events
+Description: Package to performs multiple imputation on recurrent event data sets.
+    Existing study dataset or simulated one can be used to perform multiple 
+    imputation and sensitivity analysis.
 License: GPL (>=2)
 LazyData: true
 Suggests:
