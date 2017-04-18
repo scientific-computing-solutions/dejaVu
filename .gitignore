@@ -1,11 +1,8 @@
 *.Rproj
-*.Rbuildignore
 .Rproj.user
 .Rhistory
 .RData
-working/*
 vignettes/*
 !vignettes/*.Rnw
 !vignettes/*.bib
 tests/*.pdf
-inst
