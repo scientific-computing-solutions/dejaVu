@@ -24,4 +24,3 @@ See the user guide vignette for an example of using this function
 \seealso{
 \code{\link{CreateScenario}}
 }
-

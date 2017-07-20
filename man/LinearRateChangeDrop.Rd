@@ -31,4 +31,3 @@ LinearRateChangeDrop(starting.rate=0.0025,rate.change=-0.00001,var=1)
 \seealso{
 \code{\link{DropoutMechanism.object}}
 }
-

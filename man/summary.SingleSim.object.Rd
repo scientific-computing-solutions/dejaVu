@@ -23,4 +23,3 @@ The \code{print.summary.SingleSim} method has been implemented}
 \description{
 The object returned when calling the summary function on a \code{SingleSim} object
 }
-

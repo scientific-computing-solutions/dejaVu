@@ -28,4 +28,3 @@ function to actually analyze data should take great care.
 \examples{
 expandEventCount(count=c(0, 20), time=c(10, 20))
 }
-

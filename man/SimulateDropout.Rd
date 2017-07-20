@@ -31,4 +31,3 @@ sim.with.MAR.dropout <- SimulateDropout(sim,
                                           rate.change = 0.0005))
 
 }
-

@@ -45,4 +45,3 @@ sim2 <- SimulateComplete(study.time=365,number.subjects=c(50,75),
 \seealso{
 \code{\link{SingleSim.object}}
 }
-

@@ -28,4 +28,3 @@ derived from a \code{SingleSimFit} object and \code{ImputeMechanism}
 \seealso{
 \code{\link{GetImputedDataSet}}
 }
-

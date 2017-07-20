@@ -30,4 +30,3 @@ plotting
 \details{
 A \code{print.summary.Scenario} function has been implemented
 }
-

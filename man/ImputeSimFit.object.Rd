@@ -23,4 +23,3 @@ have been implemented
 \seealso{
 \code{summary.ImputeSimFit} \code{\link{summary.SingleSimFit}}
 }
-

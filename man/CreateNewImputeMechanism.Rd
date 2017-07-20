@@ -28,4 +28,3 @@ A function which creates an Impute Mechanism object
 \seealso{
 \code{\link{ImputeMechanism.object}}
 }
-

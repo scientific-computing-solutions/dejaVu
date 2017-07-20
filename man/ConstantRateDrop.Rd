@@ -27,4 +27,3 @@ ConstantRateDrop(rate=0.0025,var=1)
 \seealso{
 \code{\link{DropoutMechanism.object}}
 }
-

@@ -22,4 +22,3 @@ Create \code{Scenario} object from list of Fit Summaries
 \seealso{
 \code{\link{Scenario.object}}
 }
-

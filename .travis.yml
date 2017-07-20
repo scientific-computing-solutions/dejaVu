@@ -1,15 +1,5 @@
-language: r
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+sudo: false
 cache: packages
-
-os:
-  - linux
-  - osx
-
-r_github_packages:
-  - jimhester/covr
-
-before_install: 
-  - if [ "${TRAVIS_OS_NAME}" == "osx" ]; then sudo tlmgr install preprint url; fi 
-
-after_success:
-  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then echo 'covr::coveralls(quiet=FALSE)' | R --vanilla; fi

@@ -15,4 +15,3 @@ The number of subjects
 \description{
 S3 generic to output the number of subjects in a given object
 }
-

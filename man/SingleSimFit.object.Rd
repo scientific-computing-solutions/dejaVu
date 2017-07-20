@@ -22,4 +22,3 @@ then this will be NULL}
 \description{
 A \code{\link{summary.SingleSimFit}} method has been implemented
 }
-

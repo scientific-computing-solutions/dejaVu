@@ -1,6 +1,9 @@
 ##' @importFrom MASS glm.nb
 NULL
 
+#' @import stats
+#' @import utils
+
 ##' @importFrom MASS mvrnorm
 
 #cat a named list

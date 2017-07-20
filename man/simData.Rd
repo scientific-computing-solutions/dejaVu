@@ -24,4 +24,3 @@ study was 1 year, but some patients dropped out early and so their
 follow-up ended prematurely (i.e. before 1 year)
 }
 \keyword{datasets}
-

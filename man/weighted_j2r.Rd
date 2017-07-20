@@ -39,4 +39,3 @@ See the User guide vignette for further details
 \seealso{
 \code{\link{ImputeMechanism.object}}
 }
-

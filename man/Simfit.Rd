@@ -31,4 +31,3 @@ S3 generic for fitting models
 \seealso{
 \code{\link{SingleSimFit.object}}
 }
-

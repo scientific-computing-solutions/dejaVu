@@ -15,4 +15,3 @@ A vector of the number of subjects in each arm
 \description{
 S3 generic to output the number of subjects in each arm for a given object
 }
-

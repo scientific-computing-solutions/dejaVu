@@ -32,4 +32,3 @@ is used to combine the test statistics into a single summary
 \details{
 A \code{print.summary.ImputeSimFit} object has been implemented
 }
-

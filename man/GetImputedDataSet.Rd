@@ -21,4 +21,3 @@ Output a single imputed data set
 \seealso{
 \code{\link{ImputeSim.object}}
 }
-

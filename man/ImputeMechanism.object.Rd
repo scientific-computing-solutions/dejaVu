@@ -34,7 +34,7 @@ A \code{print.ImputeMechanism} method is defined.
  The following components must be included in
 an ImputeMechanism Object
 }
+
 \examples{
 j2r <- weighted_j2r(trt.weight=0)
 }
-

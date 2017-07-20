@@ -28,4 +28,3 @@ A function which creates a DropOut Mechanism object
 \seealso{
 \code{\link{DropoutMechanism.object}}
 }
-

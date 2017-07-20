@@ -36,4 +36,3 @@ my.df$rate <- 0.0025 + my.df$covar*0.002 + (1-my.df$arm)*0.002
 my.dejaData <- MakeDejaData(my.df,arm="arm",rate="rate",Id="Id")
 
 }
-

@@ -38,4 +38,3 @@ A \code{print.summary.SingleSimFit} method has been implemented
 \seealso{
 \code{\link{SingleSimFit.object}}
 }
-

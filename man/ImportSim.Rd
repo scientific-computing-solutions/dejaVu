@@ -66,4 +66,3 @@ dropout.dataset <- ImportSim(dejaData, event.times,
                     censored.time=censored.time)
 
 }
-
