@@ -10,7 +10,8 @@
 
 Multiple Imputation for Recurent Event Endpoints in Clinical Trials
 
-The dejaVu package performs multiple imputation on recurrent event data sets. The 
+The dejaVu package performs multiple imputation on recurrent event data sets,
+following the approach described by [Keene et al](http://doi.org/10.1002/pst.1624). The 
 package can be used to perform multiple imputation of an existing study dataset 
 where some patients dropped out. Imputation can be performed either assuming 
 dropout is at random (missing at random) or assuming a specific non-random dropout 
