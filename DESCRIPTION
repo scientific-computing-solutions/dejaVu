@@ -4,6 +4,9 @@ Title: Multiple Imputation for Recurrent Events
 Version: 0.2
 Author: c(person("Nikolas", "Burkoff", 
             role=c("aut")),
+          person("Paul", "Metcalfe", 
+            email='paul.metcalfe@astrazeneca.com',
+            role=c("aut")),  
           person("Jonathan", "Bartlett", 
             email='jonathan.bartlett1@astrazeneca.com',
             role=c("aut")),
