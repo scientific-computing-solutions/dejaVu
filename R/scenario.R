@@ -6,7 +6,7 @@
 ##' Functions \code{as.data.frame.Scenario} and \code{summary.Scenario} have 
 ##' been implemented
 ##' 
-##' @param description A string containind a description of the scenario
+##' @param description A string containing a description of the scenario
 ##' @param summaries A list of either \code{summary.ImputeSimFit} or \code{summary.SingleSimFit} objects
 ##' 
 ##' @seealso \code{\link{CreateScenario}} 

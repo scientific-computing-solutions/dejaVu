@@ -4,7 +4,7 @@
 \alias{Scenario.object}
 \title{Scenario object}
 \arguments{
-\item{description}{A string containind a description of the scenario}
+\item{description}{A string containing a description of the scenario}
 
 \item{summaries}{A list of either \code{summary.ImputeSimFit} or \code{summary.SingleSimFit} objects}
 }

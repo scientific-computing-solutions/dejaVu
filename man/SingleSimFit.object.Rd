@@ -14,7 +14,7 @@ a \code{SingleSim object}. It can be used to both impute data sets or can be sum
 \item{genCoeff.function}{A function which returns a list of parameters from the model fit(s) which can 
 be used when performing the gamma imputation. It takes one argument, use.uncertainty (by default is TRUE) which
 if TRUE stochastically incorporates uncertainty into the parameter estimates in preparation for use with imputation 
-If a Poisson/quasi-Poission model was fitted to the \code{SingleSimFit} object
+If a Poisson/quasi-Poisson model was fitted to the \code{SingleSimFit} object
 then this will be NULL}
 
 \item{equal}{dispersion whether equal dispersions were used when fitting model(s) to the data}
