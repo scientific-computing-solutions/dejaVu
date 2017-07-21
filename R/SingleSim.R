@@ -95,7 +95,7 @@ print.SingleSim <- function(x,...){
 ##'
 ##' @section Structure: The above components must be included in
 ##' a SingleSim Object
-##' @param data The data frame, one row per subjecy containing (at least) the following columns
+##' @param data The data frame, one row per subject containing (at least) the following columns
 ##' Id, arm, censored.time, observed.events and actual.events
 ##' @param event.times A list of event times. event.times[[1]] is a list of event times for subject with Id 1
 ##' The length of event.times[[1]] = the number of observed events of subject with Id 1 

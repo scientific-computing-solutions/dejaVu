@@ -21,7 +21,7 @@
 ##' @param trt.weight See details
 ##' @param delta If \code{trt.weight=1} then delta is a vector of length 2
 ##' (control.delta,treatment.delta) and the mean number of expected events for the imputed missing data is
-##' multipled by the appropriate delta 
+##' multiplied by the appropriate delta 
 ##' @return An \code{ImputeMechanism} object
 ##' @seealso \code{\link{ImputeMechanism.object}}
 ##' @export

@@ -25,7 +25,7 @@ NULL
 ##' 
 ##' @param imputeSim A \code{ImputeSim} object which contains 
 ##' multiple imputed data sets
-##' @param index numberic, which of the multiple imputed data sets to output
+##' @param index numeric, which of the multiple imputed data sets to output
 ##' @return A \code{SingleSim} object with \code{status="imputed"}
 ##' @seealso \code{\link{ImputeSim.object}}
 ##' @export
