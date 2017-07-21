@@ -1,6 +1,6 @@
 Package: dejaVu
 Type: Package
-Title: Multiple Imputation for recurrent events
+Title: Multiple Imputation for Recurrent Events
 Version: 0.2
 Author: c(person("Nikolas", "Burkoff", 
             role=c("aut")),
