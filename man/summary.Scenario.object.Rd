@@ -10,7 +10,7 @@
 
 \item{power}{The proportion of simulations for which the p-value is \code{< alpha}}
 
-\item{alpha}{The signficance level used when calculating power, by default 0.05 use
+\item{alpha}{The significance level used when calculating power, by default 0.05 use
 \code{summary(object,alpha=x)} to use a different p value}
 
 \item{use.adjusted.pval}{logical, default FALSE should the p values calculated using

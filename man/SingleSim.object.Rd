@@ -6,7 +6,7 @@
 \alias{summary.SingleSim}
 \title{SingleSim Object}
 \arguments{
-\item{data}{The data frame, one row per subjecy containing (at least) the following columns
+\item{data}{The data frame, one row per subject containing (at least) the following columns
 Id, arm, censored.time, observed.events and actual.events}
 
 \item{event.times}{A list of event times. event.times[[1]] is a list of event times for subject with Id 1

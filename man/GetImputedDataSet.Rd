@@ -10,7 +10,7 @@ GetImputedDataSet(imputeSim, index)
 \item{imputeSim}{A \code{ImputeSim} object which contains 
 multiple imputed data sets}
 
-\item{index}{numberic, which of the multiple imputed data sets to output}
+\item{index}{numeric, which of the multiple imputed data sets to output}
 }
 \value{
 A \code{SingleSim} object with \code{status="imputed"}

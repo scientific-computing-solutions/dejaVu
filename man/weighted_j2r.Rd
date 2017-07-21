@@ -11,7 +11,7 @@ weighted_j2r(trt.weight, delta = c(1, 1))
 
 \item{delta}{If \code{trt.weight=1} then delta is a vector of length 2
 (control.delta,treatment.delta) and the mean number of expected events for the imputed missing data is
-multipled by the appropriate delta}
+multiplied by the appropriate delta}
 }
 \value{
 An \code{ImputeMechanism} object
