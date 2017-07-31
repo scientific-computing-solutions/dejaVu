@@ -15,8 +15,9 @@ Author: c(person("Nikolas", "Burkoff",
             role=c("aut"))
         )
 Maintainer: Jonathan Bartlett <jonathan.bartlett1@astrazeneca.com>
-Description: Package to perform multiple imputation of recurrent event data
-    based on a negative binomial regression model.
+Description: Performs reference based multiple imputation of recurrent event data
+    based on a negative binomial regression model, as described
+    by Keene et al (2014) doi:10.1002/pst.1624.
 License: GPL (>=2)
 LazyData: true
 Suggests:

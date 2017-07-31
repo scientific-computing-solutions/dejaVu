@@ -14,6 +14,16 @@ Missing counts for subjects in both arms are imputed by assuming
 the rate before and dropout are both equal to the control (reference) estimated rate.
 This corresponds to what is usually termed the copy reference assumption.
 }
+\examples{
+ 
+sim <- SimulateComplete(study.time=365,number.subjects=50,
+                        event.rates=c(0.01,0.005),dispersions=0.25)
+sim.with.MCAR.dropout <- SimulateDropout(sim,
+                                         drop.mechanism = ConstantRateDrop(rate = 0.0025))
+fit <- Simfit(sim.with.MCAR.dropout)
+imps <- Impute(fit, copy_reference(), 10)
+
+}
 \seealso{
 \code{\link{ImputeMechanism.object}}
 }

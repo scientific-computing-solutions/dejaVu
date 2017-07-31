@@ -1,5 +1,6 @@
 ##' SingleSimFit object
 ##'  
+##' 
 ##' A \code{SingleSimFit} object is returned from calling \code{Simfit} with
 ##' a \code{SingleSim object}. It can be used to both impute data sets or can be summarized 
 ##' 
@@ -38,6 +39,12 @@ NULL
 ##' @param number.subjects The number of subjects in each arm
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @name summary.SingleSimFit
+##' @examples
+##' sim <- SimulateComplete(study.time=365,number.subjects=50,
+##' event.rates=c(0.01,0.005),dispersions=0.25)
+##' fit <- Simfit(sim)
+##' summary(fit)
+
 NULL
 
 ##' @export
@@ -93,6 +100,15 @@ print.summary.SingleSimFit <- function(x,...){
 ##' @param impute.mechanism An \code{ImputeMechanism} object
 ##' @param N The number of data sets to impute
 ##' @return An \code{ImputeSim} object
+##' 
+##' @examples 
+##' sim <- SimulateComplete(study.time=365,number.subjects=50,
+##'     event.rates=c(0.01,0.005),dispersions=0.25)
+##' sim.with.MCAR.dropout <- SimulateDropout(sim,
+##'     drop.mechanism = ConstantRateDrop(rate = 0.0025))
+##' fit <- Simfit(sim.with.MCAR.dropout)
+##' imps <- Impute(fit, copy_reference(), 10)
+##' 
 ##' @export
 Impute <- function(fit,impute.mechanism,N){
   validateImputeArguments(fit,impute.mechanism,N)

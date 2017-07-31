@@ -28,6 +28,10 @@ NULL
 ##' S3 generic to output the number of subjects in each arm for a given object
 ##' @param x The object
 ##' @return A vector of the number of subjects in each arm
+##' @examples 
+##' sim <- SimulateComplete(study.time=365,number.subjects=50,
+##' event.rates=c(0.01,0.005),dispersions=0.25)
+##' subjectsPerArm(sim)
 ##' @export
 subjectsPerArm <- function(x){
   UseMethod("subjectsPerArm")
@@ -42,6 +46,10 @@ subjectsPerArm.default <- function(x){
 ##' S3 generic to output the number of subjects in a given object
 ##' @param x The object
 ##' @return The number of subjects
+##' @examples 
+##' sim <- SimulateComplete(study.time=365,number.subjects=50,
+##' event.rates=c(0.01,0.005),dispersions=0.25)
+##' numberSubjects(sim)
 ##' @export
 numberSubjects <- function(x){
   UseMethod("numberSubjects")
@@ -66,6 +74,14 @@ numberSubjects.default <- function(x){
 ##' @return A \code{SingleSimFit} object
 ##' @seealso \code{\link{SingleSimFit.object}}
 ##' @export
+##' 
+##' @examples  
+##' set.seed(1234)
+##' sim <- SimulateComplete(study.time=1,number.subjects=50,
+##'       event.rates=c(0.1,0.05),dispersions=0.1)
+##' summary(Simfit(sim,equal.dispersion=TRUE))
+##'
+##' 
 Simfit <- function(x,family="negbin",equal.dispersion=TRUE,covar=NULL,...){
   UseMethod("Simfit")
 }

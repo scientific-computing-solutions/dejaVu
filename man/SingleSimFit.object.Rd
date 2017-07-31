@@ -2,10 +2,7 @@
 % Please edit documentation in R/SingleSimFit.R
 \name{SingleSimFit.object}
 \alias{SingleSimFit.object}
-\title{SingleSimFit object
- 
-A \code{SingleSimFit} object is returned from calling \code{Simfit} with
-a \code{SingleSim object}. It can be used to both impute data sets or can be summarized}
+\title{SingleSimFit object}
 \arguments{
 \item{singleSim}{The \code{SingleSim} object to which a model has been fitted}
 
@@ -20,5 +17,9 @@ then this will be NULL}
 \item{equal}{dispersion whether equal dispersions were used when fitting model(s) to the data}
 }
 \description{
+A \code{SingleSimFit} object is returned from calling \code{Simfit} with
+a \code{SingleSim object}. It can be used to both impute data sets or can be summarized
+}
+\details{
 A \code{\link{summary.SingleSimFit}} method has been implemented
 }

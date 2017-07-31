@@ -28,6 +28,16 @@ NULL
 ##' @param index numeric, which of the multiple imputed data sets to output
 ##' @return A \code{SingleSim} object with \code{status="imputed"}
 ##' @seealso \code{\link{ImputeSim.object}}
+##' 
+##' @examples 
+##' sim <- SimulateComplete(study.time=365,number.subjects=50,
+##' event.rates=c(0.01,0.005),dispersions=0.25)
+##' sim.with.MCAR.dropout <- SimulateDropout(sim,
+##'   drop.mechanism = ConstantRateDrop(rate = 0.0025))
+##' fit <- Simfit(sim.with.MCAR.dropout)
+##' imps <- Impute(fit, copy_reference(), 10)
+##' imp1 <- GetImputedDataSet(imps, 1)
+##' 
 ##' @export
 GetImputedDataSet <- function(imputeSim,index){
   
